@@ -1,30 +1,29 @@
 "use client";
-import { useState } from "react";
 import type { User } from "db";
 import { useSocket } from "@/components/SocketContext/useSocket";
 import Link from "next/link";
 import { HiUser } from "react-icons/hi2";
+import useSWR from "swr";
 
-interface PeopleListProps {
-  users?: User[];
-}
+const fetchUsers = (): Promise<User[]> =>
+  fetch("/_api/users").then((res) => res.json());
 
-export const PeopleList = (props: PeopleListProps) => {
-  const { users = [] } = props;
-  const [userList, setUserList] = useState<User[]>(users);
+export const PeopleList = () => {
+  const { data: users, isLoading, mutate } = useSWR("/_api/users", fetchUsers);
 
   const { user } = useSocket("user-connected", ({ user }) => {
-    setUserList((userList) => {
-      if (!userList.find((u) => u.id === user.id)) {
-        return [...userList, user];
-      }
-      return userList;
-    });
+    if (!users.find((u) => u.id === user.id)) {
+      mutate([...users, user]);
+    }
   });
+
+  if (isLoading) {
+    return <div>Loading</div>;
+  }
 
   return (
     <div className="flex flex-col gap-2 h-full overflow-scroll pb-16">
-      {userList
+      {users
         .filter((u) => u.id !== user?.id)
         .map((user) => {
           return (
