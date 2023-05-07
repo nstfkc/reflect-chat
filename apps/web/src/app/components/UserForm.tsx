@@ -11,7 +11,7 @@ export const UserForm = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    fetch("/api/create-user", {
+    fetch("/_api/user", {
       method: "POST",
       body: JSON.stringify({ username }),
     })

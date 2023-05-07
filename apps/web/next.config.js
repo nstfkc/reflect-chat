@@ -31,6 +31,10 @@ const nextConfig = {
         source: "/media/:path*",
         destination: `https://flak.flak-media.workers.dev/:path*`,
       },
+      {
+        source: "/_api/:path*",
+        destination: `http://localhost:4000/:path*`,
+      },
     ];
   },
 };
