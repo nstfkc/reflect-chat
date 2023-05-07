@@ -3,9 +3,13 @@ import { prisma } from "db";
 import cookie from "@fastify/cookie";
 import { hex } from "generate-random-color";
 import { addDays } from "date-fns";
+import fastifyIO from "fastify-socket.io";
+
+import { sockets } from "./socket";
 
 const server = fastify();
 
+server.register(fastifyIO);
 server.register(cookie, {
   secret: process.env.SECRET,
 });
@@ -174,6 +178,10 @@ server.get("/channel/:channelId", async (req) => {
   });
 
   return channel;
+});
+
+server.ready().then(() => {
+  sockets(server.io);
 });
 
 server.listen({ port: 4000 }, (err, address) => {
