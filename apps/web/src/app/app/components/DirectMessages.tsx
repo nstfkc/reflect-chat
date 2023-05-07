@@ -1,56 +1,44 @@
-import { DirectMessage, MessageV1, User } from "db";
+import { MessageV1 } from "db";
 import { cx } from "class-variance-authority";
+import useSWR from "swr";
 
 import Link from "next/link";
 import { HiUser } from "react-icons/hi2";
 import { useSocket } from "@/components/SocketContext/useSocket";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { UserContext } from "@/components/UserContext/UserContext";
 import { MessageContext } from "@/components/MessageContext/MessageContext";
 import { useParams } from "next/navigation";
 
-interface DirectMessagesProps {
-  user: User;
-  dmUserIds: string[];
-}
+const fetchDirectMessages = (): Promise<string[]> =>
+  fetch("/_api/direct-messages").then((res) => res.json());
 
-export const DirectMessages = (props: DirectMessagesProps) => {
-  const { user, dmUserIds } = props;
-  const { getUserById } = useContext(UserContext);
+export const DirectMessages = () => {
+  const { data: uniqueDMsUserIds = [], mutate } = useSWR(
+    "/_api/direct-messages",
+    fetchDirectMessages
+  );
+
+  const { getUserById, user } = useContext(UserContext);
   const { userId } = useParams();
   const { unreadMessages } = useContext(MessageContext);
+  const dmUserIds = uniqueDMsUserIds;
 
-  const [dmUsers, setDmUsers] = useState(
-    Array.from(new Set([user.id, ...dmUserIds])).map((id) => getUserById(id))
-  );
+  const dmUsers = dmUserIds.map((id) => getUserById(id));
 
   const updateDMList = useCallback(
     (dm: MessageV1) => {
-      setDmUsers((currentUsers) => {
-        const isReceivedMessage = dm.receiverId === user.id;
-        const isNewConversation = !currentUsers
-          .map((u) => u?.id)
-          .includes(isReceivedMessage ? dm.senderId : dm.receiverId!);
-        if (!isNewConversation) {
-          return currentUsers;
-        }
-        if (dm.senderId === user.id) {
-          const newUser = getUserById(dm.receiverId!);
-          if (newUser) {
-            return [...currentUsers, newUser];
-          }
-        }
-
-        if (dm.receiverId === user.id) {
-          const newUser = getUserById(dm.senderId);
-          if (newUser) {
-            return [...currentUsers, newUser];
-          }
-        }
-        return currentUsers;
+      if (dm.channelId) {
+        return;
+      }
+      const { senderId, receiverId } = dm;
+      mutate(
+        Array.from(new Set([...uniqueDMsUserIds, senderId, receiverId]))
+      ).then(() => {
+        console.log("mutated");
       });
     },
-    [user.id, getUserById]
+    [mutate, uniqueDMsUserIds]
   );
 
   const { socket } = useSocket();

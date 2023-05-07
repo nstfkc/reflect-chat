@@ -1,8 +1,7 @@
 "use client";
 
-import { Channel, User } from "db";
 import Link from "next/link";
-import { TbAt, TbBook, TbPlus } from "react-icons/tb";
+import { TbAt, TbBook } from "react-icons/tb";
 import { DirectMessages } from "./DirectMessages";
 import { Channels } from "./Channels";
 
@@ -12,13 +11,7 @@ const Text = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-interface SidebarProps {
-  channels: Channel[];
-  dmUserIds: string[];
-  user: User;
-}
-
-export const Sidebar = (props: SidebarProps) => {
+export const Sidebar = () => {
   return (
     <div className="bg-white h-full overflow-scroll">
       <div className="p-4 flex flex-col gap-4">
@@ -44,11 +37,11 @@ export const Sidebar = (props: SidebarProps) => {
 
         <div className="flex flex-col gap-2">
           <span className="font-bold tracking-wide">Channels</span>
-          <Channels channels={props.channels} />
+          <Channels />
         </div>
         <div className="flex flex-col gap-2">
           <span className="font-bold tracking-wide">Direct Messages</span>
-          <DirectMessages user={props.user} dmUserIds={props.dmUserIds} />
+          <DirectMessages />
         </div>
       </div>
     </div>

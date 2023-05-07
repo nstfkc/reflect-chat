@@ -208,7 +208,6 @@ export const MessageContext = createContext({} as MessageContextValue);
 
 interface MessageProviderProps {
   children: ReactNode;
-  channels: Channel[];
 }
 
 export const MessageProvider = (props: MessageProviderProps) => {

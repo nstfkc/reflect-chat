@@ -1,4 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
+import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 import { ComponentProps, FormEvent, ReactNode, useState } from "react";
 import { HiXMark } from "react-icons/hi2";
 import * as Switch from "@radix-ui/react-switch";
@@ -27,6 +29,22 @@ const PrivateSwitch = (props: ComponentProps<typeof Switch.Root>) => {
   );
 };
 
+interface CreateChannelParams {
+  name: string;
+  description: string;
+  kind: string;
+  createdBy: string;
+}
+const createChannel = async (
+  url: string,
+  { arg }: { arg: CreateChannelParams }
+): Promise<Channel> => {
+  return await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(arg),
+  }).then((res) => res.json());
+};
+
 interface CreateChannelDialogProps {
   children: ReactNode;
   onChannelCreate: (channel: Channel) => void;
@@ -34,6 +52,7 @@ interface CreateChannelDialogProps {
 
 export const CreateChannelDialog = (props: CreateChannelDialogProps) => {
   const { children, onChannelCreate } = props;
+  const { trigger } = useSWRMutation("/_api/create-channel", createChannel, {});
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -44,14 +63,15 @@ export const CreateChannelDialog = (props: CreateChannelDialogProps) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const res = await fetch("/app/api/create-channel", {
-      method: "POST",
-      body: JSON.stringify({ name, description, kind, createdBy: user?.id }),
-    }).then((res) => res.json());
+    const channel = await trigger({
+      name,
+      description,
+      kind,
+      createdBy: user?.id,
+    });
+    socket?.emit("channel-created", channel);
 
-    socket?.emit("channel-created", res.channel);
-
-    onChannelCreate(res.channel);
+    onChannelCreate(channel);
 
     setIsLoading(false);
     setName("");

@@ -1,7 +1,8 @@
+import useSWR from "swr";
 import { Channel } from "db";
 import { CreateChannelDialog } from "./CreateChannelDialog";
 import { TbPlus } from "react-icons/tb";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { HiHashtag, HiLockClosed } from "react-icons/hi2";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -14,18 +15,22 @@ const Text = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-interface ChannelsProps {
-  channels: Channel[];
-}
+const fetchChannels = (): Promise<Channel[]> =>
+  fetch("/_api/channels").then((res) => res.json());
 
-export const Channels = (props: ChannelsProps) => {
-  const [channels, setChannels] = useState(props.channels);
+export const Channels = () => {
+  const {
+    data: channels,
+    isLoading,
+    mutate,
+  } = useSWR("/_api/channels", fetchChannels, { fallbackData: [] });
 
   const { channelId } = useParams();
 
   const { unreadMessages, unreadMentions } = useContext(MessageContext);
+
   const handleChannelCreate = (channel: Channel) => {
-    setChannels((c) => [...c, channel]);
+    mutate([...channels, channel]);
   };
 
   return (

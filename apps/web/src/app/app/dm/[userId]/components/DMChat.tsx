@@ -1,23 +1,28 @@
 "use client";
 
-import { User } from "db";
+import useSWR from "swr";
 import { useContext } from "react";
 import { MessageContext } from "@/components/MessageContext/MessageContext";
 import { UserContext } from "@/components/UserContext/UserContext";
 import { Chat } from "@/components/Chat/Chat";
 import { FileUploaderProvider, Media } from "@/components/Chat/FileUploader";
 import { MessageV1WithMedia } from "@/types/global";
+import { useParams } from "next/navigation";
 
-interface ChannelChatProps {
-  history?: MessageV1WithMedia[];
-  otherUser: User;
-}
+const fetchDMs = async (url: string): Promise<MessageV1WithMedia[]> => {
+  return await fetch(url).then((res) => res.json());
+};
 
-export const DMChat = (props: ChannelChatProps) => {
-  const { history = [], otherUser } = props;
+export const DMChat = () => {
+  const { userId } = useParams();
+  const { data: history = [] } = useSWR(`/_api/messages/${userId}`, fetchDMs);
+
   const { sendMessage, markMessageAsRead, getMessageHistoryById } =
     useContext(MessageContext);
-  const { user, allUsers } = useContext(UserContext);
+
+  const { user, allUsers, getUserById } = useContext(UserContext);
+
+  const otherUser = getUserById(userId);
 
   const handleSendMessage = (text: string, media: Media[]) => {
     sendMessage(

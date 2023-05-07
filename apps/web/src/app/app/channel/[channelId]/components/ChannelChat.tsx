@@ -1,7 +1,8 @@
 "use client";
 
-import { useSocket } from "@/components/SocketContext/useSocket";
-import type { Channel, User } from "db";
+import useSWR from "swr";
+
+import type { Channel } from "db";
 import { useContext } from "react";
 import { MessageContext } from "@/components/MessageContext/MessageContext";
 import { UserContext } from "@/components/UserContext/UserContext";
@@ -9,21 +10,32 @@ import { Chat } from "@/components/Chat/Chat";
 import { FileUploaderProvider, Media } from "@/components/Chat/FileUploader";
 import { MessageV1WithMedia } from "@/types/global";
 
+const fetchChannelMessages = async (
+  url: string
+): Promise<MessageV1WithMedia[]> => {
+  return await fetch(url).then((res) => res.json());
+};
+
 interface ChannelChatProps {
   channel: Channel;
   history?: MessageV1WithMedia[];
-  users?: User[];
 }
 
 export const ChannelChat = (props: ChannelChatProps) => {
-  const { history = [], users = [], channel } = props;
+  const { channel } = props;
   const {
     sendMessage,
     markMessageAsRead,
     getMessageHistoryById,
     markMentionsAsRead,
   } = useContext(MessageContext);
-  const { user } = useContext(UserContext);
+
+  const { data: history = [] } = useSWR(
+    `/_api/channel/messages/${channel.id}`,
+    fetchChannelMessages
+  );
+
+  const { user, allUsers } = useContext(UserContext);
 
   const handleSendMessage = (text: string, medias?: Media[]) => {
     sendMessage(
@@ -41,11 +53,11 @@ export const ChannelChat = (props: ChannelChatProps) => {
   return (
     <FileUploaderProvider pathPrefix={channel.id}>
       <Chat
-        name={channel.name!}
+        name={`#${channel.name!}`}
         handleSendMessage={handleSendMessage}
         messages={messages}
-        users={users}
-        usersCanBeMentioned={users}
+        users={allUsers}
+        usersCanBeMentioned={allUsers}
         markAsRead={markMessageAsRead(channel.id)}
         markMentionsAsRead={markMentionsAsRead(channel.id)}
       />

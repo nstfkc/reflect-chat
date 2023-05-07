@@ -187,65 +187,70 @@ export const Chat = (props: ChatProps) => {
   });
 
   return (
-    <div
-      className="flex flex-col justify-end h-full relative"
-      {...getRootProps()}
-    >
-      {isDragActive ? (
-        <div className="absolute z-50 bg-gray-600/70 w-full h-full flex items-center justify-center">
-          <div className="flex flex-col items-center">
-            <RxImage className="text-4xl text-gray-100" />
-            <span className="text-white font-semibold tracking-wide">
-              Drag and drop files here
-            </span>
-          </div>
-        </div>
-      ) : null}
+    <>
+      <div className="fixed top-0 bg-gray-300 w-full p-4 z-10">
+        <span>{name}</span>
+      </div>
       <div
-        className="flex flex-col gap-8 p-4 overflow-scroll justify-end"
-        ref={containerRef}
+        className="flex flex-col justify-end h-full relative"
+        {...getRootProps()}
       >
-        {Object.entries(groupItemsByCreatedAt(messages as any)).map(
-          ([date, messages]) => {
-            return (
-              <Fragment key={date}>
-                <div className="w-full flex w-full justify-center items-center opacity-75">
-                  <div className="border-b-[1px] border-gray-600/50 grow"></div>
-                  <div className="border-[1px] border-gray-600/50 rounded-full px-4 py-2 text-sm">
-                    {date}
+        {isDragActive ? (
+          <div className="absolute z-50 bg-gray-600/70 w-full h-full flex items-center justify-center">
+            <div className="flex flex-col items-center">
+              <RxImage className="text-4xl text-gray-100" />
+              <span className="text-white font-semibold tracking-wide">
+                Drag and drop files here
+              </span>
+            </div>
+          </div>
+        ) : null}
+        <div
+          className="flex flex-col gap-8 p-4 overflow-scroll justify-end"
+          ref={containerRef}
+        >
+          {Object.entries(groupItemsByCreatedAt(messages as any)).map(
+            ([date, messages]) => {
+              return (
+                <Fragment key={date}>
+                  <div className="w-full flex w-full justify-center items-center opacity-75">
+                    <div className="border-b-[1px] border-gray-600/50 grow"></div>
+                    <div className="border-[1px] border-gray-600/50 rounded-full px-4 py-2 text-sm">
+                      {date}
+                    </div>
+
+                    <div className="border-b-[1px] border-gray-600/50 grow"></div>
                   </div>
+                  {Object.values(groupMessagesInTheSameMinute(messages)).map(
+                    (messages) => {
+                      const authorId = messages[0].senderId;
 
-                  <div className="border-b-[1px] border-gray-600/50 grow"></div>
-                </div>
-                {Object.values(groupMessagesInTheSameMinute(messages)).map(
-                  (messages) => {
-                    const authorId = messages[0].senderId;
-
-                    const user = users.find((user) => user.id === authorId);
-                    return (
-                      <MessageRender
-                        onRender={onRender}
-                        user={user!}
-                        messages={messages as any}
-                        key={messages[0].id}
-                        markAsRead={markAsRead}
-                        markMentionsAsRead={markMentionsAsRead}
-                      />
-                    );
-                  }
-                )}
-              </Fragment>
-            );
-          }
-        )}
+                      const user = users.find((user) => user.id === authorId);
+                      return (
+                        <MessageRender
+                          onRender={onRender}
+                          user={user!}
+                          messages={messages as any}
+                          key={messages[0].id}
+                          markAsRead={markAsRead}
+                          markMentionsAsRead={markMentionsAsRead}
+                        />
+                      );
+                    }
+                  )}
+                </Fragment>
+              );
+            }
+          )}
+        </div>
+        <div className="p-4">
+          <TextEditor
+            usersCanBeMentioned={usersCanBeMentioned}
+            placeholder={`Message ${name}`}
+            onSubmit={handleSendMessage}
+          ></TextEditor>
+        </div>
       </div>
-      <div className="p-4">
-        <TextEditor
-          usersCanBeMentioned={usersCanBeMentioned}
-          placeholder={`Message ${name}`}
-          onSubmit={handleSendMessage}
-        ></TextEditor>
-      </div>
-    </div>
+    </>
   );
 };

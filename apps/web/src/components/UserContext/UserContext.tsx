@@ -1,8 +1,9 @@
 "use client";
 
 import { User } from "db";
+import useSWR from "swr";
 
-import { ReactNode, createContext, useCallback, useState } from "react";
+import { ReactNode, createContext, useCallback } from "react";
 import { useSocket } from "../SocketContext/useSocket";
 
 interface UserContextValue {
@@ -13,15 +14,26 @@ interface UserContextValue {
 
 export const UserContext = createContext({} as UserContextValue);
 
+const fetchUsers = (): Promise<User[]> =>
+  fetch("/_api/users").then((res) => res.json());
+
 interface UserProviderProps {
-  user: User;
-  users: User[];
   children: ReactNode;
 }
 
 export const UserProvider = (props: UserProviderProps) => {
-  const { user, children } = props;
-  const [users, setUsers] = useState(props.users);
+  const { children } = props;
+  const {
+    data: users = [],
+    isLoading,
+    mutate,
+  } = useSWR("/_api/users", fetchUsers);
+
+  const { user } = useSocket("user-connected", ({ user }) => {
+    if (!users.find((u) => u.id === user.id)) {
+      mutate([...users, user]);
+    }
+  });
 
   const getUserById = useCallback(
     (id: string) => {
@@ -30,14 +42,9 @@ export const UserProvider = (props: UserProviderProps) => {
     [users]
   );
 
-  useSocket("user-connected", ({ user }) => {
-    setUsers((users) => {
-      if (!users.find((u) => u.id === user.id)) {
-        return [...users, user];
-      }
-      return users;
-    });
-  });
+  if (isLoading) {
+    return null;
+  }
 
   const value: UserContextValue = {
     user,
