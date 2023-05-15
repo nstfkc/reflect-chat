@@ -4,12 +4,16 @@ import cookie from "@fastify/cookie";
 import { hex } from "generate-random-color";
 import { addDays } from "date-fns";
 import fastifyIO from "fastify-socket.io";
+import cors from "@fastify/cors";
 
 import { sockets } from "./socket";
 
 const server = fastify();
 
 server.register(fastifyIO);
+server.register(cors, {
+  // put your options here
+});
 server.register(cookie, {
   secret: process.env.SECRET,
 });
@@ -178,6 +182,14 @@ server.get("/channel/:channelId", async (req) => {
   });
 
   return channel;
+});
+
+server.get("/health", () => {
+  return "healthy";
+});
+
+server.post("/test", (_req, reply) => {
+  return reply.send({ hello: "world" });
 });
 
 server.ready().then(() => {

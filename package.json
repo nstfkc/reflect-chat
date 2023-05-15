@@ -3,8 +3,10 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "dotenv -- turbo run dev",
+    "open:ios": "dotenv -- turbo run open:ios",
     "lint": "turbo run lint",
     "generate": "turbo run generate",
+    "static": "dotenv -- turbo run static",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
@@ -12,7 +14,17 @@
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
     "prettier": "^2.5.1",
-    "turbo": "^1.9.3"
+    "turbo": "^1.9.3",
+    "typescript": "^5.0.4"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@babel/*",
+        "expo-modules-*",
+        "typescript"
+      ]
+    }
   },
   "packageManager": "pnpm@7.15.0",
   "name": "reflect-chat"

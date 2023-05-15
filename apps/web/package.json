@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "static": "next build && next export"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.0",
@@ -41,18 +42,17 @@
     "tailwindcss": "3.3.1",
     "tippy.js": "^6.3.7",
     "ts-debounce": "^4.0.0",
-    "typescript": "5.0.4",
     "ui": "workspace:*",
     "use-local-storage-state": "^18.3.2",
     "utf-8-validate": "^6.0.3"
   },
   "devDependencies": {
+    "@capacitor/cli": "^5.0.1",
     "@prisma/nextjs-monorepo-workaround-plugin": "^4.13.0",
     "@types/node": "^17.0.12",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
     "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^4.5.3"
+    "tsconfig": "workspace:*"
   }
 }

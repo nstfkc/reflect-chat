@@ -11,6 +11,8 @@
       "cache": false,
       "persistent": true
     },
+    "static": {},
+    "open:ios": {},
     "generate": {}
   }
 }
