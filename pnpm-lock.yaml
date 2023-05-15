@@ -90,6 +90,7 @@ importers:
       react-dom: ^18.2.0
       react-router: ^5.3.4
       react-router-dom: ^5.3.4
+      shared: workspace:*
       tailwindcss: ^3.3.2
       tippy.js: ^6.3.7
       ts-jest: ^29.1.0
@@ -118,6 +119,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-router: 5.3.4_react@18.2.0
       react-router-dom: 5.3.4_react@18.2.0
+      shared: link:../../packages/shared
       tippy.js: 6.3.7
       ui: link:../../packages/ui
     devDependencies:
@@ -257,6 +259,22 @@ importers:
       eslint-config-prettier: 8.8.0
       eslint-config-turbo: 1.9.3
       eslint-plugin-react: 7.28.0
+
+  packages/shared:
+    specifiers:
+      '@types/react': ^18.2.0
+      '@types/react-dom': ^18.2.0
+      eslint: ^7.32.0
+      eslint-config-custom: workspace:*
+      react: ^17.0.2
+      tsconfig: workspace:*
+    devDependencies:
+      '@types/react': 18.2.5
+      '@types/react-dom': 18.2.3
+      eslint: 7.32.0
+      eslint-config-custom: link:../eslint-config-custom
+      react: 17.0.2
+      tsconfig: link:../tsconfig
 
   packages/tsconfig:
     specifiers: {}
