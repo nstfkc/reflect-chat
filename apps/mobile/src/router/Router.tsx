@@ -1,7 +1,14 @@
-import { useState, useEffect, ReactNode, useRef, createContext } from "react";
+import {
+  useState,
+  useEffect,
+  ReactNode,
+  useRef,
+  createContext,
+  useCallback,
+} from "react";
 import { useHistory } from "react-router-dom";
 import { routeParser, Route } from "./routeParser";
-import { Subject } from "./Subject";
+import { Subject } from "@/utils/Subject";
 
 interface RouterContextValue {
   path: string[];
@@ -20,12 +27,11 @@ export const Router = (props: { children: ReactNode }) => {
   const { listen, push } = useHistory();
   const leftSubject = useRef(new Subject(0));
 
-  const manifest = {
-    "": [],
-    chat: ["chatId", "messageId"],
-  };
-
-  const handleState = () => {
+  const handleState = useCallback(() => {
+    const manifest = {
+      "": [],
+      chat: ["chatId", "messageId"],
+    };
     const path = Array.from(new Set(window.location.pathname.split("/")));
 
     setPath(path);
@@ -36,14 +42,14 @@ export const Router = (props: { children: ReactNode }) => {
     );
     setCurrentRoute(activeRoutes[activeRoutes.length - 1]);
     return activeRoutes;
-  };
+  }, []);
 
   useEffect(() => {
     handleState();
     listen(() => {
       handleState();
     });
-  }, []);
+  }, [handleState, listen]);
 
   const back = (currentPath: string) => {
     const reversedRoutes = routes.reverse();
