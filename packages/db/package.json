@@ -6,7 +6,9 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "generate": "npx prisma generate"
+    "generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",

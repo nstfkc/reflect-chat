@@ -1,8 +1,8 @@
 import fastify from "fastify";
+import clerk from "@clerk/clerk-sdk-node";
+
 import { prisma } from "db";
 import cookie from "@fastify/cookie";
-import { hex } from "generate-random-color";
-import { addDays } from "date-fns";
 import fastifyIO from "fastify-socket.io";
 import cors from "@fastify/cors";
 
@@ -25,31 +25,13 @@ server.register(cookie, {
 });
 
 server.get("/users", async (_request, _reply) => {
-  const users = await prisma.user.findMany();
+  const users = await clerk.users.getUserList();
   return users;
-});
-
-server.get("/me", async (request, reply) => {
-  const userId = request.cookies["userid"];
-
-  if (!userId) {
-    return reply.send({ redirect: "/" });
-  }
-
-  const user = await prisma.user.findFirst({
-    where: { id: userId },
-  });
-
-  if (!user) {
-    return reply.send({ redirect: "/404" });
-  }
-
-  return user;
 });
 
 server.get("/direct-messages", async (request) => {
   const userId = request.cookies["userid"];
-  const uniqueDMsUserIds = await prisma.messageV1.findMany({
+  const uniqueDMsUserIds = await prisma.message.findMany({
     distinct: ["senderId", "receiverId"],
     where: {
       OR: [{ senderId: userId }, { receiverId: userId }],
@@ -69,26 +51,25 @@ server.get("/direct-messages", async (request) => {
   );
 });
 
-server.get("/channels", async (request) => {
-  const userId = request.cookies["userid"];
+server.get("/channels", async () => {
   const channels = await prisma.channel.findMany({
     where: {
       OR: [
         { kind: "Public" },
-        {
-          OR: [
-            {
-              kind: "Private",
-              users: {
-                some: { id: userId },
-              },
-            },
-            {
-              kind: "Private",
-              createdBy: userId,
-            },
-          ],
-        },
+        // {
+        //   OR: [
+        //     {
+        //       kind: "Private",
+        //       users: {
+        //         some: { id: userId },
+        //       },
+        //     },
+        //     {
+        //       kind: "Private",
+        //       createdBy: userId,
+        //     },
+        //   ],
+        // },
       ],
     },
   });
@@ -99,7 +80,7 @@ server.get("/channels", async (request) => {
 server.get("/messages/:otherUserId", async (request) => {
   const userId = request.cookies["userid"];
   const { otherUserId } = (request as any).params;
-  const history = await prisma.messageV1.findMany({
+  const history = await prisma.message.findMany({
     where: {
       OR: [
         { senderId: userId, receiverId: otherUserId },
@@ -119,7 +100,7 @@ server.get("/messages/:otherUserId", async (request) => {
 
 server.get("/channel/messages/:channelId", async (request) => {
   const { channelId } = (request as any).params;
-  const history = await prisma.messageV1.findMany({
+  const history = await prisma.message.findMany({
     where: {
       channelId,
     },
@@ -151,30 +132,9 @@ server.post("/create-channel", async (request) => {
   return channel;
 });
 
-server.post("/user", async (req, reply) => {
-  const { username } = JSON.parse(req.body as any);
-  const user = await prisma.user.create({
-    data: {
-      username,
-      profileColor: hex(),
-    },
-  });
-
-  reply
-    .setCookie("userid", user.id, {
-      path: "/",
-      expires: addDays(new Date(), 1),
-    })
-    .send(user);
-});
-
 server.get("/user/:userId", async (req) => {
   const { userId } = (req as any).params;
-  const user = await prisma.user.findFirst({
-    where: {
-      id: userId,
-    },
-  });
+  const user = await clerk.users.getUser(userId);
 
   return user;
 });

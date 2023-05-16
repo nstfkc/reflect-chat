@@ -43,7 +43,7 @@ export function sockets(io: Server) {
 
     socket.on("message:create", (message, medias) => {
       if (message.channelId) {
-        prisma.messageV1
+        prisma.message
           .create({
             data: {
               ...message,
@@ -66,7 +66,7 @@ export function sockets(io: Server) {
       }
 
       if (message.receiverId) {
-        prisma.messageV1
+        prisma.message
           .create({
             data: {
               ...message,

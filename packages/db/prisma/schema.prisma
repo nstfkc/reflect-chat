@@ -11,30 +11,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id           String @id @default(cuid())
-  username     String @unique
-  profileColor String
-  // email     String    @unique
-  // password  String
-  // role     String
-
-  notifications UserNotifications[]
-
-  Channel   Channel? @relation(fields: [channelId], references: [id])
-  channelId String?
-
-  @@index([channelId])
-}
-
 model Channel {
   id          String  @id @default(cuid())
   kind        String //Public, Private, Conversation
   createdBy   String // user id
   name        String?
   description String?
-
-  users User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,14 +31,14 @@ model Media {
   height   Int    @default(0)
   path     String
 
-  createdAt   DateTime   @default(now())
-  MessageV1   MessageV1? @relation(fields: [messageV1Id], references: [id])
-  messageV1Id String?
+  createdAt DateTime @default(now())
+  Message   Message? @relation(fields: [messageId], references: [id])
+  messageId String?
 
-  @@index([messageV1Id])
+  @@index([messageId])
 }
 
-model MessageV1 {
+model Message {
   id String @id @default(cuid())
 
   text  String  @db.Text
@@ -79,7 +61,6 @@ model UserNotifications {
 
   payload String
 
-  User   User?   @relation(fields: [userId], references: [id])
   userId String?
 
   @@index([userId])

@@ -5,7 +5,8 @@
     "dev": "dotenv -- turbo run dev",
     "open:ios": "dotenv -- turbo run open:ios",
     "lint": "turbo run lint",
-    "generate": "turbo run generate",
+    "db:generate": "dotenv -- turbo run db:generate",
+    "db:push": "dotenv -- turbo run db:push",
     "static": "dotenv -- turbo run static",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
