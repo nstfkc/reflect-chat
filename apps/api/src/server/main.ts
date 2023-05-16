@@ -10,7 +10,13 @@ import { sockets } from "./socket";
 
 const server = fastify();
 
-server.register(fastifyIO);
+server.register(fastifyIO, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  },
+});
+
 server.register(cors, {
   // put your options here
 });
@@ -196,7 +202,7 @@ server.ready().then(() => {
   sockets(server.io);
 });
 
-server.listen({ port: 4000 }, (err, address) => {
+server.listen({ port: 4000, host: "127.0.0.1" }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);

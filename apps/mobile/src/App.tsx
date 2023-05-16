@@ -10,6 +10,7 @@ import { SafeAreaView } from "./components/SafeAreaView";
 import { HomeScreen } from "./screens/HomeScreen";
 import { ThreadScreen } from "./screens/ThreadScreen";
 import { ChatScreen } from "./screens/ChatScreen";
+import { ConfigProvider, SocketProvider, UserProvider } from "shared";
 
 const App = () => {
   return (
@@ -18,15 +19,21 @@ const App = () => {
         publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
       >
         <SignedIn>
-          <div className="bg-gray-200">
-            <BrowserRouter>
-              <Router>
-                <ThreadScreen />
-                <ChatScreen />
-                <HomeScreen />
-              </Router>
-            </BrowserRouter>
-          </div>
+          <ConfigProvider apiUrl="http://localhost:4000">
+            <UserProvider>
+              <SocketProvider>
+                <div className="bg-gray-200">
+                  <BrowserRouter>
+                    <Router>
+                      <ThreadScreen />
+                      <ChatScreen />
+                      <HomeScreen />
+                    </Router>
+                  </BrowserRouter>
+                </div>
+              </SocketProvider>
+            </UserProvider>
+          </ConfigProvider>
         </SignedIn>
         <SignedOut>
           <SafeAreaView>

@@ -53,7 +53,9 @@ function useSocket(userId: string) {
     if (!userId) {
       return;
     }
-    const socket = io({ query: { userId: userId }, host: apiUrl });
+    const socket = io(apiUrl, {
+      query: { userId: userId },
+    });
 
     socket.on("error", (err) => {
       console.log(err);
