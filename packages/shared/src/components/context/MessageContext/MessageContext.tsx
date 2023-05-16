@@ -3,7 +3,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import useLocalStorageState from "use-local-storage-state";
 import { debounce } from "ts-debounce";
-import { MessageV1 } from "db";
+import { Message } from "db";
 import {
   ReactNode,
   createContext,
@@ -66,7 +66,7 @@ function useUnreadMessages() {
   };
 
   const handler = useCallback(
-    (message: MessageV1) => {
+    (message: Message) => {
       if (message.channelId) {
         addItem(message.channelId, message.id);
       } else {
@@ -99,7 +99,7 @@ function useChannelMentions() {
   };
 
   const handler = useCallback(
-    (params: { message: MessageV1 }) => {
+    (params: { message: Message }) => {
       const { message } = params;
       if (message.channelId) {
         addItem(message.channelId, message.id);
@@ -124,13 +124,13 @@ function useChannelMentions() {
 function useLastSeenMessage() {
   const { user } = useContext(UserContext);
   const [lastSeenMessage, setLastSeenMessage] =
-    useLocalStorageState<null | MessageV1>("last-seen-message", {
+    useLocalStorageState<null | Message>("last-seen-message", {
       defaultValue: null,
     });
 
   const { socket } = useSocket();
 
-  function updateLastSeenMessage(message: MessageV1) {
+  function updateLastSeenMessage(message: Message) {
     if (!lastSeenMessage) {
       setLastSeenMessage(message);
       socket?.emit("last-seen-message", { userId: user.id, message });
@@ -199,7 +199,7 @@ function useMessageHistory() {
 }
 
 interface MessageContextValue {
-  sendMessage: (cm: Partial<MessageV1>, media: Media[]) => void;
+  sendMessage: (cm: Partial<Message>, media: Media[]) => void;
 
   unreadMessages: Record<string, Set<string>>;
   markMessageAsRead: (channelId: string) => (messageId: string) => void;
@@ -207,7 +207,7 @@ interface MessageContextValue {
   unreadMentions: Record<string, Set<string>>;
   markMentionsAsRead: (channelId: string) => (messageId: string) => void;
 
-  updateLastSeenMessage: (message: MessageV1) => void;
+  updateLastSeenMessage: (message: Message) => void;
   getMessageHistoryById: (id: string) => MessageV1WithMedia[];
 }
 
@@ -237,7 +237,7 @@ export const MessageProvider = (props: MessageProviderProps) => {
   }, [socket]);
 
   const sendMessage = useCallback(
-    (message: Partial<MessageV1>, medias: Media[]) => {
+    (message: Partial<Message>, medias: Media[]) => {
       const media = medias.map((media) => ({
         filename: media.file.name,
         kind: media.fileKind,
