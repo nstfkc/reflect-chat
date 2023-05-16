@@ -19,11 +19,9 @@ const fetchChannels = (): Promise<Channel[]> =>
   fetch("/_api/channels").then((res) => res.json());
 
 export const Channels = () => {
-  const {
-    data: channels,
-    isLoading,
-    mutate,
-  } = useSWR("/_api/channels", fetchChannels, { fallbackData: [] });
+  const { data: channels, mutate } = useSWR("/_api/channels", fetchChannels, {
+    fallbackData: [],
+  });
 
   const { channelId } = useParams();
 

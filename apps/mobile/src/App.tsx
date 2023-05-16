@@ -15,6 +15,15 @@ import { RouterContext, Router } from "./Router";
 import { ScreenOrientation } from "@capawesome/capacitor-screen-orientation";
 import { useAnimate } from "framer-motion";
 import { Button } from "ui";
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+  RedirectToSignIn,
+} from "@clerk/clerk-react";
+import { Auth } from "./Auth";
 
 const SafeAreaInsetsContext = createContext({
   insets: { top: 0, left: 0, bottom: 0, right: 0 },
@@ -102,7 +111,7 @@ const Route = (props: RouteProps) => {
           },
           onEnd: (details) => {
             const delta = details.currentX - details.startX;
-            if (delta > window.innerWidth / 2 && order > 0) {
+            const complete = () =>
               animate(
                 scope.current,
                 { left: "100vw" },
@@ -116,6 +125,14 @@ const Route = (props: RouteProps) => {
                   },
                 }
               );
+            if (delta > window.innerWidth / 2 && order > 0) {
+              complete();
+            } else if (
+              delta > window.innerWidth / 5 &&
+              details.velocityX > 0.1 &&
+              order > 0
+            ) {
+              complete();
             } else {
               animate(
                 scope.current,
@@ -183,6 +200,7 @@ const Route = (props: RouteProps) => {
 };
 
 const Home: React.FC = () => {
+  const { user } = useUser();
   return (
     <Route path="/">
       <div className="bg-red-200 h-full">
@@ -233,17 +251,28 @@ const Message = () => {
 
 const App = () => {
   return (
-    <div className="bg-gray-200">
-      <SafeAreaProvider>
-        <BrowserRouter>
-          <Router>
-            <Message />
-            <Chat />
-            <Home />
-          </Router>
-        </BrowserRouter>
-      </SafeAreaProvider>
-    </div>
+    <SafeAreaProvider>
+      <ClerkProvider
+        publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
+      >
+        <SignedIn>
+          <div className="bg-gray-200">
+            <BrowserRouter>
+              <Router>
+                <Message />
+                <Chat />
+                <Home />
+              </Router>
+            </BrowserRouter>
+          </div>
+        </SignedIn>
+        <SignedOut>
+          <SafeAreaView>
+            <Auth />
+          </SafeAreaView>
+        </SignedOut>
+      </ClerkProvider>
+    </SafeAreaProvider>
   );
 };
 

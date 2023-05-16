@@ -3,7 +3,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import useLocalStorageState from "use-local-storage-state";
 import { debounce } from "ts-debounce";
-import { Channel, Message, MessageV1 } from "db";
+import { MessageV1 } from "db";
 import {
   ReactNode,
   createContext,
@@ -64,13 +64,16 @@ function useUnreadMessages() {
     removeItem(channelId, messageId);
   };
 
-  const handler = (message: MessageV1) => {
-    if (message.channelId) {
-      addItem(message.channelId, message.id);
-    } else {
-      addItem(message.senderId, message.id);
-    }
-  };
+  const handler = useCallback(
+    (message: MessageV1) => {
+      if (message.channelId) {
+        addItem(message.channelId, message.id);
+      } else {
+        addItem(message.senderId, message.id);
+      }
+    },
+    [addItem]
+  );
 
   useEffect(() => {
     socket?.on("message:created", handler);
@@ -94,12 +97,15 @@ function useChannelMentions() {
     removeItem(channelId, messageId);
   };
 
-  const handler = (params: { message: Message }) => {
-    const { message } = params;
-    if (message.channelId) {
-      addItem(message.channelId, message.id);
-    }
-  };
+  const handler = useCallback(
+    (params: { message: MessageV1 }) => {
+      const { message } = params;
+      if (message.channelId) {
+        addItem(message.channelId, message.id);
+      }
+    },
+    [addItem]
+  );
 
   useEffect(() => {
     socket?.on("new-mention", handler);
@@ -117,13 +123,13 @@ function useChannelMentions() {
 function useLastSeenMessage() {
   const { user } = useContext(UserContext);
   const [lastSeenMessage, setLastSeenMessage] =
-    useLocalStorageState<null | Message>("last-seen-message", {
+    useLocalStorageState<null | MessageV1>("last-seen-message", {
       defaultValue: null,
     });
 
   const { socket } = useSocket();
 
-  function updateLastSeenMessage(message: Message) {
+  function updateLastSeenMessage(message: MessageV1) {
     if (!lastSeenMessage) {
       setLastSeenMessage(message);
       socket?.emit("last-seen-message", { userId: user.id, message });

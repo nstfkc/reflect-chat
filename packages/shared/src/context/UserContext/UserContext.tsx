@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "db";
+import type { User } from "db";
 import useSWR from "swr";
 
 import { ReactNode, createContext, useCallback } from "react";
