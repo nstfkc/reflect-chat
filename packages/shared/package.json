@@ -17,6 +17,10 @@
     "tsconfig": "workspace:*"
   },
   "dependencies": {
-    "swr": "^2.1.5"
+    "@clerk/clerk-react": "^4.15.5",
+    "@paralleldrive/cuid2": "^2.2.0",
+    "swr": "^2.1.5",
+    "ts-debounce": "^4.0.0",
+    "use-local-storage-state": "^18.3.2"
   }
 }

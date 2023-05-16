@@ -2,10 +2,18 @@
 
 import { MessageMedia, MessageV1WithMedia } from "@/types/global";
 import type { Channel, User, MessageV1 } from "db";
-import { ReactNode, createContext, useEffect, useRef, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
-import useSWR from "swr";
+import { UserContext } from "../UserContext/UserContext";
+import { ConfigContext } from "../ConfigContext/ConfigContext";
 
 type EmitEvents = {
   "user-connected": ({ user }: { user: User }) => void;
@@ -29,21 +37,23 @@ export type ListenEvents = {
 
 export type InternalSocket = Socket<ListenEvents, EmitEvents>;
 
-export const SocketContext = createContext<{
+interface SocketContextValue {
   socket: InternalSocket | null;
   connected: boolean;
-  user: User | null;
-}>({ socket: null, connected: false, user: null });
+}
 
-function useSocket(user: User) {
+export const SocketContext = createContext<{}>({} as SocketContextValue);
+
+function useSocket(userId: string) {
+  const { apiUrl } = useContext(ConfigContext);
   const [connected, setConnected] = useState(false);
   const socketRef = useRef<InternalSocket | null>(null);
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       return;
     }
-    const socket = io({ query: { userId: user.id } });
+    const socket = io({ query: { userId: userId }, host: apiUrl });
 
     socket.on("error", (err) => {
       console.log(err);
@@ -55,14 +65,14 @@ function useSocket(user: User) {
       setConnected(true);
       (socketRef as any).current = socket;
 
-      socket.emit("user-connected", { user });
+      socket.emit("user-connected", { userId });
     });
     return () => {
       if (socket) {
         socket.disconnect();
       }
     };
-  }, [user]);
+  }, [userId]);
 
   return {
     connected,
@@ -70,24 +80,17 @@ function useSocket(user: User) {
   };
 }
 
-const fetchUser = (): Promise<User> =>
-  fetch("/_api/me").then((res) => res.json());
-
 interface SocketProviderProps {
   children: ReactNode;
 }
 
 export const SocketProvider = (props: SocketProviderProps) => {
   const { children } = props;
-  const { data: user, isLoading } = useSWR("/me", fetchUser);
-  const { socket, connected } = useSocket(user);
-
-  if (isLoading) {
-    return null;
-  }
+  const { user } = useContext(UserContext);
+  const { socket, connected } = useSocket(user.id);
 
   return (
-    <SocketContext.Provider value={{ socket, connected, user }}>
+    <SocketContext.Provider value={{ socket, connected }}>
       {children}
     </SocketContext.Provider>
   );

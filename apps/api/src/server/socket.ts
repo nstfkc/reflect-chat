@@ -27,8 +27,8 @@ export function sockets(io: Server) {
     // Update the user list
     //
 
-    socket.on("user-connected", ({ user }) => {
-      io.emit("user-connected", { user });
+    socket.on("user-connected", ({ userId }) => {
+      io.emit("user-connected", { userId });
     });
 
     socket.on("last-seen-message", async ({ userId, message }) => {
