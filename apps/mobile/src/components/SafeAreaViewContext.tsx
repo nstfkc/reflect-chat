@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { ScreenOrientation } from "@capawesome/capacitor-screen-orientation";
+import { Keyboard } from "@capacitor/keyboard";
 import { SafeArea } from "capacitor-plugin-safe-area";
 
 export const SafeAreaInsetsContext = createContext({
@@ -17,6 +18,9 @@ export const SafeAreaProvider = (props: { children: ReactNode }) => {
         setInsets(insets as any);
       });
     });
+    Keyboard.addListener("keyboardWillShow", (info) => {
+      console.log("keyboard will show with height:", info.keyboardHeight);
+    });
   }, []);
 
   if (!insets) {
@@ -27,25 +31,5 @@ export const SafeAreaProvider = (props: { children: ReactNode }) => {
     <SafeAreaInsetsContext.Provider value={{ insets }}>
       {props.children}
     </SafeAreaInsetsContext.Provider>
-  );
-};
-
-const Chat: React.FC = () => {
-  return (
-    <Route
-      path="/chat/:chatId"
-      renderTitle={() => {
-        return <div>Chat page</div>;
-      }}
-    >
-      <div className="bg-green-200 h-full py-8">
-        <div>User Hi </div>
-        <div className=""></div>
-        <Link to="/">Home</Link>
-        <div>
-          <Link to="/chat/1234/asdf">- Message</Link>
-        </div>
-      </div>
-    </Route>
   );
 };

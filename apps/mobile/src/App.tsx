@@ -11,10 +11,12 @@ import { HomeScreen } from "./screens/HomeScreen";
 import { ThreadScreen } from "./screens/ThreadScreen";
 import { ChatScreen } from "./screens/ChatScreen";
 import { ConfigProvider, SocketProvider, UserProvider } from "shared";
+import { ModalRoot } from "./components/Modal";
 
 const App = () => {
   return (
     <SafeAreaProvider>
+      <ModalRoot />
       <ClerkProvider
         publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
       >

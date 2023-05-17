@@ -1,5 +1,4 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { ComponentProps, FormEvent, ReactNode, useState } from "react";
 import { HiXMark } from "react-icons/hi2";

@@ -2,6 +2,8 @@ PODS:
   - Capacitor (5.0.3):
     - CapacitorCordova
   - CapacitorCordova (5.0.3)
+  - CapacitorKeyboard (5.0.2):
+    - Capacitor
   - CapacitorPluginSafeArea (2.0.0):
     - Capacitor
   - CapacitorStatusBar (5.0.2):
@@ -12,6 +14,7 @@ PODS:
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/.pnpm/@capacitor+ios@5.0.3_@capacitor+core@5.0.3/node_modules/@capacitor/ios`)"
   - "CapacitorCordova (from `../../node_modules/.pnpm/@capacitor+ios@5.0.3_@capacitor+core@5.0.3/node_modules/@capacitor/ios`)"
+  - "CapacitorKeyboard (from `../../../../node_modules/@capacitor/keyboard`)"
   - "CapacitorPluginSafeArea (from `../../node_modules/.pnpm/capacitor-plugin-safe-area@2.0.0_@capacitor+core@5.0.3/node_modules/capacitor-plugin-safe-area`)"
   - "CapacitorStatusBar (from `../../node_modules/.pnpm/@capacitor+status-bar@5.0.2_@capacitor+core@5.0.3/node_modules/@capacitor/status-bar`)"
   - "CapawesomeCapacitorScreenOrientation (from `../../node_modules/.pnpm/@capawesome+capacitor-screen-orientation@5.0.0_@capacitor+core@5.0.3/node_modules/@capawesome/capacitor-screen-orientation`)"
@@ -21,6 +24,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/.pnpm/@capacitor+ios@5.0.3_@capacitor+core@5.0.3/node_modules/@capacitor/ios"
   CapacitorCordova:
     :path: "../../node_modules/.pnpm/@capacitor+ios@5.0.3_@capacitor+core@5.0.3/node_modules/@capacitor/ios"
+  CapacitorKeyboard:
+    :path: "../../../../node_modules/@capacitor/keyboard"
   CapacitorPluginSafeArea:
     :path: "../../node_modules/.pnpm/capacitor-plugin-safe-area@2.0.0_@capacitor+core@5.0.3/node_modules/capacitor-plugin-safe-area"
   CapacitorStatusBar:
@@ -31,10 +36,11 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: 304a960e431f9e6f78556554ca71c41c1b2b9680
   CapacitorCordova: def732a63679698df6fb392bbe6d269a0b61e937
+  CapacitorKeyboard: e628d4e66d621c69e449945ebabded17c5b9c2e8
   CapacitorPluginSafeArea: 8385b05f7677aebbf0d9941f104920da53a1cd59
   CapacitorStatusBar: 48f2899f6846cc7d8431b251ebfc58e1c10e3d58
   CapawesomeCapacitorScreenOrientation: 5b7cfb76348775e4b824bf460e5c52212b94c8d1
 
-PODFILE CHECKSUM: 7b8ca8b7f3e6d51244f9f4c8559b79fa70c17fc0
+PODFILE CHECKSUM: f22ff7f8e52cb38cd53ebca55c6815c864ab9ffd
 
 COCOAPODS: 1.12.1

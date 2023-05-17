@@ -1,4 +1,6 @@
 import { useQuery } from "@shared/api-client/useQuery";
+import { CreateChannelDialog } from "./CreateChannelDialog";
+import { TbPlus } from "react-icons/tb";
 
 interface ChannelListProps {
   onChannelClick: (channelId: string) => void;
@@ -7,6 +9,8 @@ interface ChannelListProps {
 export const ChannelList = (props: ChannelListProps) => {
   const { onChannelClick } = props;
   const { data, isLoading } = useQuery("/channels");
+
+  const handleChannelCreate = () => {};
 
   if (isLoading && !data) {
     return null;
