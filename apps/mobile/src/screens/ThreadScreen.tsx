@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 export const ThreadScreen = () => {
   return (
     <Route
-      path="/chat/:chatId/:messageId"
+      path="/channel/:channelId/:messageId"
       renderTitle={() => {
         return <div>Thread page</div>;
       }}
     >
       <div className="bg-blue-200 h-full py-8">
         <div>Message Thread </div>
-        <Link to="/chat/1234">Chat</Link>
+        <Link to="/channel/1234">Chat</Link>
       </div>
     </Route>
   );

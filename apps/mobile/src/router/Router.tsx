@@ -30,7 +30,7 @@ export const Router = (props: { children: ReactNode }) => {
   const handleState = useCallback(() => {
     const manifest = {
       "": [],
-      chat: ["chatId", "messageId"],
+      channel: ["channelId", "messageId"],
     };
     const path = Array.from(new Set(window.location.pathname.split("/")));
 

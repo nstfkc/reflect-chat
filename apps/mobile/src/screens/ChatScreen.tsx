@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 export const ChatScreen = () => {
   return (
     <Route
-      path="/chat/:chatId"
+      path="/channel/:channelId"
       renderTitle={() => {
         return <div>Chat screen</div>;
       }}
     >
       <div className="bg-blue-200 h-full py-8">
         <div>Chat </div>
-        <Link to="/chat/1234/asdf">Chat</Link>
+        <Link to="/channel/1234/asdf">Chat</Link>
       </div>
     </Route>
   );

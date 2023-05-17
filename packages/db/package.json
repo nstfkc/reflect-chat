@@ -8,7 +8,8 @@
     "lint": "eslint \"**/*.ts*\"",
     "generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",

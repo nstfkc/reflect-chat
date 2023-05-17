@@ -115,7 +115,7 @@ server.get("/channel/messages/:channelId", async (request) => {
   return history;
 });
 
-server.post("/create-channel", async (request) => {
+server.post("/channel/create", async (request) => {
   const { kind, description, name, createdBy } = JSON.parse(
     request.body as any
   );

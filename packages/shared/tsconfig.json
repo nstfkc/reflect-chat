@@ -2,7 +2,7 @@
   "extends": "tsconfig/react-library.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@shared/*": ["./src/*"]
     }
   },
   "include": ["."],

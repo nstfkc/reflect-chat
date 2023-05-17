@@ -33,6 +33,7 @@ importers:
       generate-random-color: ^1.0.6
       ioredis: ^5.3.2
       nodemon: ^2.0.20
+      shared: workspace:*
       socket.io: ^4.6.1
       ts-node: ^10.9.1
       vite: ^4.0.4
@@ -47,6 +48,7 @@ importers:
       fastify-socket.io: 4.0.0_socket.io@4.6.1
       generate-random-color: 1.0.6
       ioredis: 5.3.2
+      shared: link:../../packages/shared
       socket.io: 4.6.1
       ts-node: 10.9.1_@types+node@18.16.5
     devDependencies:
