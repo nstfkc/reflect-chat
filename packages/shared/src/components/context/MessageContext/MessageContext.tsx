@@ -15,9 +15,8 @@ import {
 } from "react";
 import { useSocket } from "../SocketContext/useSocket";
 import { UserContext } from "../UserContext/UserContext";
-import { MessageV1WithMedia } from "@/types/global";
-
-type Media = any; // TODO: fix
+import { MessageV1WithMedia } from "@shared/types/global";
+import { RawMedia } from "@shared/components/ui/Chat/FileUploader";
 
 function useMappedState() {
   const store = useRef(new Map());
@@ -199,7 +198,7 @@ function useMessageHistory() {
 }
 
 interface MessageContextValue {
-  sendMessage: (cm: Partial<Message>, media: Media[]) => void;
+  sendMessage: (cm: Partial<Message>, media: RawMedia[]) => void;
 
   unreadMessages: Record<string, Set<string>>;
   markMessageAsRead: (channelId: string) => (messageId: string) => void;
@@ -237,7 +236,7 @@ export const MessageProvider = (props: MessageProviderProps) => {
   }, [socket]);
 
   const sendMessage = useCallback(
-    (message: Partial<Message>, medias: Media[]) => {
+    (message: Partial<Message>, medias: RawMedia[]) => {
       const media = medias.map((media) => ({
         filename: media.file.name,
         kind: media.fileKind,

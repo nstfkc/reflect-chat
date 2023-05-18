@@ -1,10 +1,9 @@
 "use client";
 
-import type { User } from "db";
-
 import { ReactNode, createContext, useCallback } from "react";
 import { useSocket } from "../SocketContext/useSocket";
-import useSWR from "swr";
+import { useQuery } from "@shared/api-client/useQuery";
+import { User } from "@shared/types/global";
 
 interface UsersContextValue {
   allUsers: User[];
@@ -17,12 +16,9 @@ interface UserProviderProps {
   children: ReactNode;
 }
 
-const fetchUsers = (): Promise<User[]> =>
-  fetch("/_api/users").then((res) => res.json());
-
 export const UsersProvider = (props: UserProviderProps) => {
   const { children } = props;
-  const { data: users = [], mutate } = useSWR("/_api/users", fetchUsers);
+  const { data: users = [], mutate } = useQuery("/users");
 
   useSocket("user-connected", ({ user }) => {
     if (!users.find((u) => u.id === user.id)) {

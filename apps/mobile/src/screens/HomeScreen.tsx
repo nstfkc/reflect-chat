@@ -1,39 +1,39 @@
 import { useHistory } from "react-router-dom";
 import { Route } from "@/router/Route";
-import { ChannelList, CreateChannelForm, UserContext } from "shared";
+import { ChannelList, CreateChannelForm, UserContext, useQuery } from "shared";
 import { Modal, ModalContext, ModalProvider } from "@/components/Modal";
 import { useContext } from "react";
 
 const ChannelsSection = () => {
+  const { user } = useContext(UserContext);
   const { push } = useHistory();
   const { toggle } = useContext(ModalContext);
+
   return (
     <div>
       <ChannelList
-        onChannelClick={(channelId) => push(`/channel/${channelId}`)}
+        onChannelClick={(channel) => push(`/channel/${channel.id}`, channel)}
+        onAddChannelClick={toggle}
       />
-      <button onClick={toggle}>Channel create</button>
+
+      <Modal title="Create channel">
+        <CreateChannelForm
+          onSuccess={toggle}
+          userId={user.id}
+        ></CreateChannelForm>
+      </Modal>
     </div>
   );
 };
 
 export const HomeScreen = () => {
-  const { user } = useContext(UserContext);
+  /* const { data } = useQuery("/channels"); */
   return (
     <Route path="/">
       <div className="bg-red-200 h-full">
-        <div>Home </div>
-        <div>
-          <ModalProvider>
-            <ChannelsSection></ChannelsSection>
-            <Modal title="Create channel">
-              <CreateChannelForm
-                onSuccess={console.log}
-                userId={user.id}
-              ></CreateChannelForm>
-            </Modal>
-          </ModalProvider>
-        </div>
+        <ModalProvider>
+          <ChannelsSection />
+        </ModalProvider>
       </div>
     </Route>
   );

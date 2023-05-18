@@ -6,7 +6,7 @@ import { ConfigContext } from "../components/context/ConfigContext";
 
 export function useMutation<T extends keyof Mutations>(key: T) {
   const { apiUrl } = useContext(ConfigContext);
-  const endpoint = `${apiUrl}/${key}`;
+  const endpoint = `${apiUrl}${key}`;
 
   const fetcher = async (
     url: string,

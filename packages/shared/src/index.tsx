@@ -12,3 +12,5 @@ export { useQuery } from "./api-client/useQuery";
 
 export { ChannelList } from "./components/ui/ChannelList";
 export { CreateChannelForm } from "./components/ui/CreateChannelDialog";
+
+export { ChatHistory } from "./components/ui/Chat/ChatHistory";

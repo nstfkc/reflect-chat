@@ -115,6 +115,22 @@ server.get("/channel/messages/:channelId", async (request) => {
   return history;
 });
 
+server.get("/messages", async (request) => {
+  const { args } = request.query as any;
+  const { where } = JSON.parse(args);
+  const history = await prisma.message.findMany({
+    where: where,
+    include: {
+      media: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  return history;
+});
+
 server.post("/channel/create", async (request) => {
   const { kind, description, name, createdBy } = JSON.parse(
     request.body as any
@@ -137,6 +153,11 @@ server.get("/user/:userId", async (req) => {
   const user = await clerk.users.getUser(userId);
 
   return user;
+});
+
+server.get("/users/", async () => {
+  const userList = await clerk.users.getUserList();
+  return userList;
 });
 
 server.get("/channel/:channelId", async (req) => {
@@ -162,7 +183,7 @@ server.ready().then(() => {
   sockets(server.io);
 });
 
-server.listen({ port: 4000, host: "127.0.0.1" }, (err, address) => {
+server.listen({ port: 4000, host: "0.0.0.0" }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);

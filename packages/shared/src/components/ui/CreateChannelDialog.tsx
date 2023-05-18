@@ -1,8 +1,10 @@
-import { ComponentProps, FormEvent, useState } from "react";
+import { ComponentProps, FormEvent, useRef, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import { cx } from "class-variance-authority";
 import { Channel } from "db";
 import { useMutation } from "@shared/api-client/useMutation";
+import { useQuery } from "@shared/api-client/useQuery";
+import { useSocket } from "../context/SocketContext";
 
 const PrivateSwitch = (props: ComponentProps<typeof Switch.Root>) => {
   return (
@@ -36,6 +38,9 @@ export const CreateChannelForm = (props: CreateChannelFormProps) => {
   const [kind, setKind] = useState("Public");
   const [isLoading, setIsLoading] = useState(false);
   const { trigger } = useMutation("/channel/create");
+  const { data, mutate } = useQuery("/channels");
+  const { socket } = useSocket();
+  const isFocused = useRef(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,6 +54,10 @@ export const CreateChannelForm = (props: CreateChannelFormProps) => {
 
     if (channel) {
       props.onSuccess(channel);
+      if (data) {
+        socket?.emit("channel-created", channel);
+        mutate([...data, channel]);
+      }
     }
 
     setIsLoading(false);
@@ -72,7 +81,10 @@ export const CreateChannelForm = (props: CreateChannelFormProps) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               ref={(el) => {
-                el?.focus();
+                if (!isFocused.current) {
+                  el?.focus();
+                  isFocused.current = true;
+                }
               }}
             />
           </fieldset>

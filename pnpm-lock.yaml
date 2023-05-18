@@ -283,6 +283,7 @@ importers:
       eslint: ^7.32.0
       eslint-config-custom: workspace:*
       react: ^17.0.2
+      react-dropzone: ^14.2.3
       react-icons: ^4.8.0
       swr: ^2.1.5
       ts-debounce: ^4.0.0
@@ -294,6 +295,7 @@ importers:
       '@radix-ui/react-dialog': 1.0.3_2wsigp256uooefgzaclurqrkuu
       '@radix-ui/react-switch': 1.0.2_react@17.0.2
       class-variance-authority: 0.5.3
+      react-dropzone: 14.2.3_react@17.0.2
       react-icons: 4.8.0_react@17.0.2
       swr: 2.1.5_react@17.0.2
       ts-debounce: 4.0.0
@@ -7913,6 +7915,18 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-dropzone/14.2.3_react@17.0.2:
+    resolution: {integrity: sha512-O3om8I+PkFKbxCukfIR3QAGftYXDZfOE2N1mr/7qebQJHs7U+/RSL/9xomJNpRg9kM5h9soQSdf0Gc7OHF5Fug==}
+    engines: {node: '>= 10.13'}
+    peerDependencies:
+      react: '>= 16.8 || 18.0.0'
+    dependencies:
+      attr-accept: 2.2.2
+      file-selector: 0.6.0
+      prop-types: 15.8.1
+      react: 17.0.2
     dev: false
 
   /react-dropzone/14.2.3_react@18.2.0:

@@ -75,9 +75,7 @@ export const Router = (props: { children: ReactNode }) => {
         back,
       }}
     >
-      <div className="relative w-screen h-screen overflow-hidden">
-        {props.children}
-      </div>
+      {props.children}
     </RouterContext.Provider>
   );
 };

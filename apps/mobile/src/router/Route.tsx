@@ -2,7 +2,21 @@ import { SafeAreaView } from "@/components/SafeAreaView";
 import { RouterContext } from "./Router";
 import { createGesture } from "@ionic/react";
 import { useAnimate } from "framer-motion";
-import { ReactNode, useCallback, useContext, useEffect } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react";
+
+interface RouterParametersContextValue {
+  params: Record<string, any>;
+}
+
+export const RouterParametersContext = createContext({
+  params: {},
+} as RouterParametersContextValue);
 
 interface RouteProps {
   path: string;
@@ -47,9 +61,7 @@ export const Route = (props: RouteProps) => {
                   type: "tween",
                   duration: 0.1,
                   onComplete: () => {
-                    console.log(order);
                     back(currentPath);
-                    console.log("complete");
                   },
                 }
               );
@@ -108,21 +120,24 @@ export const Route = (props: RouteProps) => {
   const zIndex = order * 10;
 
   return (
-    <SafeAreaView className="absolute w-full h-full">
-      <div
-        ref={titleScope}
-        className="absolute bg-gray-200 w-full"
-        style={{ zIndex: zIndex + 1 }}
-      >
-        {renderTitle()}
-      </div>
-      <div
-        className="h-full w-full absolute"
-        ref={scope}
-        style={{ zIndex, left: order === 0 ? 0 : "100vw" }}
-      >
-        {props.children}
-      </div>
-    </SafeAreaView>
+    <RouterParametersContext.Provider value={{ params: ownRoute.params }}>
+      <SafeAreaView className="absolute w-full h-full">
+        <div
+          ref={titleScope}
+          className="absolute bg-gray-200 w-full"
+          style={{ zIndex: zIndex + 1 }}
+        >
+          {renderTitle()}
+          <div id={`router-title-${ownRoute.path}`}></div>
+        </div>
+        <div
+          className="h-full w-full absolute"
+          ref={scope}
+          style={{ zIndex, left: order === 0 ? 0 : "100vw" }}
+        >
+          {props.children}
+        </div>
+      </SafeAreaView>
+    </RouterParametersContext.Provider>
   );
 };

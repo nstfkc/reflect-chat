@@ -2,3 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+/* Placeholder (at the top) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror ul {
+  list-style: disc;
+  margin-left: 20px;
+}
+
+.ProseMirror ol {
+  list-style: decimal;
+  margin-left: 20px;
+}
+
+
+.ProseMirror a {
+  color: theme(colors.blue.500);
+  text-decoration: underline;
+}
+
+.ProseMirror ul > li > ul {
+  list-style: circle;
+}
+
+.ProseMirror ul > li > ul > li > ul {
+  list-style: square;
+}
+
+.ProseMirror ul > li > ul > li > ul > li > ul {
+  list-style: disc;
+}
+
+.ProseMirror ul > li > ul > li > ul > li > ul > li > ul {
+  list-style: circle;
+}
+
+.ProseMirror ul > li > ul > li > ul > li > ul > li > ul > li > ul{
+  list-style: square;
+}
+
+.ProseMirror .mention {
+  background-color: theme(colors.yellow.900 / 20%);
+  color: theme(colors.yellow.700 / 100%);
+  padding: 0 3px;
+  border-radius: theme(borderRadius.md);
+}

@@ -54,7 +54,7 @@ export const Modal = (props: ModalProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      animate(scope.current, { top: "5vh" }, { duration: 0.2 });
+      animate(scope.current, { top: "0" }, { duration: 0.2 });
     } else {
       animate(scope.current, { top: "100vh" }, { duration: 0.2 });
     }
@@ -64,17 +64,19 @@ export const Modal = (props: ModalProps) => {
     <>
       {createPortal(
         <div
-          className="w-full bg-gray-200 rounded-t-xl absolute z-[500] p-4"
-          style={{ top: "100vh" }}
+          className="w-full bg-gray-200 absolute rounded-t-xl z-[500] p-4"
+          style={{ top: "100vh", height: isOpen ? "auto" : 0 }}
           ref={scope}
         >
-          <div className="flex justify-between items-center">
-            <span className="font-bold tracking-wide">{props.title}</span>
-            <button onClick={toggle}>
-              <TbX className="text-lg" />
-            </button>
-          </div>
-          {isOpen ? <div>{props.children}</div> : null}
+          <SafeAreaView>
+            <div className="flex justify-between items-center">
+              <span className="font-bold tracking-wide">{props.title}</span>
+              <button onClick={toggle}>
+                <TbX className="text-lg" />
+              </button>
+            </div>
+            {isOpen ? <div>{props.children}</div> : null}
+          </SafeAreaView>
         </div>,
         document.getElementById("modal-root")
       )}
