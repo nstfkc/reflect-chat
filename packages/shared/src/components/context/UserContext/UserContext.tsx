@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
-import { User } from "@/types/global";
+import { User } from "@shared/types/global";
 
 import { ReactNode, createContext } from "react";
 

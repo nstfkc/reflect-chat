@@ -1,6 +1,6 @@
 import type { Media, Message } from "db";
 
-export type MessageV1WithMedia = Message & { media: Media[] };
+export type MessageWithMedia = Message & { media: Media[] };
 export type MessageMedia = Media;
 export type User = {
   id: string;

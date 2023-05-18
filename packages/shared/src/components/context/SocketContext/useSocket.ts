@@ -5,7 +5,7 @@ export function useSocket<T extends keyof ListenEvents>(
   event?: T,
   listener?: ListenEvents[T]
 ) {
-  const { connected, socket, user } = useContext(SocketContext);
+  const { connected, socket } = useContext(SocketContext);
   const listenerRegistered = useRef(false);
 
   useEffect(() => {
@@ -17,5 +17,5 @@ export function useSocket<T extends keyof ListenEvents>(
     }
   }, [socket, connected, event, listener]);
 
-  return { socket, user };
+  return { socket };
 }

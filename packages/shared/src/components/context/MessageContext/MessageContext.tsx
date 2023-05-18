@@ -15,7 +15,7 @@ import {
 } from "react";
 import { useSocket } from "../SocketContext/useSocket";
 import { UserContext } from "../UserContext/UserContext";
-import { MessageV1WithMedia } from "@shared/types/global";
+import { MessageWithMedia } from "@shared/types/global";
 import { RawMedia } from "@shared/components/ui/Chat/FileUploader";
 
 function useMappedState() {
@@ -151,13 +151,14 @@ function useLastSeenMessage() {
 }
 
 function useMessageHistory() {
-  const dmHistoryMapRef = useRef(new Map<string, MessageV1WithMedia[]>());
-  const { socket, user } = useSocket();
+  const dmHistoryMapRef = useRef(new Map<string, MessageWithMedia[]>());
+  const { user } = useContext(UserContext);
+  const { socket } = useSocket();
 
   const [dmHistory, setDmHistory] = useState(dmHistoryMapRef.current);
 
   const handleUpdateMessageHistory = useCallback(
-    (dm: MessageV1WithMedia) => {
+    (dm: MessageWithMedia) => {
       let key = "";
 
       if (dm.receiverId) {
@@ -207,7 +208,7 @@ interface MessageContextValue {
   markMentionsAsRead: (channelId: string) => (messageId: string) => void;
 
   updateLastSeenMessage: (message: Message) => void;
-  getMessageHistoryById: (id: string) => MessageV1WithMedia[];
+  getMessageHistoryById: (id: string) => MessageWithMedia[];
 }
 
 export const MessageContext = createContext({} as MessageContextValue);

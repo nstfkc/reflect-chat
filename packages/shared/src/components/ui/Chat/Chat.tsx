@@ -9,7 +9,7 @@ import { debounce } from "ts-debounce";
 import { TextEditor } from "./TextEditor";
 import { FileUploaderContext } from "./FileUploader";
 import { RxImage } from "react-icons/rx";
-import { MessageV1WithMedia, User } from "@shared/types/global";
+import { MessageWithMedia, User } from "@shared/types/global";
 import { HiOutlineCloudDownload } from "react-icons/hi";
 import { groupItemsByCreatedAt, groupMessagesInTheSameMinute } from "./utils";
 
@@ -41,7 +41,7 @@ interface MessageFragmentProps {
   text: string;
   id: string;
   userId: string;
-  message: MessageV1WithMedia;
+  message: MessageWithMedia;
   markAsRead: (id: string) => void;
   markMentionsAsRead: (id: string) => void;
   onRender: (el: HTMLDivElement | null) => void;
@@ -108,7 +108,7 @@ const MessageFragment = (props: MessageFragmentProps) => {
 };
 
 interface MessageProps {
-  messages: MessageV1WithMedia[];
+  messages: MessageWithMedia[];
   user: User;
   markAsRead: (id: string) => void;
   markMentionsAsRead: (id: string) => void;
@@ -157,7 +157,7 @@ const MessageRender = (props: MessageProps) => {
 
 interface ChatProps {
   handleSendMessage: (text: string, media: RawMedia[]) => void;
-  messages: MessageV1WithMedia[];
+  messages: MessageWithMedia[];
   users: User[];
   name: string;
   markAsRead: (id: string) => void;

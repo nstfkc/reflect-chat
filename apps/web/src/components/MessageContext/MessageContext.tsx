@@ -3,7 +3,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import useLocalStorageState from "use-local-storage-state";
 import { debounce } from "ts-debounce";
-import { MessageV1 } from "db";
+import { Message, MessageV1 } from "db";
 import {
   ReactNode,
   createContext,
@@ -198,7 +198,7 @@ function useMessageHistory() {
 }
 
 interface MessageContextValue {
-  sendMessage: (cm: Partial<MessageV1>, media: Media[]) => void;
+  sendMessage: (cm: Partial<Message>, media: Media[]) => void;
 
   unreadMessages: Record<string, Set<string>>;
   markMessageAsRead: (channelId: string) => (messageId: string) => void;
@@ -206,7 +206,7 @@ interface MessageContextValue {
   unreadMentions: Record<string, Set<string>>;
   markMentionsAsRead: (channelId: string) => (messageId: string) => void;
 
-  updateLastSeenMessage: (message: MessageV1) => void;
+  updateLastSeenMessage: (message: Message) => void;
   getMessageHistoryById: (id: string) => MessageV1WithMedia[];
 }
 

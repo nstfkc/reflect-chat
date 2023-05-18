@@ -1,7 +1,7 @@
 "use client";
 
-import { MessageMedia, MessageV1WithMedia } from "@/types/global";
-import type { Channel, User, MessageV1 } from "db";
+import { MessageMedia, MessageWithMedia, User } from "@shared/types/global";
+import type { Channel, Message } from "db";
 import {
   ReactNode,
   createContext,
@@ -19,20 +19,17 @@ type EmitEvents = {
   "user-connected": ({ user }: { user: User }) => void;
 
   "channel-created": (channel: Channel) => void;
-  "last-seen-message": (params: { userId: string; message: MessageV1 }) => void;
+  "last-seen-message": (params: { userId: string; message: Message }) => void;
   /*  */
-  "message:create": (
-    message: Partial<MessageV1>,
-    medias: MessageMedia[]
-  ) => void;
+  "message:create": (message: Partial<Message>, medias: MessageMedia[]) => void;
 };
 
 export type ListenEvents = {
   "user-connected": ({ user }: { user: User }) => void;
   "channel-created": (channel: Channel) => void;
-  "new-mention": (props: { message: MessageV1 }) => void;
+  "new-mention": (props: { message: Message }) => void;
   /*  */
-  "message:created": (message: MessageV1WithMedia) => void;
+  "message:created": (message: MessageWithMedia) => void;
 };
 
 export type InternalSocket = Socket<ListenEvents, EmitEvents>;
@@ -74,7 +71,7 @@ function useSocket(userId: string) {
         socket.disconnect();
       }
     };
-  }, [userId]);
+  }, [userId, apiUrl]);
 
   return {
     connected,
