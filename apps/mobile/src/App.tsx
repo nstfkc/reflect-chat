@@ -43,18 +43,16 @@ const App = () => {
                   <SocketProvider>
                     <MessageProvider>
                       <UsersProvider>
-                        <div className="bg-gray-200">
-                          <BrowserRouter>
-                            <Router>
-                              <ThreadScreen />
-                              <Route path="/channel/:channelId">
-                                <ChatScreen />
-                              </Route>
-                              <HomeScreen />
-                            </Router>
-                          </BrowserRouter>
-                          <ModalRoot />
-                        </div>
+                        <BrowserRouter>
+                          <Router>
+                            <ThreadScreen />
+                            <Route path="/channel/:channelId">
+                              <ChatScreen />
+                            </Route>
+                            <HomeScreen />
+                          </Router>
+                        </BrowserRouter>
+                        <ModalRoot />
                       </UsersProvider>
                     </MessageProvider>
                   </SocketProvider>

@@ -11,7 +11,11 @@ export const SafeAreaView = (props: SafeAreaViewProps) => {
 
   return (
     <div
+      id="safe-area"
       style={{
+        width: "100vw",
+        overflow: "hidden",
+        height: "100vh",
         paddingTop: `${insets.top}px`,
         paddingBottom: `${insets.bottom}px`,
         paddingLeft: `${insets.left}px`,
@@ -19,7 +23,7 @@ export const SafeAreaView = (props: SafeAreaViewProps) => {
       }}
       className={props.className}
     >
-      {props.children}
+      <div className="relative h-full w-full">{props.children}</div>
     </div>
   );
 };

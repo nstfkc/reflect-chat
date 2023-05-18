@@ -206,10 +206,7 @@ export const Chat = (props: ChatProps) => {
 
   return (
     <>
-      <div
-        className="flex flex-col justify-end h-full relative"
-        {...getRootProps()}
-      >
+      <div className="h-full flex flex-col justify-between" {...getRootProps()}>
         {isDragActive ? (
           <div className="absolute z-50 bg-gray-600/70 w-full h-full flex items-center justify-center">
             <div className="flex flex-col items-center">
@@ -221,7 +218,7 @@ export const Chat = (props: ChatProps) => {
           </div>
         ) : null}
         <ul
-          className="gap-8 py-4 overflow-scroll"
+          className="gap-8 overflow-scroll"
           style={{ height: "100%" }}
           ref={containerRef}
         >
@@ -262,7 +259,7 @@ export const Chat = (props: ChatProps) => {
           />
           {}
         </ul>
-        <div className="p-4">
+        <div className="p-4 bottom-0 w-full">
           <TextEditor
             usersCanBeMentioned={usersCanBeMentioned}
             placeholder={`Message ${name}`}

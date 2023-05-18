@@ -78,7 +78,7 @@ export const TextEditor = (props: TextEditorProps) => {
   };
 
   const editor = useEditor({
-    autofocus: true,
+    autofocus: false,
     onFocus: () => {},
     editorProps: {
       attributes: {

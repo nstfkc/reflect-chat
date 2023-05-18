@@ -22,13 +22,17 @@ export const SafeAreaProvider = (props: { children: ReactNode }) => {
       });
     });
     StatusBar.setStyle({ style: Style.Light });
-    /* Keyboard.addListener("keyboardWillShow", (info) => {
-     *   console.log("keyboard will show with height:", info.keyboardHeight);
-     *   setKeyboardHeight(info.keyboardHeight);
-     * });
-     * Keyboard.addListener("keyboardWillHide", () => {
-     *   setKeyboardHeight(0);
-     * }); */
+    Keyboard.addListener("keyboardWillShow", (info) => {
+      console.log("keyboard will show with height:", info.keyboardHeight);
+      setKeyboardHeight(info.keyboardHeight);
+      setInsets((insets) => ({ ...insets, bottom: 0 }));
+    });
+    Keyboard.addListener("keyboardWillHide", () => {
+      SafeArea.getSafeAreaInsets().then(({ insets }) => {
+        setInsets(insets as any);
+      });
+      setKeyboardHeight(0);
+    });
   }, []);
 
   if (!insets) {
