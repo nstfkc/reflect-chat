@@ -23,17 +23,6 @@ import {
 import { ModalRoot } from "./components/Modal";
 import { PropsWithChildren } from "react";
 
-const HeightControl = (props: PropsWithChildren) => {
-  return (
-    <div
-      style={{ height: `100vh` }}
-      className="relative w-screen overflow-hidden"
-    >
-      {props.children}
-    </div>
-  );
-};
-
 const Prefetch = () => {
   useQuery("/channels");
   return null;
@@ -55,18 +44,16 @@ const App = () => {
                     <MessageProvider>
                       <UsersProvider>
                         <div className="bg-gray-200">
-                          <HeightControl>
-                            <BrowserRouter>
-                              <Router>
-                                <ThreadScreen />
-                                <Route path="/channel/:channelId">
-                                  <ChatScreen />
-                                </Route>
-                                <HomeScreen />
-                              </Router>
-                            </BrowserRouter>
-                            <ModalRoot />
-                          </HeightControl>
+                          <BrowserRouter>
+                            <Router>
+                              <ThreadScreen />
+                              <Route path="/channel/:channelId">
+                                <ChatScreen />
+                              </Route>
+                              <HomeScreen />
+                            </Router>
+                          </BrowserRouter>
+                          <ModalRoot />
                         </div>
                       </UsersProvider>
                     </MessageProvider>
