@@ -159,6 +159,7 @@ function useMessageHistory() {
 
   const handleUpdateMessageHistory = useCallback(
     (dm: MessageWithMedia) => {
+      console.log(dm);
       let key = "";
 
       if (dm.receiverId) {
@@ -219,7 +220,8 @@ interface MessageProviderProps {
 
 export const MessageProvider = (props: MessageProviderProps) => {
   const { children } = props;
-  const { socket, user } = useSocket();
+  const { user } = useContext(UserContext);
+  const { socket } = useSocket();
 
   const { markMessageAsRead, unreadMessages } = useUnreadMessages();
 
