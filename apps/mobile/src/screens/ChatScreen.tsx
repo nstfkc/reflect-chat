@@ -1,3 +1,4 @@
+import { SafeAreaView } from "@/components/SafeAreaView";
 import { RouterParametersContext } from "@/router/Route";
 import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -37,6 +38,7 @@ export const ChatScreen = () => {
   return (
     <div className="h-full bg-gray-200">
       <Title />
+
       <ChatHistory channelId={params.channelId} />
     </div>
   );

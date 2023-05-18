@@ -285,6 +285,7 @@ importers:
       react: ^17.0.2
       react-dropzone: ^14.2.3
       react-icons: ^4.8.0
+      react-virtuoso: ^4.3.7
       swr: ^2.1.5
       ts-debounce: ^4.0.0
       tsconfig: workspace:*
@@ -297,6 +298,7 @@ importers:
       class-variance-authority: 0.5.3
       react-dropzone: 14.2.3_react@17.0.2
       react-icons: 4.8.0_react@17.0.2
+      react-virtuoso: 4.3.7_react@17.0.2
       swr: 2.1.5_react@17.0.2
       ts-debounce: 4.0.0
       use-local-storage-state: 18.3.2_react@17.0.2
@@ -8108,6 +8110,16 @@ packages:
       invariant: 2.2.4
       react: 18.2.0
       tslib: 2.5.0
+    dev: false
+
+  /react-virtuoso/4.3.7_react@17.0.2:
+    resolution: {integrity: sha512-XPNRzmhXUyBoXjPxNYdqD5wubNXtDIbBFbhTR4awx4yEC98EegM5RLeaghIK0BBAhZyRFu8sMvrPnwE12KLOJg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16 || >=17 || >= 18'
+      react-dom: '>=16 || >=17 || >= 18'
+    dependencies:
+      react: 17.0.2
     dev: false
 
   /react/17.0.2:

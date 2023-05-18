@@ -47,31 +47,33 @@ const App = () => {
           publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
         >
           <SignedIn>
-            <ConfigProvider apiUrl="http://192.168.1.2:4000">
-              <Prefetch />
-              <UserProvider>
-                <SocketProvider>
-                  <MessageProvider>
-                    <UsersProvider>
-                      <div className="bg-gray-200">
-                        <HeightControl>
-                          <BrowserRouter>
-                            <Router>
-                              <ThreadScreen />
-                              <Route path="/channel/:channelId">
-                                <ChatScreen />
-                              </Route>
-                              <HomeScreen />
-                            </Router>
-                          </BrowserRouter>
-                          <ModalRoot />
-                        </HeightControl>
-                      </div>
-                    </UsersProvider>
-                  </MessageProvider>
-                </SocketProvider>
-              </UserProvider>
-            </ConfigProvider>
+            <SafeAreaView>
+              <ConfigProvider apiUrl="http://192.168.1.2:4000">
+                <Prefetch />
+                <UserProvider>
+                  <SocketProvider>
+                    <MessageProvider>
+                      <UsersProvider>
+                        <div className="bg-gray-200">
+                          <HeightControl>
+                            <BrowserRouter>
+                              <Router>
+                                <ThreadScreen />
+                                <Route path="/channel/:channelId">
+                                  <ChatScreen />
+                                </Route>
+                                <HomeScreen />
+                              </Router>
+                            </BrowserRouter>
+                            <ModalRoot />
+                          </HeightControl>
+                        </div>
+                      </UsersProvider>
+                    </MessageProvider>
+                  </SocketProvider>
+                </UserProvider>
+              </ConfigProvider>
+            </SafeAreaView>
           </SignedIn>
           <SignedOut>
             <SafeAreaView>

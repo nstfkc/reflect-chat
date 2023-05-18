@@ -121,7 +121,7 @@ export const Route = (props: RouteProps) => {
 
   return (
     <RouterParametersContext.Provider value={{ params: ownRoute.params }}>
-      <SafeAreaView className="absolute w-full h-full">
+      <div>
         <div
           ref={titleScope}
           className="absolute bg-gray-200 w-full"
@@ -137,7 +137,7 @@ export const Route = (props: RouteProps) => {
         >
           {props.children}
         </div>
-      </SafeAreaView>
+      </div>
     </RouterParametersContext.Provider>
   );
 };

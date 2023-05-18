@@ -1,5 +1,6 @@
 import { Media as MessageMedia } from "db";
 import format from "date-fns/format";
+import { Virtuoso } from "react-virtuoso";
 
 import type { RawMedia } from "./FileUploader";
 import {
@@ -187,17 +188,20 @@ export const Chat = (props: ChatProps) => {
   } = props;
   const containerRef = useRef<HTMLUListElement>(null);
   const { isDragActive, getRootProps } = useContext(FileUploaderContext);
+  const virtuoso = useRef<any>(null);
 
   const onRender = debounce((el: HTMLElement | null) => {
     /* el?.scrollIntoView({ behavior: "auto" }); */
   });
 
-  useEffect(() => {
-    console.log("hi");
-  }, []);
+  const data = Object.entries(groupItemsByCreatedAt(messages));
 
   useLayoutEffect(() => {
-    console.log(containerRef.current?.lastChild);
+    virtuoso?.current?.scrollToIndex({
+      index: data.length - 1,
+      align: "end",
+      behavior: "auto",
+    });
   });
 
   return (
@@ -216,9 +220,15 @@ export const Chat = (props: ChatProps) => {
             </div>
           </div>
         ) : null}
-        <ul className="gap-8 py-4 overflow-scroll" ref={containerRef}>
-          {Object.entries(groupItemsByCreatedAt(messages as any)).map(
-            ([date, messages]) => {
+        <ul
+          className="gap-8 py-4 overflow-scroll"
+          style={{ height: "100%" }}
+          ref={containerRef}
+        >
+          <Virtuoso
+            ref={virtuoso}
+            data={data}
+            itemContent={(index, [date, messages]) => {
               return (
                 <Fragment key={date}>
                   <li className="w-full flex w-full justify-center items-center opacity-75">
@@ -248,8 +258,9 @@ export const Chat = (props: ChatProps) => {
                   )}
                 </Fragment>
               );
-            }
-          )}
+            }}
+          />
+          {}
         </ul>
         <div className="p-4">
           <TextEditor

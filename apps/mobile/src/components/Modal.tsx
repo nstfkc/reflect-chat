@@ -15,7 +15,7 @@ import { createPortal } from "react-dom";
 import { SafeAreaView } from "./SafeAreaView";
 
 export const ModalRoot = () => {
-  return <div id="modal-root" />;
+  return <div className="" id="modal-root" />;
 };
 
 interface ModalContextValue {
@@ -64,18 +64,20 @@ export const Modal = (props: ModalProps) => {
     <>
       {createPortal(
         <div
-          className="w-full bg-gray-200 absolute rounded-t-xl z-[500] p-4"
+          className="w-full bg-gray-200 absolute rounded-t-xl z-[500]"
           style={{ top: "100vh", height: isOpen ? "auto" : 0 }}
           ref={scope}
         >
           <SafeAreaView>
-            <div className="flex justify-between items-center">
-              <span className="font-bold tracking-wide">{props.title}</span>
-              <button onClick={toggle}>
-                <TbX className="text-lg" />
-              </button>
+            <div className="p-4">
+              <div className="flex justify-between items-center">
+                <span className="font-bold tracking-wide">{props.title}</span>
+                <button onClick={toggle}>
+                  <TbX className="text-lg" />
+                </button>
+              </div>
+              {isOpen ? <div>{props.children}</div> : null}
             </div>
-            {isOpen ? <div>{props.children}</div> : null}
           </SafeAreaView>
         </div>,
         document.getElementById("modal-root")
