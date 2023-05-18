@@ -30,7 +30,7 @@ export const HomeScreen = () => {
   /* const { data } = useQuery("/channels"); */
   return (
     <Route path="/">
-      <div className="bg-red-200 h-full">
+      <div className="h-full bg-gray-200">
         <ModalProvider>
           <ChannelsSection />
         </ModalProvider>

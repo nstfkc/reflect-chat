@@ -35,11 +35,9 @@ const Title = () => {
 export const ChatScreen = () => {
   const { params } = useContext(RouterParametersContext);
   return (
-    <div className="bg-blue-200 h-full py-8">
+    <div className="h-full bg-gray-200">
       <Title />
-      <div>
-        <ChatHistory channelId={params.channelId} />
-      </div>
+      <ChatHistory channelId={params.channelId} />
     </div>
   );
 };

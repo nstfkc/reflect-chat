@@ -2,7 +2,14 @@ import { Media as MessageMedia } from "db";
 import format from "date-fns/format";
 
 import type { RawMedia } from "./FileUploader";
-import { Fragment, ReactNode, useContext, useEffect, useRef } from "react";
+import {
+  Fragment,
+  ReactNode,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import { HiOutlineDocumentText, HiUser } from "react-icons/hi2";
 import { MessageContext } from "@shared/components/context/MessageContext";
 import { debounce } from "ts-debounce";
@@ -58,7 +65,11 @@ const MessageFragment = (props: MessageFragmentProps) => {
   }, [message]);
 
   return (
-    <div>
+    <li
+      ref={(el) => {
+        onRender(el as any);
+      }}
+    >
       <div
         className="ProseMirror"
         dangerouslySetInnerHTML={{ __html: text }}
@@ -103,7 +114,7 @@ const MessageFragment = (props: MessageFragmentProps) => {
           }
         })}
       </div>
-    </div>
+    </li>
   );
 };
 
@@ -120,7 +131,7 @@ const MessageRender = (props: MessageProps) => {
   const hour = format(new Date(messages[0].createdAt), "h:mm a");
 
   return (
-    <div className="flex items-start gap-2">
+    <li className="px-4 py-2 flex items-start gap-2">
       <div className="flex">
         <div className="rounded-lg bg-gray-200 p-1 shadow-md">
           <HiUser
@@ -134,7 +145,7 @@ const MessageRender = (props: MessageProps) => {
           <span className="font-bold mt-[-4px]">{user?.username}</span>
           <span className="text-sm  mt-[-3px] opacity-75">{hour}</span>
         </div>
-        <div className="flex flex-col gap-1">
+        <ul className=" gap-1">
           {messages.map((message) => {
             return (
               <MessageFragment
@@ -149,9 +160,9 @@ const MessageRender = (props: MessageProps) => {
               />
             );
           })}
-        </div>
+        </ul>
       </div>
-    </div>
+    </li>
   );
 };
 
@@ -174,14 +185,19 @@ export const Chat = (props: ChatProps) => {
     usersCanBeMentioned,
     markMentionsAsRead = () => {},
   } = props;
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLUListElement>(null);
   const { isDragActive, getRootProps } = useContext(FileUploaderContext);
 
   const onRender = debounce((el: HTMLElement | null) => {
-    setTimeout(() => {
-      containerRef.current?.classList.remove("justify-end");
-    });
-    el?.scrollIntoView({ behavior: "auto" });
+    /* el?.scrollIntoView({ behavior: "auto" }); */
+  });
+
+  useEffect(() => {
+    console.log("hi");
+  }, []);
+
+  useLayoutEffect(() => {
+    console.log(containerRef.current?.lastChild);
   });
 
   return (
@@ -200,22 +216,19 @@ export const Chat = (props: ChatProps) => {
             </div>
           </div>
         ) : null}
-        <div
-          className="flex flex-col gap-8 p-4 overflow-scroll justify-end"
-          ref={containerRef}
-        >
+        <ul className="gap-8 py-4 overflow-scroll" ref={containerRef}>
           {Object.entries(groupItemsByCreatedAt(messages as any)).map(
             ([date, messages]) => {
               return (
                 <Fragment key={date}>
-                  <div className="w-full flex w-full justify-center items-center opacity-75">
+                  <li className="w-full flex w-full justify-center items-center opacity-75">
                     <div className="border-b-[1px] border-gray-600/50 grow"></div>
                     <div className="border-[1px] border-gray-600/50 rounded-full px-4 py-2 text-sm">
                       {date}
                     </div>
 
                     <div className="border-b-[1px] border-gray-600/50 grow"></div>
-                  </div>
+                  </li>
                   {Object.values(groupMessagesInTheSameMinute(messages)).map(
                     (messages) => {
                       const authorId = messages[0].senderId;
@@ -237,7 +250,7 @@ export const Chat = (props: ChatProps) => {
               );
             }
           )}
-        </div>
+        </ul>
         <div className="p-4">
           <TextEditor
             usersCanBeMentioned={usersCanBeMentioned}
