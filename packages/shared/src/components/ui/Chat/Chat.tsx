@@ -259,7 +259,7 @@ export const Chat = (props: ChatProps) => {
           />
           {}
         </ul>
-        <div className="p-4 bottom-0 w-full">
+        <div className=" w-full">
           <TextEditor
             usersCanBeMentioned={usersCanBeMentioned}
             placeholder={`Message ${name}`}
