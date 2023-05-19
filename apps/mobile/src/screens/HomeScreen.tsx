@@ -16,12 +16,12 @@ const ChannelsSection = () => {
         onAddChannelClick={toggle}
       />
 
-      {/* <Modal title="Create channel">
-          <CreateChannelForm
+      <Modal title="Create channel">
+        <CreateChannelForm
           onSuccess={toggle}
           userId={user.id}
-          ></CreateChannelForm>
-          </Modal> */}
+        ></CreateChannelForm>
+      </Modal>
     </div>
   );
 };
