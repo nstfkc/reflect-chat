@@ -1,28 +1,10 @@
-import { SafeAreaView } from "@/components/SafeAreaView";
-import { RouterParametersContext } from "@/router/Route";
-import { useContext, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { RouteTitle, RouterParametersContext } from "@/router/Route";
+import { useContext } from "react";
 import { ChatHistory, useQuery } from "shared";
 
 const Title = () => {
-  const { data } = useQuery("/channels");
+  const { data = [] } = useQuery("/channels");
   const { params } = useContext(RouterParametersContext);
-  const [container, setContainer] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const el = document.getElementById("router-title-/channel/:channelId");
-    if (el) {
-      setContainer(el);
-    }
-  }, []);
-
-  if (!container) {
-    return null;
-  }
-
-  if (!data) {
-    return null;
-  }
 
   const channel = data.find((channel) => channel.id === params.channelId);
 
@@ -30,15 +12,20 @@ const Title = () => {
     return null;
   }
 
-  return <>{createPortal(<div>#{channel.name}</div>, container)}</>;
+  return (
+    <RouteTitle>
+      <div className="p-4 font-semibold tracking-wide shadow-md">
+        #{channel.name}
+      </div>
+    </RouteTitle>
+  );
 };
 
 export const ChatScreen = () => {
   const { params } = useContext(RouterParametersContext);
   return (
-    <div className="h-full bg-red-200">
+    <div className="h-full bg-gray-100">
       <Title />
-
       <ChatHistory channelId={params.channelId} />
     </div>
   );

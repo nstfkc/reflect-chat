@@ -21,7 +21,6 @@ import {
   useQuery,
 } from "shared";
 import { ModalRoot } from "./components/Modal";
-import { PropsWithChildren } from "react";
 
 const Prefetch = () => {
   useQuery("/channels");
@@ -29,7 +28,6 @@ const Prefetch = () => {
 };
 
 const App = () => {
-  console.log({ x: import.meta.env.VITE_ASSESTS_SERVICE_HOST });
   return (
     <SWRConfig>
       <SafeAreaProvider>

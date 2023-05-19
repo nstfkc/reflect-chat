@@ -8,6 +8,8 @@ import {
 } from "react";
 import { SafeAreaInsetsContext } from "./SafeAreaViewContext";
 
+import { getPlatforms } from "@ionic/react";
+
 import { Keyboard, KeyboardResize } from "@capacitor/keyboard";
 import { useAnimate } from "framer-motion";
 
@@ -48,13 +50,20 @@ export const SafeAreaView = (props: SafeAreaViewProps) => {
   };
 
   useEffect(() => {
-    Keyboard.setResizeMode({ mode: KeyboardResize.None });
-    Keyboard.addListener("keyboardWillShow", (info) => {
-      handleAnimate(`${window.innerHeight - info.keyboardHeight}px`, "0", 0.3);
-    });
-    Keyboard.addListener("keyboardWillHide", () => {
-      handleAnimate(`${heightRef.current}px`, `${insets.bottom}px`, 0.3);
-    });
+    const platforms = getPlatforms();
+    if (!platforms.includes("mobileweb")) {
+      Keyboard.setResizeMode({ mode: KeyboardResize.None });
+      Keyboard.addListener("keyboardWillShow", (info) => {
+        handleAnimate(
+          `${window.innerHeight - info.keyboardHeight}px`,
+          "0",
+          0.3
+        );
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        handleAnimate(`${heightRef.current}px`, `${insets.bottom}px`, 0.3);
+      });
+    }
   });
 
   return (
@@ -72,7 +81,9 @@ export const SafeAreaView = (props: SafeAreaViewProps) => {
       }}
       className={`${props.className}`}
     >
-      <div className="relative h-full w-full">{props.children}</div>
+      <div className="relative h-full w-full overflow-hidden">
+        {props.children}
+      </div>
     </div>
   );
 };

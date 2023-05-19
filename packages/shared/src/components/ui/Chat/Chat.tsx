@@ -201,7 +201,6 @@ export const Chat = (props: ChatProps) => {
   const resizeObserver = useMemo(
     () =>
       new ResizeObserver(() => {
-        console.log("resizing");
         virtuoso?.current?.scrollTo({ top: 99999 });
       }),
     []

@@ -51,7 +51,6 @@ export const FileUploaderProvider = (props: FileUploaderProviderProps) => {
   const currentExecution = useRef<null | string>(null);
   const controllerMap = useRef<Map<string, AbortController>>(new Map());
   const { assetsServiceUrl } = useContext(ConfigContext);
-  console.log({ assetsServiceUrl });
 
   const uploadFile = useCallback(
     async (file: RawMedia) => {

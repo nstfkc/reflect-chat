@@ -1,4 +1,3 @@
-import { SafeAreaView } from "@/components/SafeAreaView";
 import { RouterContext } from "./Router";
 import { createGesture } from "@ionic/react";
 import { useAnimate } from "framer-motion";
@@ -9,10 +8,13 @@ import {
   useContext,
   useEffect,
   useRef,
+  useState,
 } from "react";
+import { createPortal } from "react-dom";
 
 interface RouterParametersContextValue {
   params: Record<string, any>;
+  path: string;
 }
 
 export const RouterParametersContext = createContext({
@@ -52,6 +54,9 @@ export const Route = (props: RouteProps) => {
             if (isActive && isNotHome) {
               if (delta > 0) {
                 animate(scope.current, { left: delta }, { duration: 0 });
+                animateTitle(titleScope.current, {
+                  top: `-${(delta / window.innerWidth) * 20}%`,
+                });
               }
             }
           },
@@ -79,6 +84,7 @@ export const Route = (props: RouteProps) => {
             ) {
               complete();
             } else {
+              animateTitle(titleScope.current, { top: 0 });
               animate(
                 scope.current,
                 { left: 0 },
@@ -92,7 +98,7 @@ export const Route = (props: RouteProps) => {
         return gesture;
       }
     },
-    [animate, back, scope]
+    [animate, back, scope, titleScope, animateTitle]
   );
 
   useEffect(() => {
@@ -106,9 +112,8 @@ export const Route = (props: RouteProps) => {
     if (ownRoute && currentRoute) {
       if (ownRoute?.path < currentRoute?.path) {
         animate(scope.current, { left: 0 }, { type: "tween", duration: 0.2 });
-        animateTitle(titleScope.current, { opacity: 1 });
       } else {
-        animateTitle(titleScope.current, { opacity: 0 });
+        animateTitle(titleScope.current, { top: "-100%" });
         animate(
           scope.current,
           { left: "100vw" },
@@ -116,7 +121,7 @@ export const Route = (props: RouteProps) => {
         );
       }
       if (currentRoute?.path === ownRoute?.path) {
-        animateTitle(titleScope.current, { opacity: 1 });
+        animateTitle(titleScope.current, { top: 0 });
         animate(scope.current, { left: 0 }, { type: "spring", duration: 0.5 });
       }
     }
@@ -125,7 +130,9 @@ export const Route = (props: RouteProps) => {
   const zIndex = order * 10;
 
   return (
-    <RouterParametersContext.Provider value={{ params: ownRoute.params }}>
+    <RouterParametersContext.Provider
+      value={{ params: ownRoute.params, path: ownRoute.path }}
+    >
       <div>
         <div
           ref={titleScope}
@@ -140,7 +147,7 @@ export const Route = (props: RouteProps) => {
           className="absolute w-full h-full z-[10000] pointer-events-none"
         ></div>
         <div
-          className="h-full w-full absolute"
+          className="h-full w-full absolute shadow-lg"
           ref={scope}
           style={{ zIndex, left: order === 0 ? 0 : "100vw" }}
         >
@@ -149,4 +156,28 @@ export const Route = (props: RouteProps) => {
       </div>
     </RouterParametersContext.Provider>
   );
+};
+
+interface RouteTitleProps {
+  children: ReactNode;
+}
+
+export const RouteTitle = (props: RouteTitleProps) => {
+  const { path } = useContext(RouterParametersContext);
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+
+  const id = `router-title-${path}`;
+
+  useEffect(() => {
+    const el = document.getElementById(id);
+    if (el) {
+      setContainer(el);
+    }
+  }, [id]);
+
+  if (!container) {
+    return null;
+  }
+
+  return <>{createPortal(<>{props.children}</>, container)}</>;
 };
