@@ -2,7 +2,7 @@ import { ReactRenderer } from "@tiptap/react";
 import tippy from "tippy.js";
 
 import { MentionList } from "./MentionList";
-import type { User } from "@shared/types/global";
+import { User } from "../../../types/global";
 
 interface CreateMentionSuggestionsProps {
   onStart: VoidFunction;

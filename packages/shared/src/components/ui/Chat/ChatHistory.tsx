@@ -1,10 +1,10 @@
-import { useQuery } from "@shared/api-client/useQuery";
-import { MessageContext } from "@shared/components/context/MessageContext";
-import { UserContext } from "@shared/components/context/UserContext";
-import { UsersContext } from "@shared/components/context/UsersContext";
 import { useContext } from "react";
 import { FileUploaderProvider, RawMedia } from "./FileUploader";
 import { Chat } from "./Chat";
+import { MessageContext } from "../../context/MessageContext";
+import { useQuery } from "../../../api-client/useQuery";
+import { UserContext } from "../../context/UserContext";
+import { UsersContext } from "../../context/UsersContext";
 
 interface ChatHistoryProps {
   channelId: string;

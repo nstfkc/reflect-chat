@@ -1,6 +1,6 @@
-import { User } from "@shared/types/global";
 import { cx } from "class-variance-authority";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { User } from "../../../types/global";
 
 interface MentionListProps {
   items: User[];

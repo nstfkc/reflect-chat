@@ -16,32 +16,30 @@ import {
   RxPaperPlane,
   RxStrikethrough,
   RxPlus,
-  RxAlignLeft,
-  RxAlignRight,
 } from "react-icons/rx";
 
 import { MdOutlineFormatListNumbered } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import { cx } from "class-variance-authority";
 import { createMentionSuggestions } from "./createMentionSuggestions";
-import { User } from "@shared/types/global";
 import { FileUploaderContext, RawMedia } from "./FileUploader";
 import { UploadQueue } from "./UploadQueue";
 import { TbIndentDecrease, TbIndentIncrease } from "react-icons/tb";
+import { User } from "../../../types/global";
 
-let shiftEnter = false;
+/* let shiftEnter = false; */
 
-const HandleEnter = (handlePressEnter: (editor: EditorInstance) => void) =>
+const HandleEnter = (_handlePressEnter: (editor: EditorInstance) => void) =>
   Extension.create({
     addKeyboardShortcuts(this) {
       return {
         "Shift-Enter": (editor) => {
-          shiftEnter = true;
+          /* shiftEnter = true; */
           editor.editor.commands.enter();
-          shiftEnter = false;
+          /* shiftEnter = false; */
           return true;
         },
-        Enter: ({ editor }) => {
+        Enter: ({ editor: _ }) => {
           /* if (!shiftEnter) {
            *   handlePressEnter(editor as any);
            *   shiftEnter = false;
@@ -103,10 +101,10 @@ export const TextEditor = (props: TextEditorProps) => {
         suggestion: createMentionSuggestions({
           users: usersCanBeMentioned,
           onExit: () => {
-            shiftEnter = false;
+            /* shiftEnter = false; */
           },
           onStart: () => {
-            shiftEnter = true;
+            /* shiftEnter = true; */
           },
         }),
       }),
@@ -167,7 +165,7 @@ export const TextEditor = (props: TextEditorProps) => {
               buttonClass,
               editor?.isActive("orderedList") ? "bg-gray-200" : ""
             )}
-            onClick={(e) => {
+            onClick={() => {
               editor?.chain().focus().toggleOrderedList().run();
             }}
             disabled={!editor?.can().chain().focus().toggleOrderedList().run()}
@@ -180,7 +178,7 @@ export const TextEditor = (props: TextEditorProps) => {
               buttonClass,
               editor?.isActive("bulletList") ? "bg-gray-200" : ""
             )}
-            onClick={(e) => {
+            onClick={() => {
               editor?.chain().focus().toggleBulletList().run();
             }}
             disabled={!editor?.can().chain().focus().toggleBulletList().run()}

@@ -10,7 +10,7 @@ import {
 import { createId } from "@paralleldrive/cuid2";
 import { useDropzone } from "react-dropzone";
 import { FileKind, getFileKindFromObject } from "./file";
-import { ConfigContext } from "@shared/components/context/ConfigContext";
+import { ConfigContext } from "../../context/ConfigContext";
 
 interface FileUploaderContextValue {
   isDragActive: boolean;

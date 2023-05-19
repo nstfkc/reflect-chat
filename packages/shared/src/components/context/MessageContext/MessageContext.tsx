@@ -15,8 +15,8 @@ import {
 } from "react";
 import { useSocket } from "../SocketContext/useSocket";
 import { UserContext } from "../UserContext/UserContext";
-import { MessageWithMedia } from "@shared/types/global";
-import { RawMedia } from "@shared/components/ui/Chat/FileUploader";
+import { MessageWithMedia } from "../../../types/global";
+import { RawMedia } from "../../ui/Chat/FileUploader";
 
 function useMappedState() {
   const store = useRef(new Map());

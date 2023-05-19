@@ -6,24 +6,22 @@ import type { RawMedia } from "./FileUploader";
 import {
   Fragment,
   ReactNode,
-  UIEventHandler,
   useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 import { HiOutlineDocumentText, HiUser } from "react-icons/hi2";
-import { MessageContext } from "@shared/components/context/MessageContext";
+import { ConfigContext } from "../../context/ConfigContext";
+
 import { debounce } from "ts-debounce";
 import { TextEditor } from "./TextEditor";
 import { FileUploaderContext } from "./FileUploader";
 import { RxImage } from "react-icons/rx";
-import { MessageWithMedia, User } from "@shared/types/global";
+import { MessageWithMedia, User } from "../../../types/global";
 import { HiOutlineCloudDownload } from "react-icons/hi";
 import { groupItemsByCreatedAt, groupMessagesInTheSameMinute } from "./utils";
-import { ConfigContext } from "@shared/components/context/ConfigContext";
 
 interface MediaWrapperProps {
   media: MessageMedia;
@@ -61,15 +59,15 @@ interface MessageFragmentProps {
 }
 
 const MessageFragment = (props: MessageFragmentProps) => {
-  const { id, text, message, markAsRead, markMentionsAsRead, onRender } = props;
-  const { updateLastSeenMessage } = useContext(MessageContext);
+  const { text, message, markAsRead, markMentionsAsRead, onRender } = props;
+  /* const { updateLastSeenMessage } = useContext(MessageContext); */
   const { assetsServiceUrl } = useContext(ConfigContext);
 
   useEffect(() => {
     /* updateLastSeenMessage(message); */
     markMentionsAsRead(message.id);
     markAsRead(message.id);
-  }, [message]);
+  }, [message, markAsRead, markMentionsAsRead]);
 
   return (
     <li
@@ -94,6 +92,7 @@ const MessageFragment = (props: MessageFragmentProps) => {
                 onRender={onRender}
               >
                 <div className="rounded-lg flex gap-2 items-center overflow-hidden shadow-md">
+                  {/* eslint-disable-next-line  */}
                   <img
                     alt="any"
                     width={200}
@@ -191,6 +190,7 @@ export const Chat = (props: ChatProps) => {
     users,
     usersCanBeMentioned,
     markMentionsAsRead = () => {},
+    name,
   } = props;
   const { isDragActive, getRootProps } = useContext(FileUploaderContext);
   const virtuoso = useRef<VirtuosoHandle>(null);
@@ -206,7 +206,7 @@ export const Chat = (props: ChatProps) => {
     []
   );
 
-  const onRender = debounce((el: HTMLElement | null) => {
+  const onRender = debounce((_el: HTMLElement | null) => {
     /* el?.scrollIntoView({ behavior: "auto" }); */
   });
 
@@ -247,7 +247,7 @@ export const Chat = (props: ChatProps) => {
               style={{ height: "100%" }}
               alignToBottom={true}
               followOutput={true}
-              itemContent={(index, [date, messages]) => {
+              itemContent={(_, [date, messages]) => {
                 return (
                   <Fragment key={date}>
                     <div className="w-full flex w-full justify-center items-center opacity-75">

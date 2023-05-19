@@ -2,9 +2,9 @@ import { ComponentProps, FormEvent, useRef, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import { cx } from "class-variance-authority";
 import { Channel } from "db";
-import { useMutation } from "@shared/api-client/useMutation";
-import { useQuery } from "@shared/api-client/useQuery";
 import { useSocket } from "../context/SocketContext";
+import { useMutation } from "../../api-client/useMutation";
+import { useQuery } from "../../api-client/useQuery";
 
 const PrivateSwitch = (props: ComponentProps<typeof Switch.Root>) => {
   return (

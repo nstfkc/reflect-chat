@@ -1,6 +1,6 @@
-import { useQuery } from "@shared/api-client/useQuery";
 import { Channel } from "db";
 import { TbPlus } from "react-icons/tb";
+import { useQuery } from "../../api-client/useQuery";
 
 interface ChannelListProps {
   onChannelClick: (channel: Channel) => void;

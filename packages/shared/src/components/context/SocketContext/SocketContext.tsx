@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageMedia, MessageWithMedia, User } from "@shared/types/global";
+import { MessageMedia, MessageWithMedia, User } from "../../../types/global";
 import type { Channel, Message } from "db";
 import {
   ReactNode,
@@ -39,7 +39,7 @@ interface SocketContextValue {
   connected: boolean;
 }
 
-export const SocketContext = createContext<{}>({} as SocketContextValue);
+export const SocketContext = createContext({} as SocketContextValue);
 
 function useSocket(userId: string) {
   const { apiUrl } = useContext(ConfigContext);
@@ -47,9 +47,6 @@ function useSocket(userId: string) {
   const socketRef = useRef<InternalSocket | null>(null);
 
   useEffect(() => {
-    if (!userId) {
-      return;
-    }
     const socket = io(apiUrl, {
       query: { userId: userId },
     });
@@ -70,6 +67,7 @@ function useSocket(userId: string) {
       if (socket) {
         socket.disconnect();
       }
+      return null;
     };
   }, [userId, apiUrl]);
 

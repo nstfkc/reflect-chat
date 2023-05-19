@@ -1,9 +1,7 @@
 import { SignIn, SignUp } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 
-interface AuthProps {}
-
-export const Auth = (props: AuthProps) => {
+export const Auth = () => {
   const [signedUp, setSignedUp] = useState(false);
   useEffect(() => {
     if (window.location.href.includes("sign-in")) {

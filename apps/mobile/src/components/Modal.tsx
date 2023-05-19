@@ -2,7 +2,6 @@ import { useAnimate } from "framer-motion";
 import { TbX } from "react-icons/tb";
 
 import {
-  PropsWithChildren,
   ReactNode,
   createContext,
   useCallback,

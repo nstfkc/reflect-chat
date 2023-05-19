@@ -32,7 +32,7 @@ export const SafeAreaView = (props: SafeAreaViewProps) => {
     }
   }, [setHeight]);
 
-  const handleAnimate = (height: string, paddingBottom: string, delay = 0) => {
+  const handleAnimate = (height: string, paddingBottom: string) => {
     if (!animatingRef.current) {
       animate(
         scope.current,
@@ -54,14 +54,10 @@ export const SafeAreaView = (props: SafeAreaViewProps) => {
     if (!platforms.includes("mobileweb")) {
       Keyboard.setResizeMode({ mode: KeyboardResize.None });
       Keyboard.addListener("keyboardWillShow", (info) => {
-        handleAnimate(
-          `${window.innerHeight - info.keyboardHeight}px`,
-          "0",
-          0.3
-        );
+        handleAnimate(`${window.innerHeight - info.keyboardHeight}px`, "0");
       });
       Keyboard.addListener("keyboardWillHide", () => {
-        handleAnimate(`${heightRef.current}px`, `${insets.bottom}px`, 0.3);
+        handleAnimate(`${heightRef.current}px`, `${insets.bottom}px`);
       });
     }
   });

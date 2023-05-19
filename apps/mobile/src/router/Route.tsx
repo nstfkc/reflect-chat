@@ -97,6 +97,7 @@ export const Route = (props: RouteProps) => {
         gesture.enable();
         return gesture;
       }
+      return null;
     },
     [animate, back, scope, titleScope, animateTitle]
   );
