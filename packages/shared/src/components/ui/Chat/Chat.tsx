@@ -1,15 +1,18 @@
 import { Media as MessageMedia } from "db";
 import format from "date-fns/format";
-import { Virtuoso } from "react-virtuoso";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
 import type { RawMedia } from "./FileUploader";
 import {
   Fragment,
   ReactNode,
+  UIEventHandler,
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
+  useState,
 } from "react";
 import { HiOutlineDocumentText, HiUser } from "react-icons/hi2";
 import { MessageContext } from "@shared/components/context/MessageContext";
@@ -186,15 +189,24 @@ export const Chat = (props: ChatProps) => {
     usersCanBeMentioned,
     markMentionsAsRead = () => {},
   } = props;
-  const containerRef = useRef<HTMLUListElement>(null);
   const { isDragActive, getRootProps } = useContext(FileUploaderContext);
-  const virtuoso = useRef<any>(null);
+  const virtuoso = useRef<VirtuosoHandle>(null);
+  const container = useRef<HTMLDivElement>(null);
+
+  const data = Object.entries(groupItemsByCreatedAt(messages));
+
+  const resizeObserver = useMemo(
+    () =>
+      new ResizeObserver(() => {
+        console.log("resizing");
+        virtuoso?.current?.scrollTo({ top: 99999 });
+      }),
+    []
+  );
 
   const onRender = debounce((el: HTMLElement | null) => {
     /* el?.scrollIntoView({ behavior: "auto" }); */
   });
-
-  const data = Object.entries(groupItemsByCreatedAt(messages));
 
   useLayoutEffect(() => {
     virtuoso?.current?.scrollToIndex({
@@ -203,6 +215,10 @@ export const Chat = (props: ChatProps) => {
       behavior: "auto",
     });
   });
+
+  useEffect(() => {
+    resizeObserver.observe(container?.current!);
+  }, [resizeObserver]);
 
   return (
     <>
@@ -217,50 +233,64 @@ export const Chat = (props: ChatProps) => {
             </div>
           </div>
         ) : null}
-        <ul
-          className="gap-8 overflow-scroll"
-          style={{ height: "100%" }}
-          ref={containerRef}
-        >
-          <Virtuoso
-            ref={virtuoso}
-            data={data}
-            itemContent={(index, [date, messages]) => {
-              return (
-                <Fragment key={date}>
-                  <li className="w-full flex w-full justify-center items-center opacity-75">
-                    <div className="border-b-[1px] border-gray-600/50 grow"></div>
-                    <div className="border-[1px] border-gray-600/50 rounded-full px-4 py-2 text-sm">
-                      {date}
+        <div className="relative h-full">
+          <div
+            ref={container}
+            className="gap-8 overflow-scroll"
+            style={{ height: "100%" }}
+          >
+            <Virtuoso
+              ref={virtuoso}
+              data={data}
+              style={{ height: "100%" }}
+              alignToBottom={true}
+              followOutput={true}
+              itemContent={(index, [date, messages]) => {
+                return (
+                  <Fragment key={date}>
+                    <div className="w-full flex w-full justify-center items-center opacity-75">
+                      <div className="border-b-[1px] border-gray-600/50 grow"></div>
+                      <div className="border-[1px] border-gray-600/50 rounded-full px-4 py-2 text-sm">
+                        {date}
+                      </div>
+
+                      <div className="border-b-[1px] border-gray-600/50 grow"></div>
                     </div>
+                    {Object.values(groupMessagesInTheSameMinute(messages)).map(
+                      (messages) => {
+                        const authorId = messages[0].senderId;
 
-                    <div className="border-b-[1px] border-gray-600/50 grow"></div>
-                  </li>
-                  {Object.values(groupMessagesInTheSameMinute(messages)).map(
-                    (messages) => {
-                      const authorId = messages[0].senderId;
-
-                      const user = users.find((user) => user?.id === authorId);
-                      return (
-                        <MessageRender
-                          onRender={onRender}
-                          user={user!}
-                          messages={messages as any}
-                          key={messages[0].id}
-                          markAsRead={markAsRead}
-                          markMentionsAsRead={markMentionsAsRead}
-                        />
-                      );
-                    }
-                  )}
-                </Fragment>
-              );
-            }}
-          />
-          {}
-        </ul>
+                        const user = users.find(
+                          (user) => user?.id === authorId
+                        );
+                        return (
+                          <MessageRender
+                            onRender={onRender}
+                            user={user!}
+                            messages={messages as any}
+                            key={messages[0].id}
+                            markAsRead={markAsRead}
+                            markMentionsAsRead={markMentionsAsRead}
+                          />
+                        );
+                      }
+                    )}
+                  </Fragment>
+                );
+              }}
+            />
+          </div>
+        </div>
         <div className=" w-full">
           <TextEditor
+            onFocus={() => {}}
+            testAction={() => {
+              virtuoso?.current?.scrollToIndex({
+                index: data.length - 1,
+                align: "end",
+                behavior: "auto",
+              });
+            }}
             usersCanBeMentioned={usersCanBeMentioned}
             placeholder={`Message ${name}`}
             onSubmit={handleSendMessage}

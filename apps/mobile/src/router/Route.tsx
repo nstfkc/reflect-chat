@@ -8,6 +8,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
 } from "react";
 
 interface RouterParametersContextValue {
@@ -26,6 +27,7 @@ interface RouteProps {
 
 export const Route = (props: RouteProps) => {
   const { renderTitle = () => null } = props;
+  const coverRef = useRef<HTMLDivElement>(null);
   const [scope, animate] = useAnimate();
   const [titleScope, animateTitle] = useAnimate();
   const { currentRoute, routes, back } = useContext(RouterContext);
@@ -40,11 +42,13 @@ export const Route = (props: RouteProps) => {
         const gesture = createGesture({
           gestureName: ownPath,
           el: container,
+          onStart: () => {
+            coverRef.current.classList.remove("pointer-events-none");
+          },
           onMove: (details) => {
             const isActive = currentPath === ownPath;
             const isNotHome = order > 0;
             const delta = details.currentX - details.startX;
-
             if (isActive && isNotHome) {
               if (delta > 0) {
                 animate(scope.current, { left: delta }, { duration: 0 });
@@ -52,6 +56,7 @@ export const Route = (props: RouteProps) => {
             }
           },
           onEnd: (details) => {
+            coverRef.current.classList.add("pointer-events-none");
             const delta = details.currentX - details.startX;
             const complete = () =>
               animate(
@@ -77,7 +82,7 @@ export const Route = (props: RouteProps) => {
               animate(
                 scope.current,
                 { left: 0 },
-                { type: "tween", duration: 0.1 }
+                { type: "spring", duration: 0.5 }
               );
             }
           },
@@ -100,19 +105,19 @@ export const Route = (props: RouteProps) => {
   useEffect(() => {
     if (ownRoute && currentRoute) {
       if (ownRoute?.path < currentRoute?.path) {
-        animate(scope.current, { left: 0 }, { type: "tween", duration: 0.1 });
+        animate(scope.current, { left: 0 }, { type: "tween", duration: 0.2 });
         animateTitle(titleScope.current, { opacity: 1 });
       } else {
         animateTitle(titleScope.current, { opacity: 0 });
         animate(
           scope.current,
           { left: "100vw" },
-          { type: "tween", duration: 0.1 }
+          { type: "tween", duration: 0.2 }
         );
       }
       if (currentRoute?.path === ownRoute?.path) {
         animateTitle(titleScope.current, { opacity: 1 });
-        animate(scope.current, { left: 0 }, { type: "tween", duration: 0.1 });
+        animate(scope.current, { left: 0 }, { type: "spring", duration: 0.5 });
       }
     }
   }, [currentRoute, ownRoute, animate, animateTitle, scope, titleScope]);
@@ -130,6 +135,10 @@ export const Route = (props: RouteProps) => {
           {renderTitle()}
           <div id={`router-title-${ownRoute.path}`}></div>
         </div>
+        <div
+          ref={coverRef}
+          className="absolute w-full h-full z-[10000] pointer-events-none"
+        ></div>
         <div
           className="h-full w-full absolute"
           ref={scope}
