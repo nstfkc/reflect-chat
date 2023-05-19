@@ -29,6 +29,7 @@ const Prefetch = () => {
 };
 
 const App = () => {
+  console.log({ x: import.meta.env.VITE_ASSESTS_SERVICE_HOST });
   return (
     <SWRConfig>
       <SafeAreaProvider>
@@ -37,7 +38,10 @@ const App = () => {
         >
           <SignedIn>
             <SafeAreaView>
-              <ConfigProvider apiUrl="http://192.168.1.2:4000">
+              <ConfigProvider
+                apiUrl="http://192.168.1.2:4000"
+                assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
+              >
                 <Prefetch />
                 <UserProvider>
                   <SocketProvider>

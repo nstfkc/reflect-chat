@@ -1,8 +1,16 @@
-import { ReactNode, createContext, useCallback, useRef, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 import { createId } from "@paralleldrive/cuid2";
 import { useDropzone } from "react-dropzone";
 import { FileKind, getFileKindFromObject } from "./file";
+import { ConfigContext } from "@shared/components/context/ConfigContext";
 
 interface FileUploaderContextValue {
   isDragActive: boolean;
@@ -42,6 +50,8 @@ export const FileUploaderProvider = (props: FileUploaderProviderProps) => {
   const executionStatus = useRef<Map<string, boolean>>(new Map());
   const currentExecution = useRef<null | string>(null);
   const controllerMap = useRef<Map<string, AbortController>>(new Map());
+  const { assetsServiceUrl } = useContext(ConfigContext);
+  console.log({ assetsServiceUrl });
 
   const uploadFile = useCallback(
     async (file: RawMedia) => {
@@ -53,16 +63,17 @@ export const FileUploaderProvider = (props: FileUploaderProviderProps) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        mode: "cors",
         redirect: "follow",
         signal: abortController.signal,
       };
       const { path } = await fetch(
-        `/media/${pathPrefix}/${file.id}`,
+        `${assetsServiceUrl}/${pathPrefix}/${file.id}`,
         requestOptions
       ).then((res) => res.json());
       return path;
     },
-    [pathPrefix]
+    [assetsServiceUrl, pathPrefix]
   );
 
   const cancelUpload = (id: string) => {

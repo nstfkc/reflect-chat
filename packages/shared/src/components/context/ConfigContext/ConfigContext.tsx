@@ -2,6 +2,7 @@ import { ReactNode, createContext } from "react";
 
 interface ConfigContextValue {
   apiUrl: string;
+  assetsServiceUrl: string;
 }
 
 export const ConfigContext = createContext({} as ConfigContextValue);

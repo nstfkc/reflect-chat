@@ -1,0 +1,11 @@
+name = "reflect"
+main = "src/index.ts"
+compatibility_date = "2023-04-28"
+
+
+account_id = "fd8f425f4297e2186ca6ddacb6934da0" # ← Replace with your Account ID.
+workers_dev = true
+
+[[r2_buckets]]
+binding = 'BUCKET' # <~ valid JavaScript variable name
+bucket_name = 'reflect-chat-assets'

@@ -23,6 +23,7 @@ import { RxImage } from "react-icons/rx";
 import { MessageWithMedia, User } from "@shared/types/global";
 import { HiOutlineCloudDownload } from "react-icons/hi";
 import { groupItemsByCreatedAt, groupMessagesInTheSameMinute } from "./utils";
+import { ConfigContext } from "@shared/components/context/ConfigContext";
 
 interface MediaWrapperProps {
   media: MessageMedia;
@@ -32,11 +33,12 @@ interface MediaWrapperProps {
 
 const MediaWrapper = (props: MediaWrapperProps) => {
   const { media, children, onRender } = props;
+  const { assetsServiceUrl } = useContext(ConfigContext);
   return (
-    <div className="w-[400px] relative group py-2" ref={(el) => onRender(el)}>
+    <div className="w-[200px] relative group py-2" ref={(el) => onRender(el)}>
       <div className="absolute w-full flex justify-end p-2 opacity-75 group-hover:opacity-100">
         <a
-          href={`/media/${media.path}`}
+          href={`${assetsServiceUrl}/${media.path}`}
           download={media.filename}
           className="bg-gray-900/10 rounded-lg p-2"
         >
@@ -61,6 +63,7 @@ interface MessageFragmentProps {
 const MessageFragment = (props: MessageFragmentProps) => {
   const { id, text, message, markAsRead, markMentionsAsRead, onRender } = props;
   const { updateLastSeenMessage } = useContext(MessageContext);
+  const { assetsServiceUrl } = useContext(ConfigContext);
 
   useEffect(() => {
     /* updateLastSeenMessage(message); */
@@ -83,19 +86,19 @@ const MessageFragment = (props: MessageFragmentProps) => {
         {(message.media ?? []).map((media, index) => {
           if (media.kind === "image") {
             const ratio = media.width / media.height;
-            const height = Math.floor(400 / ratio);
+            const height = Math.floor(200 / ratio);
             return (
               <MediaWrapper
                 media={media}
                 key={`${media.id}-${index}`}
                 onRender={onRender}
               >
-                <div className="bg-white rounded-lg flex gap-2 items-center overflow-hidden shadow-md">
+                <div className="rounded-lg flex gap-2 items-center overflow-hidden shadow-md">
                   <img
                     alt="any"
-                    width={400}
+                    width={200}
                     height={height}
-                    src={`/media/${media.path}`}
+                    src={`${assetsServiceUrl}/${media.path}`}
                   />
                 </div>
               </MediaWrapper>
