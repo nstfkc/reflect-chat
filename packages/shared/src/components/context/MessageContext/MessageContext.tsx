@@ -159,7 +159,6 @@ function useMessageHistory() {
 
   const handleUpdateMessageHistory = useCallback(
     (dm: MessageWithMedia) => {
-      console.log(dm);
       let key = "";
 
       if (dm.receiverId) {

@@ -111,7 +111,11 @@ export const Route = (props: RouteProps) => {
   useEffect(() => {
     if (ownRoute && currentRoute) {
       if (ownRoute?.path < currentRoute?.path) {
-        animate(scope.current, { left: 0 }, { type: "tween", duration: 0.2 });
+        animate(
+          scope.current,
+          { left: "15px" },
+          { type: "tween", duration: 0.2 }
+        );
       } else {
         animateTitle(titleScope.current, { top: "-100%" });
         animate(
