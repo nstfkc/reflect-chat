@@ -136,7 +136,7 @@ export const Route = (props: RouteProps) => {
       <div>
         <div
           ref={titleScope}
-          className="absolute bg-gray-200 w-full"
+          className="absolute bg-white w-full"
           style={{ zIndex: zIndex + 1 }}
         >
           {renderTitle()}

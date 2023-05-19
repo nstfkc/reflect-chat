@@ -283,16 +283,8 @@ export const Chat = (props: ChatProps) => {
             />
           </div>
         </div>
-        <div className=" w-full">
+        <div className="w-full border-t-2 border-black bg-gray-100/50">
           <TextEditor
-            onFocus={() => {}}
-            testAction={() => {
-              virtuoso?.current?.scrollToIndex({
-                index: data.length - 1,
-                align: "end",
-                behavior: "auto",
-              });
-            }}
             usersCanBeMentioned={usersCanBeMentioned}
             placeholder={`Message ${name}`}
             onSubmit={handleSendMessage}

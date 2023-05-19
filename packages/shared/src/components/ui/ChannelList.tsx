@@ -22,15 +22,18 @@ export const ChannelList = (props: ChannelListProps) => {
         {data?.map((channel, idx) => {
           return (
             <li key={idx}>
-              <button className="px-4" onClick={() => onChannelClick(channel)}>
+              <button
+                className="py-[2px] px-4 w-full text-left"
+                onClick={() => onChannelClick(channel)}
+              >
                 #{channel.name}
               </button>
             </li>
           );
         })}
-        <li>
+        <li className="py-2">
           <button
-            className="flex gap-1 items-center font-semibold px-4"
+            className="flex gap-1 items-center font-semibold text-sm px-4"
             onClick={onAddChannelClick}
           >
             <TbPlus className="stroke-[3px]" />
