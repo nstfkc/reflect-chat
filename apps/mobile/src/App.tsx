@@ -37,7 +37,7 @@ const App = () => {
           <SignedIn>
             <SafeAreaView>
               <ConfigProvider
-                apiUrl="http://192.168.1.2:4000"
+                apiUrl={import.meta.env.VITE_API_HOST}
                 assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
               >
                 <Prefetch />
