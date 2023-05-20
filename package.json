@@ -1,16 +1,17 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "dotenv -- turbo run build",
     "dev": "dotenv -- turbo run dev",
     "open:ios": "dotenv -- turbo run open:ios",
     "lint": "turbo run lint",
     "db:generate": "dotenv -- turbo run db:generate",
     "db:push": "dotenv -- turbo run db:push",
     "db:studio": "dotenv -- turbo run db:studio",
-    "deploy": "dotenv -- turbo run deploy",
     "static": "dotenv -- turbo run static",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "preview": "dotenv -- turbo run preview",
+    "deploy": "fly deploy"
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
@@ -29,6 +30,6 @@
       ]
     }
   },
-  "packageManager": "pnpm@7.15.0",
+  "packageManager": "pnpm@7.19.0",
   "name": "reflect-chat"
 }
