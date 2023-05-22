@@ -1,6 +1,7 @@
 import { RouteTitle, RouterParametersContext } from "@/router/Route";
 import { useContext } from "react";
 import { ChatHistory, useQuery } from "shared";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 const Title = () => {
   const { data = [] } = useQuery("/channels");
@@ -26,7 +27,12 @@ export const ChatScreen = () => {
   return (
     <div className="h-full bg-white">
       <Title />
-      <ChatHistory channelId={params.channelId} />
+      <ChatHistory
+        onMessageSend={() => {
+          Haptics.impact({ style: ImpactStyle.Medium });
+        }}
+        channelId={params.channelId}
+      />
     </div>
   );
 };

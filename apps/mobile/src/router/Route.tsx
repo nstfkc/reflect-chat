@@ -88,7 +88,7 @@ export const Route = (props: RouteProps) => {
               animate(
                 scope.current,
                 { left: 0 },
-                { type: "spring", duration: 0.5 }
+                { type: "spring", duration: 0.1 }
               );
             }
           },

@@ -8,10 +8,11 @@ import { UsersContext } from "../../context/UsersContext";
 
 interface ChatHistoryProps {
   channelId: string;
+  onMessageSend?: VoidFunction;
 }
 
 export const ChatHistory = (props: ChatHistoryProps) => {
-  const { channelId } = props;
+  const { channelId, onMessageSend = () => {} } = props;
   const {
     sendMessage,
     markMessageAsRead,
@@ -33,6 +34,7 @@ export const ChatHistory = (props: ChatHistoryProps) => {
   }
 
   const handleSendMessage = (text: string, medias?: RawMedia[]) => {
+    onMessageSend();
     sendMessage(
       {
         senderId: user.id,

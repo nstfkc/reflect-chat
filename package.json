@@ -31,5 +31,8 @@
     }
   },
   "packageManager": "pnpm@7.19.0",
-  "name": "reflect-chat"
+  "name": "reflect-chat",
+  "dependencies": {
+    "@clerk/clerk-react": "^4.16.2"
+  }
 }

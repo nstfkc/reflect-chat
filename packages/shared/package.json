@@ -17,7 +17,6 @@
     "tsconfig": "workspace:*"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^4.15.5",
     "@paralleldrive/cuid2": "^2.2.0",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-switch": "^1.0.2",

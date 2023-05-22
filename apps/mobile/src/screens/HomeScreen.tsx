@@ -3,6 +3,7 @@ import { Route } from "@/router/Route";
 import { ChannelList, CreateChannelForm, UserContext } from "shared";
 import { Modal, ModalContext, ModalProvider } from "@/components/Modal";
 import { useContext } from "react";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 const ChannelsSection = () => {
   const { user } = useContext(UserContext);
@@ -12,7 +13,10 @@ const ChannelsSection = () => {
   return (
     <div>
       <ChannelList
-        onChannelClick={(channel) => push(`/channel/${channel.id}`, channel)}
+        onChannelClick={(channel) => {
+          Haptics.impact({ style: ImpactStyle.Medium });
+          push(`/channel/${channel.id}`, channel);
+        }}
         onAddChannelClick={toggle}
       />
 
