@@ -1,27 +1,23 @@
-import fastify from "fastify";
 import clerk from "@clerk/clerk-sdk-node";
 
 import { prisma } from "db";
-import cookie from "@fastify/cookie";
-import fastifyIO from "fastify-socket.io";
-import cors from "@fastify/cors";
-
 import { sockets } from "./socket";
+import { queries } from "shared";
 
-const server = fastify();
+import server from "./server";
 
-server.register(fastifyIO, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  },
-});
+import { auth } from "./auth";
 
-server.register(cors, {
-  // put your options here
-});
-server.register(cookie, {
-  secret: process.env.SECRET,
+auth(server);
+
+Object.entries(queries).map(([url, config]) => {
+  server.route({
+    method: ["POST", "HEAD"],
+    url,
+    handler: (req) => {
+      config.handler(req.body, {} as any);
+    },
+  });
 });
 
 server.get("/users", async (_request, _reply) => {

@@ -11,15 +11,120 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider = "npx zod-prisma-types"
+  output   = "../src/zod"
+}
+
+model Organisation {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(cuid())
+  name     String
+
+  membership Membership[]
+  channels   Channel[]
+
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  OrganisationInvitation OrganisationInvitation[]
+}
+
+model OrganisationInvitation {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(cuid())
+
+  createdBy    User         @relation(fields: [creatorId], references: [id])
+  organisation Organisation @relation(fields: [organizationId], references: [id])
+  issuedEmail  String
+
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+  creatorId      Int
+  organizationId Int
+
+  @@index([creatorId])
+  @@index([organizationId])
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  USER
+}
+
+enum GlobalRole {
+  SUPERADMIN
+  CUSTOMER
+}
+
+model Membership {
+  id   Int            @id @default(autoincrement())
+  role MembershipRole
+
+  organization   Organisation @relation(fields: [organizationId], references: [id])
+  organizationId Int
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  // When the user joins, we will clear out the name and email and set the user.
+  invitedName  String?
+  invitedEmail String?
+
+  @@unique([organizationId, invitedEmail])
+  @@index([userId])
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  publicId  String     @unique @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String
+  email     String     @unique
+  password  String
+  role      GlobalRole
+
+  userProfile UserProfile? @relation(fields: [userProfileId], references: [id])
+
+  memberships            Membership[]
+  OrganisationInvitation OrganisationInvitation[]
+  userProfileId          Int
+
+  @@index([userProfileId])
+}
+
+model UserProfile {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(cuid())
+
+  profilePictureUrl String?
+  profileColor      String  @default("#000000")
+  username          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User[]
+}
+
+enum ChannelKind {
+  PRIVATE
+  PUBLIC
+}
+
 model Channel {
-  id          String  @id @default(cuid())
-  kind        String //Public, Private, Conversation
+  id          String      @id @default(cuid())
+  kind        ChannelKind @default(PUBLIC)
   createdBy   String // user id
   name        String?
   description String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  Organisation   Organisation? @relation(fields: [organisationId], references: [publicId])
+  organisationId String?
+
+  @@index([organisationId])
 }
 
 model Media {
