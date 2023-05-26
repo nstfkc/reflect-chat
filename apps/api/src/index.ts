@@ -1,8 +1,7 @@
 import clerk from "@clerk/clerk-sdk-node";
 
-import { prisma } from "db";
+import { prisma, mutations } from "db";
 import { sockets } from "./socket";
-import { queries } from "shared";
 
 import server from "./server";
 
@@ -10,12 +9,29 @@ import { auth } from "./auth";
 
 auth(server);
 
-Object.entries(queries).map(([url, config]) => {
+Object.entries(mutations).map(([url, config]) => {
   server.route({
+    preHandler: (req, res, done) => {
+      if (config.isPublic) {
+        done();
+      }
+      const { userId } = req.requestContext.get("context");
+      if (userId === "system") {
+        res.statusCode = 401;
+        done(Error("Authentication error"));
+      }
+      done();
+    },
     method: ["POST", "HEAD"],
     url,
-    handler: (req) => {
-      config.handler(req.body, {} as any);
+    handler: async (req, rep) => {
+      const res = await config.handler(req.body, {
+        ...req.requestContext.get("context"),
+      });
+      if (res.success === false) {
+        rep.statusCode = res.error.statusCode;
+      }
+      return res;
     },
   });
 });
@@ -51,7 +67,7 @@ server.get("/channels", async () => {
   const channels = await prisma.channel.findMany({
     where: {
       OR: [
-        { kind: "Public" },
+        { kind: "PUBLIC" },
         // {
         //   OR: [
         //     {
@@ -127,22 +143,22 @@ server.get("/messages", async (request) => {
   return history;
 });
 
-server.post("/channel/create", async (request) => {
-  const { kind, description, name, createdBy } = JSON.parse(
-    request.body as any
-  );
+// server.post("/channel/create", async (request) => {
+//   const { kind, description, name, createdBy } = JSON.parse(
+//     request.body as any
+//   );
 
-  const channel = await prisma.channel.create({
-    data: {
-      kind,
-      description,
-      name,
-      createdBy,
-    } as any,
-  });
+//   const channel = await prisma.channel.create({
+//     data: {
+//       kind,
+//       description,
+//       name,
+//       createdBy,
+//     } as any,
+//   });
 
-  return channel;
-});
+//   return channel;
+// });
 
 server.get("/user/:userId", async (req) => {
   const { userId } = (req as any).params;

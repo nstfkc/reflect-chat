@@ -1,13 +1,6 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
-import {
-  ClerkProvider,
-  SignIn,
-  SignUp,
-  SignedIn,
-  SignedOut,
-  useUser,
-} from "@clerk/clerk-react";
+import { ReactNode } from "react";
+
 import {} from "next/router";
 
 interface AuthProps {
@@ -15,25 +8,8 @@ interface AuthProps {
   publishableKey: string;
 }
 
-const Redirect = (props: { path: string }) => {
-  const { path } = props;
-  useEffect(() => {
-    window.location.href = path;
-  }, []);
-  return null;
-};
-
 export const Auth = (props: AuthProps) => {
   const { children, publishableKey } = props;
 
-  return (
-    <ClerkProvider publishableKey={publishableKey}>
-      <SignedIn>{children}</SignedIn>
-      <SignedOut>
-        <div className="flex items-center justify-center h-screen">
-          <Redirect path="/auth/sign-in" />
-        </div>
-      </SignedOut>
-    </ClerkProvider>
-  );
+  return <div>Auth</div>;
 };

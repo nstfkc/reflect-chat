@@ -1,6 +1,5 @@
 export { prisma } from "./db";
 export * from "@prisma/client";
 
-import * as schema from "./zod";
-
-export { schema };
+export { mutations } from "./data/endpoints";
+export type { Mutations } from "./data/endpoints";

@@ -4,7 +4,7 @@ import { random } from "uniqolor";
 
 import { randomBytes, scrypt } from "crypto";
 import { Server } from "./server";
-import { prisma, Prisma, schema } from "db";
+import { prisma, Prisma } from "db";
 
 async function hash(password: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -32,19 +32,6 @@ async function verifyPassword(
 }
 
 export function auth(server: Server) {
-  server.route({
-    url: "/auth/test",
-    method: ["GET", "HEAD"],
-    preHandler: (req, rep, done) => {
-      const authCookie = req.cookies["Authorization"];
-      console.log({ authCookie });
-      done({ name: "ficlk", message: "Authorization header is missing!" });
-    },
-    handler: () => {
-      return { hell: "yeah" };
-    },
-  });
-
   server.post("/auth/sign-in", async (request, reply) => {
     const { email, password } = request.body as {
       email: string;
@@ -52,11 +39,32 @@ export function auth(server: Server) {
     };
 
     try {
-      const user = await prisma.user.findFirst({ where: { email } });
+      const user = await prisma.user.findFirst({
+        where: { email },
+        include: {
+          memberships: {
+            include: {
+              organization: true,
+            },
+          },
+        },
+      });
       if (user) {
         const passwordMatches = await verifyPassword(password, user.password);
         if (passwordMatches) {
-          const token = jwt.sign({ id: user.publicId }, process.env.SECRET);
+          const token = jwt.sign(
+            {
+              userId: user.publicId,
+              globalRole: user.role,
+              membershipRoles: Object.fromEntries(
+                user.memberships.map((membership) => [
+                  membership.organization.publicId,
+                  membership.role,
+                ])
+              ),
+            },
+            process.env.SECRET
+          );
           const now = Date.now();
 
           reply.setCookie("Authorization", `Bearer ${token}`, {

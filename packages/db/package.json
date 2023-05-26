@@ -4,12 +4,13 @@
   "license": "MIT",
   "main": "./dist/index.js",
   "source": "./src/index.ts",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.tsx",
   "files": [
     "dist/**"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs && tsc --emitDeclarationOnly --declaration",
+    "dev": "tsup src/index.ts --format cjs --watch --onSuccess \"node dist/index.js\"",
     "lint": "eslint \"**/*.ts*\"",
     "generate": "prisma generate",
     "db:push": "prisma db push",
@@ -18,7 +19,9 @@
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",
-    "@types/node": "^17.0.12"
+    "@types/node": "^17.0.12",
+    "swr": "^2.1.5",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

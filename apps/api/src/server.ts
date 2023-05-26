@@ -2,7 +2,9 @@ import fastify from "fastify";
 import cookie from "@fastify/cookie";
 import fastifyIO from "fastify-socket.io";
 import cors from "@fastify/cors";
-import authPlugin from "@fastify/auth";
+import { decode } from "jsonwebtoken";
+
+import { fastifyRequestContext } from "@fastify/request-context";
 
 const server = fastify();
 
@@ -19,6 +21,21 @@ server.register(cors, {
 
 server.register(cookie, {
   secret: process.env.SECRET,
+});
+
+server.register(fastifyRequestContext, {
+  defaultStoreValues: {
+    context: { userId: "system", organisationId: "system" },
+  },
+});
+
+server.addHook("onRequest", (req, _rep, done) => {
+  if (req.headers.authorization) {
+    const token = req.headers.authorization.replace("Bearer%20", "");
+    const decoded = decode(token);
+    req.requestContext.set("context", decoded);
+  }
+  done();
 });
 
 export type Server = typeof server;

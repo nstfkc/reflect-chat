@@ -1,7 +1,7 @@
 import { handleChannelCreate } from "./handlers";
 
-export const queries = {
+export const mutations = {
   "/channel/create": handleChannelCreate,
 };
 
-export type Queries = typeof queries;
+export type Mutations = typeof mutations;

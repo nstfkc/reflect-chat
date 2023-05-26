@@ -1,11 +1,10 @@
-import { useContext } from "react";
-import useSWRMutation from "swr/mutation";
+import useSWR from "swr";
 
-import { Mutations } from "db";
-import { ConfigContext } from "../components/context/ConfigContext";
+import useSWRMutation from "swr/mutation";
+import { Mutations } from "./endpoints";
 
 export function useMutation<T extends keyof Mutations>(key: T) {
-  const { apiUrl } = useContext(ConfigContext);
+  const apiUrl = "";
   const endpoint = `${apiUrl}${key}`;
 
   const fetcher = async (
@@ -24,3 +23,14 @@ export function useMutation<T extends keyof Mutations>(key: T) {
 
   return useSWRMutation(endpoint, fetcher, {});
 }
+
+const useChannnelMut = () => {
+  const { data, trigger } = useMutation("/channel/create");
+  if (data.success === false) {
+    if (data.error.title === "VALIDATION_ERROR") {
+      data.error.payload.issues.map((issue) => {
+        issue.path;
+      });
+    }
+  }
+};
