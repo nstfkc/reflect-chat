@@ -1,6 +1,6 @@
 import z from "zod";
 import { createHandler } from "./handlers";
-import { ChannelKind, MembershipRole } from ".prisma/client";
+import { ChannelKind, MembershipRole } from "@prisma/client";
 import { prisma } from "../db";
 import { prismaError } from "./error";
 

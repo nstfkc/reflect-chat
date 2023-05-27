@@ -11,11 +11,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator zod {
-  provider = "npx zod-prisma-types"
-  output   = "../src/zod"
-}
-
 model Organisation {
   id       Int    @id @default(autoincrement())
   publicId String @unique @default(cuid())

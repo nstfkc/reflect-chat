@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "electron": "electron .",
     "build": "tsc && vite build",
     "open:ios": "cap sync && cap open ios",
     "test": "jest",
@@ -36,6 +37,7 @@
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
     "shared": "workspace:*",
+    "auth": "workspace:*",
     "tippy.js": "^6.3.7",
     "ui": "workspace:*"
   },
@@ -50,6 +52,7 @@
     "@typescript-eslint/parser": "^5.57.1",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.14",
+    "electron": "^24.4.0",
     "eslint": "^8.38.0",
     "eslint-config-custom": "workspace:*",
     "eslint-plugin-react-hooks": "^4.6.0",
