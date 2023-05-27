@@ -1,6 +1,6 @@
 import clerk from "@clerk/clerk-sdk-node";
 
-import { prisma, mutations } from "db";
+import { prisma, mutations, queries } from "db";
 import { sockets } from "./socket";
 
 import server from "./server";
@@ -26,6 +26,35 @@ Object.entries(mutations).map(([url, config]) => {
     url,
     handler: async (req, rep) => {
       const res = await config.handler(req.body, {
+        ...req.requestContext.get("context"),
+      });
+      if (res.success === false) {
+        rep.statusCode = res.error.statusCode;
+      }
+      return res;
+    },
+  });
+});
+
+Object.entries(queries).map(([url, config]) => {
+  server.route({
+    preHandler: (req, res, done) => {
+      if (config.isPublic) {
+        done();
+      }
+
+      const { userId } = req.requestContext.get("context");
+      console.log({ userId });
+      if (userId === "system") {
+        res.statusCode = 401;
+        done(Error("Authentication error"));
+      }
+      done();
+    },
+    method: ["GET", "HEAD"],
+    url,
+    handler: async (req, rep) => {
+      const res = await config.handler(req.query, {
         ...req.requestContext.get("context"),
       });
       if (res.success === false) {

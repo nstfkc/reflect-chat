@@ -13,6 +13,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  transpilePackages: ["auth"],
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];
@@ -35,8 +36,8 @@ const nextConfig = {
         destination: `https://flak.flak-media.workers.dev/:path*`,
       },
       {
-        source: "/_api/:path*",
-        destination: `http://localhost:4000/:path*`,
+        source: "/api/:path*",
+        destination: `http://localhost:8080/:path*`,
       },
     ];
   },

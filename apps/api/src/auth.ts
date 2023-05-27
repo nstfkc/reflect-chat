@@ -33,15 +33,19 @@ async function verifyPassword(
 
 export function auth(server: Server) {
   server.post("/auth/sign-in", async (request, reply) => {
+    console.log({ body: request.body });
     const { email, password } = request.body as {
       email: string;
       password: string;
     };
 
+    console.log({ email, password });
+
     try {
       const user = await prisma.user.findFirst({
         where: { email },
         include: {
+          userProfile: true,
           memberships: {
             include: {
               organization: true,
@@ -67,15 +71,21 @@ export function auth(server: Server) {
           );
           const now = Date.now();
 
+          reply.header("Access-Control-Allow-Credentials", "true");
+          reply.setCookie("Hi", "SUP");
           reply.setCookie("Authorization", `Bearer ${token}`, {
             expires: addDays(now, 1),
+            path: "/",
+            httpOnly: true,
+            sameSite: true,
           });
-
-          return {
-            name: user.name,
-            email: user.email,
-          };
+          reply.header("access-control-expose-headers", "Set-Cookie");
+          const { password: _, ...data } = user;
+          return data;
         }
+      } else {
+        reply.statusCode = 401;
+        return {};
       }
     } catch (error) {
       return error;
@@ -103,10 +113,8 @@ export function auth(server: Server) {
           },
         },
         select: {
-          publicId: true,
           name: true,
           email: true,
-          userProfile: true,
         },
       });
 

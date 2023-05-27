@@ -1,4 +1,5 @@
-import { Auth } from "./components/Auth";
+import { AuthProvider } from "auth";
+
 import "./globals.css";
 
 export const metadata = {
@@ -15,9 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className="h-screen max-h-screen min-h-screen overflow-hidden bg-gray-200/70 text-gray-800">
-          <Auth publishableKey={process.env.CLERK_PUBLISHABLE_KEY!}>
-            {children}
-          </Auth>
+          <AuthProvider authURL="/api/auth">{children}</AuthProvider>
         </div>
       </body>
     </html>

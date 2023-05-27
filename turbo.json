@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local", "**/.env"],
-  "globalEnv": ["SECRET", "NODE_ENV"],
+  "globalEnv": ["SECRET", "NODE_ENV", "SOCKET_HOST"],
   "pipeline": {
     "build": {
       "outputs": [

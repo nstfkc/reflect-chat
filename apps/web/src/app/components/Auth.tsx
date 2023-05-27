@@ -1,15 +1,31 @@
 "use client";
-import { ReactNode } from "react";
+import { SignedIn, SignedOut } from "auth";
+import { ReactNode, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import {} from "next/router";
 
 interface AuthProps {
   children: ReactNode;
-  publishableKey: string;
 }
 
-export const Auth = (props: AuthProps) => {
-  const { children, publishableKey } = props;
+const RedirectToSignIn = () => {
+  const { push } = useRouter();
+  useEffect(() => {
+    push("/auth/sign-in");
+  }, [push]);
 
-  return <div>Auth</div>;
+  return <div></div>;
+};
+
+export const AuthGuard = (props: AuthProps) => {
+  const { children } = props;
+
+  return (
+    <>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  );
 };

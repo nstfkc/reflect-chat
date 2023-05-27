@@ -10,12 +10,14 @@ const server = fastify();
 
 server.register(fastifyIO, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   },
 });
 
 server.register(cors, {
+  origin: ["http://localhost:3000"],
+  preflight: true,
   // put your options here
 });
 
@@ -29,9 +31,18 @@ server.register(fastifyRequestContext, {
   },
 });
 
-server.addHook("onRequest", (req, _rep, done) => {
+server.addHook("onRequest", (req, rep, done) => {
+  console.log("HEADERS", req.cookies["Authorization"]);
+
+  let token: null | string = null;
+
   if (req.headers.authorization) {
-    const token = req.headers.authorization.replace("Bearer%20", "");
+    token = req.headers.authorization.replace("Bearer%20", "");
+  }
+  if (req.cookies["Authorization"]) {
+    token = req.cookies["Authorization"].replace("Bearer", "").trim();
+  }
+  if (token) {
     const decoded = decode(token);
     req.requestContext.set("context", decoded);
   }
