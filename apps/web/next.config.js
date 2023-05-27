@@ -1,5 +1,3 @@
-const { PrismaPlugin } = require("@prisma/nextjs-monorepo-workaround-plugin");
-
 const socketHost = process.env.SOCKET_HOST;
 
 /** @type {import('next').NextConfig} */
@@ -14,13 +12,7 @@ const nextConfig = {
     unoptimized: true,
   },
   transpilePackages: ["auth"],
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.plugins = [...config.plugins, new PrismaPlugin()];
-    }
 
-    return config;
-  },
   rewrites: async () => {
     return [
       {

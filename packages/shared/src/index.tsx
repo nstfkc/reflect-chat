@@ -6,10 +6,6 @@ export * from "./components/context/SocketContext";
 export * from "./components/context/UserContext";
 export * from "./components/context/UsersContext";
 
-export * from "./api-client/schema";
-export { useMutation } from "./api-client/useMutation";
-export { useQuery } from "./api-client/useQuery";
-
 export { ChannelList } from "./components/ui/ChannelList";
 export { CreateChannelForm } from "./components/ui/CreateChannelDialog";
 

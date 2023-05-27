@@ -10,7 +10,6 @@
     "deploy": "fly deploy"
   },
   "devDependencies": {
-    "@fastify/vite": "^4.0.0",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^18.11.18",
     "fastify-tsconfig": "^1.0.1",
@@ -20,7 +19,6 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^4.9.0",
     "@fastify/auth": "^4.3.0",
     "@fastify/cookie": "^8.3.0",
     "@fastify/cors": "^8.2.1",

@@ -1,5 +1,3 @@
-import clerk from "@clerk/clerk-sdk-node";
-
 import { prisma, mutations, queries } from "db";
 import { sockets } from "./socket";
 
@@ -65,32 +63,32 @@ Object.entries(queries).map(([url, config]) => {
   });
 });
 
-server.get("/users", async (_request, _reply) => {
-  const users = await clerk.users.getUserList();
-  return users;
-});
+// server.get("/users", async (_request, _reply) => {
+//   const users = await clerk.users.getUserList();
+//   return users;
+// });
 
-server.get("/direct-messages", async (request) => {
-  const userId = request.cookies["userid"];
-  const uniqueDMsUserIds = await prisma.message.findMany({
-    distinct: ["senderId", "receiverId"],
-    where: {
-      OR: [{ senderId: userId }, { receiverId: userId }],
-      receiverId: { not: null },
-    },
-    orderBy: { createdAt: "desc" },
-    select: { senderId: true, receiverId: true },
-  });
+// server.get("/direct-messages", async (request) => {
+//   const userId = request.cookies["userid"];
+//   const uniqueDMsUserIds = await prisma.message.findMany({
+//     distinct: ["senderId", "receiverId"],
+//     where: {
+//       OR: [{ senderId: userId }, { receiverId: userId }],
+//       receiverId: { not: null },
+//     },
+//     orderBy: { createdAt: "desc" },
+//     select: { senderId: true, receiverId: true },
+//   });
 
-  return Array.from(
-    new Set([
-      userId,
-      ...uniqueDMsUserIds
-        .map((item) => [item.senderId, item.receiverId])
-        .flat(),
-    ])
-  );
-});
+//   return Array.from(
+//     new Set([
+//       userId,
+//       ...uniqueDMsUserIds
+//         .map((item) => [item.senderId, item.receiverId])
+//         .flat(),
+//     ])
+//   );
+// });
 
 server.get("/channels", async () => {
   const channels = await prisma.channel.findMany({
@@ -118,26 +116,26 @@ server.get("/channels", async () => {
   return channels;
 });
 
-server.get("/messages/:otherUserId", async (request) => {
-  const userId = request.cookies["userid"];
-  const { otherUserId } = (request as any).params;
-  const history = await prisma.message.findMany({
-    where: {
-      OR: [
-        { senderId: userId, receiverId: otherUserId },
-        { receiverId: userId, senderId: otherUserId },
-      ],
-    },
-    include: {
-      media: true,
-    },
-    orderBy: {
-      createdAt: "asc",
-    },
-  });
+// server.get("/messages/:otherUserId", async (request) => {
+//   const userId = request.cookies["userid"];
+//   const { otherUserId } = (request as any).params;
+//   const history = await prisma.message.findMany({
+//     where: {
+//       OR: [
+//         { senderId: userId, receiverId: otherUserId },
+//         { receiverId: userId, senderId: otherUserId },
+//       ],
+//     },
+//     include: {
+//       media: true,
+//     },
+//     orderBy: {
+//       createdAt: "asc",
+//     },
+//   });
 
-  return history;
-});
+//   return history;
+// });
 
 server.get("/channel/messages/:channelId", async (request) => {
   const { channelId } = (request as any).params;
@@ -189,17 +187,17 @@ server.get("/messages", async (request) => {
 //   return channel;
 // });
 
-server.get("/user/:userId", async (req) => {
-  const { userId } = (req as any).params;
-  const user = await clerk.users.getUser(userId);
+// server.get("/user/:userId", async (req) => {
+//   const { userId } = (req as any).params;
+//   const user = await clerk.users.getUser(userId);
 
-  return user;
-});
+//   return user;
+// });
 
-server.get("/users/", async () => {
-  const userList = await clerk.users.getUserList();
-  return userList;
-});
+// server.get("/users/", async () => {
+//   const userList = await clerk.users.getUserList();
+//   return userList;
+// });
 
 server.get("/channel/:channelId", async (req) => {
   const { channelId } = (req as any).params;
