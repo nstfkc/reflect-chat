@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "db": "workspace:*",
+    "shared": "workspace:*",
     "swr": "^2.1.5"
   }
 }

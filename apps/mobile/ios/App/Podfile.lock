@@ -8,7 +8,7 @@ PODS:
     - Capacitor
   - CapacitorKeyboard (5.0.2):
     - Capacitor
-  - CapacitorPluginSafeArea (2.0.1):
+  - CapacitorPluginSafeArea (2.0.0):
     - Capacitor
   - CapacitorStatusBar (5.0.2):
     - Capacitor
@@ -49,7 +49,7 @@ SPEC CHECKSUMS:
   CapacitorCordova: def732a63679698df6fb392bbe6d269a0b61e937
   CapacitorHaptics: 864585542a435bd41eaabf7f30d9ff5ec03024d3
   CapacitorKeyboard: e628d4e66d621c69e449945ebabded17c5b9c2e8
-  CapacitorPluginSafeArea: 82382fd2e7dd4d1fc514139dbe08057c4759cfa0
+  CapacitorPluginSafeArea: 8385b05f7677aebbf0d9941f104920da53a1cd59
   CapacitorStatusBar: 48f2899f6846cc7d8431b251ebfc58e1c10e3d58
   CapawesomeCapacitorScreenOrientation: 5b7cfb76348775e4b824bf460e5c52212b94c8d1
 

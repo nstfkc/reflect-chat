@@ -3,7 +3,6 @@
 import { ReactNode, createContext, useCallback } from "react";
 import { useSocket } from "../SocketContext/useSocket";
 import { User } from "../../../types/global";
-import { useQuery } from "../../../api-client/useQuery";
 
 interface UsersContextValue {
   allUsers: User[];

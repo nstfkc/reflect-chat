@@ -5,7 +5,10 @@ import server from "./server";
 
 import { auth } from "./auth";
 
-auth(server);
+server.register((server, opts, done) => {
+  auth(server as any);
+  done();
+});
 
 Object.entries(mutations).map(([url, config]) => {
   server.route({
@@ -215,7 +218,7 @@ server.get("/health", () => {
 });
 
 server.post("/test", (_req, reply) => {
-  return reply.send({ hello: "world" });
+  return _req.body;
 });
 
 server.ready().then(() => {

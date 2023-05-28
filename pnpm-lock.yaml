@@ -395,6 +395,9 @@ importers:
       db:
         specifier: workspace:*
         version: link:../db
+      shared:
+        specifier: workspace:*
+        version: link:../shared
       swr:
         specifier: ^2.1.5
         version: 2.1.5(react@18.2.0)

@@ -5,8 +5,10 @@ import useSWRMutation from "swr/mutation";
 import { AuthContext } from "./Context";
 import { User } from "db";
 import { useMe, SignedInUser } from "./useMe";
+import { HttpContext } from "shared";
 
 export function useSignIn() {
+  const { fetch } = useContext(HttpContext);
   const { authURL } = useContext(AuthContext);
   const { mutate } = useMe(authURL);
   const { trigger } = useSWRMutation(
@@ -37,6 +39,7 @@ interface SignUpArgs {
 }
 
 export function useSignUp() {
+  const { fetch } = useContext(HttpContext);
   const { authURL } = useContext(AuthContext);
   return useSWRMutation(
     `${authURL}/sign-up`,

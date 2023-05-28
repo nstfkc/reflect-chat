@@ -33,13 +33,15 @@ async function verifyPassword(
 
 export function auth(server: Server) {
   server.post("/auth/sign-in", async (request, reply) => {
-    console.log({ body: request.body });
     const { email, password } = request.body as {
       email: string;
       password: string;
     };
 
-    console.log({ email, password });
+    const includeCookiesInReply = request.requestContext.get(
+      "includeCookiesInReply"
+    );
+    console.log({ includeCookiesInReply });
 
     try {
       const user = await prisma.user.findFirst({

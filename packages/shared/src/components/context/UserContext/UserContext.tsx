@@ -1,5 +1,3 @@
-import { useUser } from "@clerk/clerk-react";
-
 import { ReactNode, createContext } from "react";
 import { User } from "../../../types/global";
 
@@ -14,7 +12,7 @@ interface UserProviderProps {
 }
 
 export const UserProvider = (props: UserProviderProps) => {
-  const { isLoaded, user } = useUser();
+  const { isLoaded, user } = { user: { id: "1234" }, isLoaded: true };
 
   if (!isLoaded) {
     return null;

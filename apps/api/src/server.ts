@@ -16,7 +16,7 @@ server.register(fastifyIO, {
 });
 
 server.register(cors, {
-  origin: "http://localhost:5173",
+  origin: "*",
   preflight: true,
   // put your options here
 });
@@ -28,6 +28,7 @@ server.register(cookie, {
 server.register(fastifyRequestContext, {
   defaultStoreValues: {
     context: { userId: "system", organisationId: "system" },
+    includeCookiesInReply: false,
   },
 });
 
@@ -35,6 +36,11 @@ server.addHook("onRequest", (req, rep, done) => {
   console.log("HEADERS", req.cookies["Authorization"]);
 
   let token: null | string = null;
+
+  console.log('req.headers["X-Device-Type"]', req.headers["X-Device-Type"]);
+  if (req.headers["X-Device-Type"] === "mobile") {
+    req.requestContext.set("includeCookiesInReply", true);
+  }
 
   if (req.headers.authorization) {
     token = req.headers.authorization.replace("Bearer%20", "");
