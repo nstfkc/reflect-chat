@@ -12,7 +12,7 @@ type ValidationIssue = {
   message: string;
 };
 
-type GenericError = {
+export type GenericError = {
   title: keyof typeof ERROR_CODES;
   code: typeof ERROR_CODES[keyof typeof ERROR_CODES];
   message: string;

@@ -1,10 +1,10 @@
 import z from "zod";
-import { createHandler } from "./handlers";
+import { createPrecedure } from "./handlers";
 import { ChannelKind, MembershipRole } from "@prisma/client";
 import { prisma } from "../db";
 import { prismaError } from "./error";
 
-export const handleChannelCreate = createHandler({
+export const handleChannelCreate = createPrecedure({
   membershipRoles: [MembershipRole.ADMIN, MembershipRole.OWNER],
   schema: z.object({
     name: z

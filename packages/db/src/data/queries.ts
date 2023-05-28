@@ -1,8 +1,8 @@
 import { prisma } from "../db";
 import { prismaError } from "./error";
-import { createHandler } from "./handlers";
+import { createPrecedure } from "./handlers";
 
-export const me = createHandler({
+export const me = createPrecedure({
   handler: async (_, ctx) => {
     const user = await prisma.user.findFirst({
       where: { publicId: ctx.userId },
@@ -22,7 +22,7 @@ export const me = createHandler({
   },
 });
 
-export const queryChanelList = createHandler({
+export const queryChanelList = createPrecedure({
   handler: async () => {
     try {
       const channels = await prisma.channel.findMany({
@@ -30,6 +30,7 @@ export const queryChanelList = createHandler({
           kind: "PUBLIC",
         },
       });
+
       return {
         success: true,
         data: channels,

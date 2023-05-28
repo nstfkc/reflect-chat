@@ -84,7 +84,7 @@ var insufficientPermissionsError = createError(
 var validationError = createError("VALIDATION_ERROR");
 
 // src/data/handlers.ts
-function createHandler(args) {
+function createPrecedure(args) {
   const {
     handler,
     schema,
@@ -95,22 +95,26 @@ function createHandler(args) {
   return {
     isPublic,
     handler: (args2, ctx) => {
+      let error = null;
       if (membershipRoles && args2.organisationId) {
         if (!membershipRoles.includes(ctx.membershipRoles[args2.organisationId])) {
-          return insufficientPermissionsError({ statusCode: 403 });
+          error = insufficientPermissionsError({ statusCode: 403 });
         }
       }
       if (globalRoles && !globalRoles.includes(ctx.globalRole)) {
-        return insufficientPermissionsError({ statusCode: 403 });
+        error = insufficientPermissionsError({ statusCode: 403 });
       }
       if (schema) {
         const { success, ...rest } = schema.safeParse(args2);
         if (!success) {
-          return validationError({
+          error = validationError({
             payload: rest == null ? void 0 : rest.error,
             statusCode: 403
           });
         }
+      }
+      if (error) {
+        return Promise.resolve(error);
       }
       return handler(args2, ctx);
     }
@@ -119,7 +123,7 @@ function createHandler(args) {
 
 // src/data/mutations.ts
 var import_client2 = require("@prisma/client");
-var handleChannelCreate = createHandler({
+var handleChannelCreate = createPrecedure({
   membershipRoles: [import_client2.MembershipRole.ADMIN, import_client2.MembershipRole.OWNER],
   schema: import_zod.default.object({
     name: import_zod.default.string({ required_error: "Name is required" }).min(3, "Channel name is too short"),
@@ -146,7 +150,7 @@ var handleChannelCreate = createHandler({
 });
 
 // src/data/queries.ts
-var me = createHandler({
+var me = createPrecedure({
   handler: async (_, ctx) => {
     const user = await prisma.user.findFirst({
       where: { publicId: ctx.userId },
@@ -165,7 +169,7 @@ var me = createHandler({
     };
   }
 });
-var queryChanelList = createHandler({
+var queryChanelList = createPrecedure({
   handler: async () => {
     try {
       const channels = await prisma.channel.findMany({

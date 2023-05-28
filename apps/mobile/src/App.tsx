@@ -24,9 +24,14 @@ const http: HTTPHandler = async (params) => {
 };
 
 const Component = () => {
-  const { data } = useQuery("/channel/list");
+  const { data, error } = useQuery("/channel/list");
 
-  return <div>{JSON.stringify(data)}</div>;
+  return (
+    <div className="py-16">
+      <pre className="text-sm">{JSON.stringify(error, null, 2)}</pre>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
+  );
 };
 
 const App = () => {

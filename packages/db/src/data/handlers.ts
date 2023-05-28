@@ -10,20 +10,28 @@ import {
 
 type HandlerReturnSuccess<T> = { success: true; data: T };
 
-type HandlerReturn<T> = HandlerReturnSuccess<T> | HandlerReturnError;
+export type HandlerReturn<T> = HandlerReturnSuccess<T> | HandlerReturnError;
 
 type Handler<T, U> = (
   args: T,
   ctx: HandlerContext
 ) => Promise<HandlerReturn<U>>;
 
-export function createHandler<U, T extends ZodRawShape>(args: {
+export type Precedure<U, T extends ZodRawShape> = {
+  handler: (
+    args: z.infer<ZodObject<T>>,
+    ctx: HandlerContext
+  ) => Promise<HandlerReturn<U>>;
+  isPublic: boolean;
+};
+
+export function createPrecedure<U, T extends ZodRawShape>(args: {
   schema?: ZodObject<T>;
   handler: Handler<z.infer<typeof args.schema>, U>;
   membershipRoles?: MembershipRole[];
   globalRoles?: GlobalRole[];
   isPublic?: boolean;
-}) {
+}): Precedure<U, T> {
   const {
     handler,
     schema,
@@ -33,25 +41,29 @@ export function createHandler<U, T extends ZodRawShape>(args: {
   } = args;
   return {
     isPublic,
-    handler: (args: z.infer<typeof schema>, ctx: HandlerContext) => {
+    handler: (args, ctx) => {
+      let error: HandlerReturnError | null = null;
       if (membershipRoles && args.organisationId) {
         if (
           !membershipRoles.includes(ctx.membershipRoles[args.organisationId])
         ) {
-          return insufficientPermissionsError({ statusCode: 403 });
+          error = insufficientPermissionsError({ statusCode: 403 });
         }
       }
       if (globalRoles && !globalRoles.includes(ctx.globalRole)) {
-        return insufficientPermissionsError({ statusCode: 403 });
+        error = insufficientPermissionsError({ statusCode: 403 });
       }
       if (schema) {
         const { success, ...rest } = schema.safeParse(args);
         if (!success) {
-          return validationError({
+          error = validationError({
             payload: (rest as any)?.error,
             statusCode: 403,
           });
         }
+      }
+      if (error) {
+        return Promise.resolve(error);
       }
       return handler(args, ctx);
     },
