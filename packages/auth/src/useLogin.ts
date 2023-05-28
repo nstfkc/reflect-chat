@@ -8,7 +8,7 @@ import { useMe, SignedInUser } from "./useMe";
 import { HttpContext } from "shared";
 
 export function useSignIn() {
-  const { fetch } = useContext(HttpContext);
+  const { http } = useContext(HttpContext);
   const { authURL } = useContext(AuthContext);
   const { mutate } = useMe(authURL);
   const { trigger } = useSWRMutation(
@@ -17,12 +17,12 @@ export function useSignIn() {
       url: string,
       { arg }: { arg: { email: string; password: string } }
     ) => {
-      return await fetch(url, {
+      const { data } = await http({
+        url,
         method: "POST",
-        body: JSON.stringify(arg),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }).then((res) => res.json() as unknown as SignedInUser);
+        data: arg,
+      });
+      return data as SignedInUser;
     }
   );
   return (...params: Parameters<typeof trigger>) => {
@@ -32,24 +32,24 @@ export function useSignIn() {
   };
 }
 
-interface SignUpArgs {
+interface SignUpArgs extends Record<string, string> {
   email: string;
   password: string;
   name: string;
 }
 
 export function useSignUp() {
-  const { fetch } = useContext(HttpContext);
+  const { http } = useContext(HttpContext);
   const { authURL } = useContext(AuthContext);
   return useSWRMutation(
     `${authURL}/sign-up`,
     async (url: string, { arg }: { arg: SignUpArgs }) => {
-      return await fetch(url, {
+      const { data } = await http({
+        url,
         method: "POST",
-        body: JSON.stringify(arg),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }).then((res) => res.json() as unknown as Pick<User, "name" | "email">);
+        data: arg,
+      });
+      return data as Pick<User, "name" | "email">;
     }
   );
 }

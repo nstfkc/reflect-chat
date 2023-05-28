@@ -11,11 +11,9 @@ export interface SignedInUser extends User {
 }
 
 export function useMe(authURL: string) {
-  const { fetch } = useContext(HttpContext);
+  const { http } = useContext(HttpContext);
   const fetchMe = async (url: string): Promise<SignedInUser> => {
-    const { data } = await fetch(url, { credentials: "include" }).then((res) =>
-      res.json()
-    );
+    const { data } = await http({ url });
     return data;
   };
   return useSWR(`${authURL}/me`, fetchMe);
