@@ -23,6 +23,7 @@ const http = async (params: HttpParams) => {
     data: _data,
     res: {
       ok: res.ok,
+      status: res.status,
     },
   };
 };

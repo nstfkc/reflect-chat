@@ -165,13 +165,31 @@ var me = createHandler({
     };
   }
 });
+var queryChanelList = createHandler({
+  handler: async () => {
+    try {
+      const channels = await prisma.channel.findMany({
+        where: {
+          kind: "PUBLIC"
+        }
+      });
+      return {
+        success: true,
+        data: channels
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  }
+});
 
 // src/data/endpoints.ts
 var mutations = {
   "/channel/create": handleChannelCreate
 };
 var queries = {
-  "/auth/me": me
+  "/auth/me": me,
+  "/channel/list": queryChanelList
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

@@ -1,6 +1,6 @@
 import { CapacitorHttp } from "@capacitor/core";
 import { AuthProvider } from "auth";
-import { HttpProvider, HTTPHandler } from "shared";
+import { HttpProvider, HTTPHandler, useQuery, ConfigProvider } from "shared";
 
 const http: HTTPHandler = async (params) => {
   const { url, data, headers, method } = params;
@@ -18,15 +18,29 @@ const http: HTTPHandler = async (params) => {
     data: res.data,
     res: {
       ok,
+      status: res.status,
     },
   };
 };
 
+const Component = () => {
+  const { data } = useQuery("/channel/list");
+
+  return <div>{JSON.stringify(data)}</div>;
+};
+
 const App = () => {
   return (
-    <HttpProvider http={http}>
-      <AuthProvider authURL="http://0.0.0.0:8080/auth">HI</AuthProvider>
-    </HttpProvider>
+    <ConfigProvider
+      apiUrl={import.meta.env.VITE_API_HOST}
+      assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
+    >
+      <HttpProvider http={http}>
+        <AuthProvider authURL="http://0.0.0.0:8080/auth">
+          <Component />
+        </AuthProvider>
+      </HttpProvider>
+    </ConfigProvider>
   );
 };
 

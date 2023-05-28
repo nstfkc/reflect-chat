@@ -1,4 +1,5 @@
 import { prisma } from "../db";
+import { prismaError } from "./error";
 import { createHandler } from "./handlers";
 
 export const me = createHandler({
@@ -18,5 +19,23 @@ export const me = createHandler({
       success: true,
       data: user,
     };
+  },
+});
+
+export const queryChanelList = createHandler({
+  handler: async () => {
+    try {
+      const channels = await prisma.channel.findMany({
+        where: {
+          kind: "PUBLIC",
+        },
+      });
+      return {
+        success: true,
+        data: channels,
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
   },
 });
