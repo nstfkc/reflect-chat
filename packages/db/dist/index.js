@@ -148,6 +148,24 @@ var handleChannelCreate = createPrecedure({
     }
   }
 });
+var handleOrganisationCreate = createPrecedure({
+  schema: import_zod.default.object({ name: import_zod.default.string() }),
+  handler: async (args, ctx) => {
+    try {
+      const org = await prisma.organisation.create({
+        data: {
+          name: args.name
+        }
+      });
+      return {
+        data: org,
+        success: true
+      };
+    } catch (err) {
+      return prismaError({ payload: err, statusCode: 400 });
+    }
+  }
+});
 
 // src/data/queries.ts
 var me = createPrecedure({
@@ -189,7 +207,8 @@ var queryChanelList = createPrecedure({
 
 // src/data/endpoints.ts
 var mutations = {
-  "/channel/create": handleChannelCreate
+  "/channel/create": handleChannelCreate,
+  "/organisation/create": handleOrganisationCreate
 };
 var queries = {
   "/auth/me": me,

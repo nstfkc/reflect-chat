@@ -32,3 +32,22 @@ export const handleChannelCreate = createPrecedure({
     }
   },
 });
+
+export const handleOrganisationCreate = createPrecedure({
+  schema: z.object({ name: z.string() }),
+  handler: async (args, ctx) => {
+    try {
+      const org = await prisma.organisation.create({
+        data: {
+          name: args.name,
+        },
+      });
+      return {
+        data: org,
+        success: true,
+      };
+    } catch (err) {
+      return prismaError({ payload: err, statusCode: 400 });
+    }
+  },
+});

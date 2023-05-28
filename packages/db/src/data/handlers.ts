@@ -25,6 +25,13 @@ export type Precedure<U, T extends ZodRawShape> = {
   isPublic: boolean;
 };
 
+export type InferPrecedureData<T> = T extends Precedure<infer R, any>
+  ? R
+  : never;
+export type InferPrecedureArgs<T> = T extends Precedure<any, infer R>
+  ? z.infer<ZodObject<R>>
+  : never;
+
 export function createPrecedure<U, T extends ZodRawShape>(args: {
   schema?: ZodObject<T>;
   handler: Handler<z.infer<typeof args.schema>, U>;

@@ -1,6 +1,12 @@
-import useSWRMutation from "swr/mutation";
+import useSWRMutation, { SWRMutationResponse } from "swr/mutation";
 import { useContext } from "react";
-import type { Mutations } from "db";
+import type {
+  GenericError,
+  Mutations,
+  InferPrecedureData,
+  HandlerReturn,
+  InferPrecedureArgs,
+} from "db";
 
 import { ConfigContext } from "../components/context/ConfigContext";
 import { HttpContext } from "../components/context/HttpContext";
@@ -27,12 +33,21 @@ export function useMutation<T extends keyof Mutations>(key: T) {
     });
     if (!res.ok) {
       const error = new Error("An error occurred while fetching the data.");
-      (error as any).info = data;
-      (error as any).status = res.status;
+      (error as any).info = data.error;
       throw error;
     }
-    return data.data as UnwrapPromise<ReturnType<Mutations[T]["handler"]>>;
+    const _data = data as UnwrapPromise<ReturnType<Mutations[T]["handler"]>>;
+    if (_data.success === false) {
+      const error = new Error("An error occurred while fetching the data.");
+      (error as any).info = _data.error;
+      throw error;
+    }
+    return _data;
   };
 
-  return useSWRMutation(endpoint, fetcher);
+  return useSWRMutation(endpoint, fetcher) as unknown as SWRMutationResponse<
+    HandlerReturn<InferPrecedureData<Mutations[T]>>,
+    { info: GenericError } | undefined,
+    InferPrecedureArgs<Mutations[T]>
+  >;
 }

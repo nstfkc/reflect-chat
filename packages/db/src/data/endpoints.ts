@@ -3,6 +3,7 @@ import * as q from "./queries";
 
 export const mutations = {
   "/channel/create": m.handleChannelCreate,
+  "/organisation/create": m.handleOrganisationCreate,
 };
 
 export const queries = {
