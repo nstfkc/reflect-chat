@@ -7,7 +7,6 @@
   "main": "./dist/main.js",
   "scripts": {
     "dev": "tsup src --watch --onSuccess \"electron dist/main.js\"",
-    "postinstall": "electron-builder install-app-deps",
     "build": "electron-builder --mac",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
