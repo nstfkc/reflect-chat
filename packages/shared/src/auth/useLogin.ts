@@ -3,29 +3,18 @@
 import { useContext } from "react";
 import useSWRMutation from "swr/mutation";
 import { AuthContext } from "./Context";
-import { User } from "db";
-import { useMe, SignedInUser } from "./useMe";
+import { Organisation, User } from "db";
 import { HttpContext } from "../components/context/HttpContext";
+import { useQuery } from "../utils/useQuery";
+import { useMutation } from "../utils/useMutation";
 
 export function useSignIn() {
-  const { http } = useContext(HttpContext);
-  const { authURL } = useContext(AuthContext);
-  const { mutate } = useMe(authURL);
-  return useSWRMutation(
-    `${authURL}/sign-in`,
-    async (
-      url: string,
-      { arg }: { arg: { email: string; password: string } }
-    ) => {
-      const { data } = await http({
-        url,
-        method: "POST",
-        data: arg,
-      });
-      await mutate(data);
-      return data as SignedInUser;
-    }
-  );
+  const { mutate } = useQuery("me");
+  return useMutation("signIn", {
+    onSuccess: (user) => {
+      mutate(user as any);
+    },
+  });
 }
 
 interface SignUpArgs extends Record<string, string> {
@@ -51,8 +40,7 @@ export function useSignUp() {
 }
 
 export function useUser() {
-  const { authURL } = useContext(AuthContext);
-  const { data, isLoading, error } = useMe(authURL);
+  const { data, isLoading, error } = useQuery("me");
   return {
     user: data,
     isLoading,
@@ -61,35 +49,44 @@ export function useUser() {
 }
 
 export function useSignOut() {
-  const { http } = useContext(HttpContext);
-  const { authURL } = useContext(AuthContext);
-  const { mutate } = useMe(authURL);
-
-  return useSWRMutation(`${authURL}/sign-out`, async (url: string) => {
-    await http({
-      url,
-    }).then(() => {
+  const { mutate } = useQuery("me");
+  return useMutation("signOut", {
+    onSuccess: () => {
       mutate(null);
-    });
+    },
   });
 }
 
-export function useOrganisation() {}
+export function useOrganisation() {
+  const { user, isLoading: userIsLoading } = useUser();
+  const { data, isLoading: organisationIdIsLoading } = useQuery(
+    "getCurrentOrganisationId"
+  );
+  let organisation: Organisation | null = null;
+  if (data && user) {
+    organisation = user.memberships
+      .map((m) => {
+        return m.organisation;
+      })
+      .find((org) => {
+        if (org.publicId === data.currentOrganisationId) {
+          return org;
+        }
+      });
+  }
+
+  return {
+    organisation,
+    isLoading: userIsLoading || organisationIdIsLoading,
+  };
+}
 
 export function useSwitchOrganisation() {
-  const { http } = useContext(HttpContext);
-  const { authURL } = useContext(AuthContext);
-  const { mutate } = useMe(authURL);
+  const { mutate } = useQuery("getCurrentOrganisationId");
 
-  return useSWRMutation(
-    `${authURL}/switch-organisation`,
-    async (url: string, { arg }: { arg: { organisationId: string } }) => {
-      await http({
-        url,
-        data: arg,
-      }).then(() => {
-        mutate(null);
-      });
-    }
-  );
+  return useMutation("setCurrentOrganisationId", {
+    onSuccess: ({ currentOrganisationId }) => {
+      mutate({ currentOrganisationId });
+    },
+  });
 }

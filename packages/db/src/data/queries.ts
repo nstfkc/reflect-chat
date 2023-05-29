@@ -22,7 +22,7 @@ export const me = createPrecedure({
   },
 });
 
-export const queryChanelList = createPrecedure({
+export const listChannels = createPrecedure({
   handler: async () => {
     try {
       const channels = await prisma.channel.findMany({
@@ -38,5 +38,18 @@ export const queryChanelList = createPrecedure({
     } catch (error) {
       return prismaError({ payload: error, statusCode: 400 });
     }
+  },
+});
+
+export const getCurrentOrganisationId = createPrecedure({
+  handler: async (_, ctx) => {
+    const { currentOrganisationId } = ctx;
+    console.log("currentOrganisationId SERVER", { currentOrganisationId });
+    return {
+      success: true,
+      data: {
+        currentOrganisationId,
+      },
+    };
   },
 });

@@ -3,6 +3,10 @@ import { AuthProvider, SignedIn, SignedOut, useUser, useSignOut } from "shared";
 import { HttpProvider, HTTPHandler, ConfigProvider, SignInForm } from "shared";
 import { SafeAreaProvider } from "./components/SafeAreaViewContext";
 import { SafeAreaView } from "./components/SafeAreaView";
+import {
+  useOrganisation,
+  useSwitchOrganisation,
+} from "shared/src/auth/useLogin";
 
 const http: HTTPHandler = async (params) => {
   const { url, data, headers, method } = params;
@@ -30,12 +34,29 @@ const http: HTTPHandler = async (params) => {
 
 const Component = () => {
   const { user } = useUser();
+  const { organisation } = useOrganisation();
+  const { trigger } = useSwitchOrganisation();
 
+  console.log("ORG", { organisation });
   if (user) {
     return (
       <div>
         {user.memberships.map((m) => {
-          return <div key={m.organisationId}>{m.organisation.name}</div>;
+          return (
+            <div>
+              <button
+                key={m.organisationId}
+                onClick={() =>
+                  trigger({ organisationId: m.organisation.publicId })
+                }
+              >
+                {m.organisation.name}{" "}
+                {organisation?.publicId === m.organisation.publicId
+                  ? "Active"
+                  : ""}
+              </button>
+            </div>
+          );
         })}
       </div>
     );
@@ -48,7 +69,12 @@ const SignOutButton = () => {
   const { trigger } = useSignOut();
 
   return (
-    <button className="bg-black text-white" onClick={trigger}>
+    <button
+      className="bg-black text-white"
+      onClick={() => {
+        trigger({});
+      }}
+    >
       Sign out
     </button>
   );

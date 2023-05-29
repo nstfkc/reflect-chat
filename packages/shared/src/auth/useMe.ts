@@ -16,7 +16,6 @@ export function useMe(authURL: string) {
     const { data, res } = await http({ url });
     if (res.ok) {
       return data.data;
-      console.log({ data: data.data });
     }
     return null;
   };

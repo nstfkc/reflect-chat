@@ -13,11 +13,18 @@ import { HttpContext } from "../components/context/HttpContext";
 
 type UnwrapPromise<T> = T extends Promise<infer R> ? R : never;
 
-export function useMutation<T extends keyof Mutations>(key: T) {
+type Config<T extends keyof Mutations> = {
+  onSuccess: (data: InferPrecedureData<Mutations[T]>) => void;
+};
+
+export function useMutation<T extends keyof Mutations>(
+  key: T,
+  config?: Config<T>
+) {
   const { apiUrl } = useContext(ConfigContext);
   const { http } = useContext(HttpContext);
 
-  const endpoint = `${apiUrl}${key}`;
+  const endpoint = `${apiUrl}/${key}`;
 
   const fetcher = async (
     url: string,
@@ -28,7 +35,8 @@ export function useMutation<T extends keyof Mutations>(key: T) {
     }
   ) => {
     const { data, res } = await http({
-      url: `${apiUrl}${url}`,
+      method: "POST",
+      url,
       data: arg,
     });
     if (!res.ok) {
@@ -42,6 +50,10 @@ export function useMutation<T extends keyof Mutations>(key: T) {
       (error as any).info = _data.error;
       throw error;
     }
+
+    // TODO: fix type, prio low
+    config?.onSuccess(_data.data as any);
+
     return _data;
   };
 

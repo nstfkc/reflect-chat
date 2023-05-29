@@ -1,6 +1,7 @@
 "use client";
 import { PropsWithChildren, ReactNode, createContext, useContext } from "react";
-import { useMe, SignedInUser } from "./useMe";
+import { SignedInUser } from "./useMe";
+import { useQuery } from "../utils/useQuery";
 
 interface AuthContextValue {
   user: SignedInUser;
@@ -17,14 +18,14 @@ interface AuthProviderProps {
 
 export const AuthProvider = (props: AuthProviderProps) => {
   const { children, authURL } = props;
-  const { data, isLoading } = useMe(authURL);
+  const { data, isLoading, error } = useQuery("me");
 
   return (
     <AuthContext.Provider
       value={{
         authURL,
         isUserLoading: isLoading,
-        user: data,
+        user: data as any,
       }}
     >
       {children}
@@ -38,13 +39,11 @@ export const SignedIn = (props: PropsWithChildren) => {
   if (user && !isUserLoading) {
     return <>{props.children}</>;
   }
-  console.log({ fucker: user });
   return null;
 };
 
 export const SignedOut = (props: PropsWithChildren) => {
   const { isUserLoading, user } = useContext(AuthContext);
-  console.log({ user });
 
   if (!user && !isUserLoading) {
     return <>{props.children}</>;

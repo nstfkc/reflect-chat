@@ -51,7 +51,76 @@ if (process.env.NODE_ENV !== "production") {
 __reExport(src_exports, require("@prisma/client"), module.exports);
 
 // src/data/mutations.ts
+var mutations_exports = {};
+__export(mutations_exports, {
+  createChannel: () => createChannel,
+  createOrganisation: () => createOrganisation,
+  setCurrentOrganisationId: () => setCurrentOrganisationId,
+  signIn: () => signIn,
+  signOut: () => signOut
+});
 var import_zod = __toESM(require("zod"));
+
+// ../../node_modules/@babel/runtime/helpers/esm/typeof.js
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && "function" == typeof Symbol && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof(obj);
+}
+
+// ../../node_modules/date-fns/esm/_lib/toInteger/index.js
+function toInteger(dirtyNumber) {
+  if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
+    return NaN;
+  }
+  var number = Number(dirtyNumber);
+  if (isNaN(number)) {
+    return number;
+  }
+  return number < 0 ? Math.ceil(number) : Math.floor(number);
+}
+
+// ../../node_modules/date-fns/esm/_lib/requiredArgs/index.js
+function requiredArgs(required, args) {
+  if (args.length < required) {
+    throw new TypeError(required + " argument" + (required > 1 ? "s" : "") + " required, but only " + args.length + " present");
+  }
+}
+
+// ../../node_modules/date-fns/esm/toDate/index.js
+function toDate(argument) {
+  requiredArgs(1, arguments);
+  var argStr = Object.prototype.toString.call(argument);
+  if (argument instanceof Date || _typeof(argument) === "object" && argStr === "[object Date]") {
+    return new Date(argument.getTime());
+  } else if (typeof argument === "number" || argStr === "[object Number]") {
+    return new Date(argument);
+  } else {
+    if ((typeof argument === "string" || argStr === "[object String]") && typeof console !== "undefined") {
+      console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#string-arguments");
+      console.warn(new Error().stack);
+    }
+    return /* @__PURE__ */ new Date(NaN);
+  }
+}
+
+// ../../node_modules/date-fns/esm/addDays/index.js
+function addDays(dirtyDate, dirtyAmount) {
+  requiredArgs(2, arguments);
+  var date = toDate(dirtyDate);
+  var amount = toInteger(dirtyAmount);
+  if (isNaN(amount)) {
+    return /* @__PURE__ */ new Date(NaN);
+  }
+  if (!amount) {
+    return date;
+  }
+  date.setDate(date.getDate() + amount);
+  return date;
+}
 
 // src/data/error.ts
 var ERROR_CODES = {
@@ -123,7 +192,7 @@ function createPrecedure(args) {
 
 // src/data/mutations.ts
 var import_client2 = require("@prisma/client");
-var handleChannelCreate = createPrecedure({
+var createChannel = createPrecedure({
   membershipRoles: [import_client2.MembershipRole.ADMIN, import_client2.MembershipRole.OWNER],
   schema: import_zod.default.object({
     name: import_zod.default.string({ required_error: "Name is required" }).min(3, "Channel name is too short"),
@@ -148,7 +217,7 @@ var handleChannelCreate = createPrecedure({
     }
   }
 });
-var handleOrganisationCreate = createPrecedure({
+var createOrganisation = createPrecedure({
   schema: import_zod.default.object({ name: import_zod.default.string() }),
   handler: async (args, ctx) => {
     try {
@@ -166,8 +235,93 @@ var handleOrganisationCreate = createPrecedure({
     }
   }
 });
+var signIn = createPrecedure({
+  isPublic: true,
+  schema: import_zod.default.object({ email: import_zod.default.string(), password: import_zod.default.string() }),
+  handler: async (args, ctx) => {
+    const { email, password } = args;
+    const { helpers } = ctx;
+    try {
+      const user = await prisma.user.findFirst({
+        where: { email },
+        include: {
+          userProfile: true,
+          memberships: {
+            include: {
+              organisation: true
+            }
+          }
+        }
+      });
+      if (user) {
+        const passwordMatches = await helpers.verifyPassword(
+          password,
+          user.password
+        );
+        if (passwordMatches) {
+          const token = helpers.jwtSign({
+            userId: user.publicId,
+            globalRole: user.role,
+            membershipRoles: Object.fromEntries(
+              user.memberships.map((membership) => [
+                membership.organisation.publicId,
+                membership.role
+              ])
+            )
+          });
+          const now = Date.now();
+          helpers.setHeader("Access-Control-Allow-Credentials", "true");
+          helpers.setCookie("Authorization", `Bearer ${token}`, {
+            expires: addDays(now, 1),
+            path: "/",
+            httpOnly: true,
+            sameSite: true
+          });
+          const { password: _, ...data } = user;
+          return data;
+        }
+      } else {
+        return {};
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+});
+var signOut = createPrecedure({
+  handler: async (_, ctx) => {
+    ctx.helpers.deleteCookie("Authorization");
+    return {
+      success: true,
+      data: {}
+    };
+  }
+});
+var setCurrentOrganisationId = createPrecedure({
+  schema: import_zod.default.object({ organisationId: import_zod.default.string() }),
+  handler: async (args, ctx) => {
+    const { helpers } = ctx;
+    helpers.setCookie("X-Organisation-Id", args.organisationId, {
+      path: "/",
+      httpOnly: true,
+      sameSite: true
+    });
+    return {
+      success: true,
+      data: {
+        currentOrganisationId: args.organisationId
+      }
+    };
+  }
+});
 
 // src/data/queries.ts
+var queries_exports = {};
+__export(queries_exports, {
+  getCurrentOrganisationId: () => getCurrentOrganisationId,
+  listChannels: () => listChannels,
+  me: () => me
+});
 var me = createPrecedure({
   handler: async (_, ctx) => {
     const user = await prisma.user.findFirst({
@@ -187,7 +341,7 @@ var me = createPrecedure({
     };
   }
 });
-var queryChanelList = createPrecedure({
+var listChannels = createPrecedure({
   handler: async () => {
     try {
       const channels = await prisma.channel.findMany({
@@ -204,16 +358,22 @@ var queryChanelList = createPrecedure({
     }
   }
 });
+var getCurrentOrganisationId = createPrecedure({
+  handler: async (_, ctx) => {
+    const { currentOrganisationId } = ctx;
+    console.log("currentOrganisationId SERVER", { currentOrganisationId });
+    return {
+      success: true,
+      data: {
+        currentOrganisationId
+      }
+    };
+  }
+});
 
 // src/data/endpoints.ts
-var mutations = {
-  createChannel: handleChannelCreate,
-  createOrganisation: handleOrganisationCreate
-};
-var queries = {
-  "/auth/me": me,
-  listChannels: queryChanelList
-};
+var mutations = mutations_exports;
+var queries = queries_exports;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   mutations,

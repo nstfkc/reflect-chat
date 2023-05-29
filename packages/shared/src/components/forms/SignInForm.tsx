@@ -21,10 +21,7 @@ export const SignInForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="">Email</label>
-          <input
-            defaultValue="enesxtufekci+2@gmail.com"
-            {...register("email")}
-          />
+          <input defaultValue="enesxtufekci@gmail.com" {...register("email")} />
         </div>
         <div>
           <label htmlFor="">Password</label>

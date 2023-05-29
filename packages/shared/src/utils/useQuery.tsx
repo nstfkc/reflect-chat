@@ -1,11 +1,9 @@
 import useSWR, { SWRResponse } from "swr";
 
-import { Queries, HandlerReturn, GenericError, Precedure } from "db";
+import { Queries, HandlerReturn, GenericError, InferPrecedureData } from "db";
 import { useContext } from "react";
 import { HttpContext } from "../components/context/HttpContext";
 import { ConfigContext } from "../components/context/ConfigContext";
-
-type InferPrecedureData<T> = T extends Precedure<infer R, any> ? R : never;
 
 export function useQuery<T extends keyof Queries>(key: T) {
   const { apiUrl } = useContext(ConfigContext);

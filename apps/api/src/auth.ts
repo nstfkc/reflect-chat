@@ -6,7 +6,7 @@ import { randomBytes, scrypt } from "crypto";
 import { Server } from "./server";
 import { prisma, Prisma } from "db";
 
-async function hash(password: string): Promise<string> {
+export async function hashPassword(password: string): Promise<string> {
   return new Promise((resolve, reject) => {
     // generate random 16 bytes long salt
     const salt = randomBytes(16).toString("hex");
@@ -18,7 +18,7 @@ async function hash(password: string): Promise<string> {
   });
 }
 
-async function verifyPassword(
+export async function verifyPassword(
   password: string,
   hash: string
 ): Promise<boolean> {
@@ -93,7 +93,7 @@ export function auth(server: Server) {
 
     try {
       const { password: passwordRaw, email, name } = data;
-      const password = await hash(passwordRaw);
+      const password = await hashPassword(passwordRaw);
 
       const user = await prisma.user.create({
         data: {
@@ -164,7 +164,7 @@ export function auth(server: Server) {
       }
       done();
     },
-    url: "auth/get-organisation",
+    url: "/auth/get-organisation",
     handler: async (req) => {
       try {
         const organisationId = req.cookies["X-Organisation-Id"];

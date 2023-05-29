@@ -1,10 +1,12 @@
 import z from "zod";
+import { addDays } from "date-fns";
+
 import { createPrecedure } from "./handlers";
 import { ChannelKind, MembershipRole } from "@prisma/client";
 import { prisma } from "../db";
 import { prismaError } from "./error";
 
-export const handleChannelCreate = createPrecedure({
+export const createChannel = createPrecedure({
   membershipRoles: [MembershipRole.ADMIN, MembershipRole.OWNER],
   schema: z.object({
     name: z
@@ -33,7 +35,7 @@ export const handleChannelCreate = createPrecedure({
   },
 });
 
-export const handleOrganisationCreate = createPrecedure({
+export const createOrganisation = createPrecedure({
   schema: z.object({ name: z.string() }),
   handler: async (args, ctx) => {
     try {
@@ -49,5 +51,92 @@ export const handleOrganisationCreate = createPrecedure({
     } catch (err) {
       return prismaError({ payload: err, statusCode: 400 });
     }
+  },
+});
+
+export const signIn = createPrecedure({
+  isPublic: true,
+  schema: z.object({ email: z.string(), password: z.string() }),
+  handler: async (args, ctx) => {
+    const { email, password } = args;
+    const { helpers } = ctx;
+
+    try {
+      const user = await prisma.user.findFirst({
+        where: { email },
+        include: {
+          userProfile: true,
+          memberships: {
+            include: {
+              organisation: true,
+            },
+          },
+        },
+      });
+      if (user) {
+        const passwordMatches = await helpers.verifyPassword(
+          password,
+          user.password
+        );
+
+        if (passwordMatches) {
+          const token = helpers.jwtSign({
+            userId: user.publicId,
+            globalRole: user.role,
+            membershipRoles: Object.fromEntries(
+              user.memberships.map((membership) => [
+                membership.organisation.publicId,
+                membership.role,
+              ])
+            ),
+          });
+          const now = Date.now();
+
+          helpers.setHeader("Access-Control-Allow-Credentials", "true");
+          helpers.setCookie("Authorization", `Bearer ${token}`, {
+            expires: addDays(now, 1),
+            path: "/",
+            httpOnly: true,
+            sameSite: true,
+          });
+          const { password: _, ...data } = user;
+          return data;
+        }
+      } else {
+        // helpers.setStatusCode(401);
+        return {};
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+});
+
+export const signOut = createPrecedure({
+  handler: async (_, ctx) => {
+    ctx.helpers.deleteCookie("Authorization");
+    return {
+      success: true,
+      data: {},
+    };
+  },
+});
+
+export const setCurrentOrganisationId = createPrecedure({
+  schema: z.object({ organisationId: z.string() }),
+  handler: async (args, ctx) => {
+    const { helpers } = ctx;
+
+    helpers.setCookie("X-Organisation-Id", args.organisationId, {
+      path: "/",
+      httpOnly: true,
+      sameSite: true,
+    });
+    return {
+      success: true,
+      data: {
+        currentOrganisationId: args.organisationId,
+      },
+    };
   },
 });

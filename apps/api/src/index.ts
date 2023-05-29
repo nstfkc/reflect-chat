@@ -1,9 +1,10 @@
+import * as jwt from "jsonwebtoken";
 import { prisma, mutations, queries } from "db";
 import { sockets } from "./socket";
 
 import server from "./server";
 
-import { auth } from "./auth";
+import { auth, verifyPassword, hashPassword } from "./auth";
 
 server.register((server, opts, done) => {
   auth(server as any);
@@ -15,19 +16,37 @@ Object.entries(mutations).map(([url, config]) => {
     preHandler: (req, res, done) => {
       if (config.isPublic) {
         done();
+      } else {
+        const { userId } = req.requestContext.get("context");
+        if (userId === "system") {
+          res.statusCode = 401;
+          done(Error("Authentication error"));
+        }
+        done();
       }
-      const { userId } = req.requestContext.get("context");
-      if (userId === "system") {
-        res.statusCode = 401;
-        done(Error("Authentication error"));
-      }
-      done();
     },
     method: ["POST", "HEAD"],
     url: `/${url}`.replace("//", "/"),
     handler: async (req, rep) => {
       const res = await config.handler(req.body, {
         ...req.requestContext.get("context"),
+        helpers: {
+          deleteCookie: (name) => {
+            rep.clearCookie(name);
+          },
+          setCookie: (name, value, options) => {
+            rep.setCookie(name, value, options);
+          },
+          jwtSign: (payload) => jwt.sign(payload, process.env.SECRET),
+          setHeader: (name, value) => {
+            rep.header(name, value);
+          },
+          setStatusCode: (code) => {
+            rep.statusCode = code;
+          },
+          verifyPassword: verifyPassword,
+          hashPassword: hashPassword,
+        },
       });
       if (res.success === false) {
         rep.statusCode = res.error.statusCode;

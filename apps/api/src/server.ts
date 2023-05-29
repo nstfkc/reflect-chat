@@ -34,6 +34,11 @@ server.register(fastifyRequestContext, {
 
 server.addHook("onRequest", (req, _rep, done) => {
   let token: null | string = null;
+  let currentOrganisationId: null | string = null;
+
+  if (req.cookies["X-Organisation-Id"]) {
+    currentOrganisationId = String(req.cookies["X-Organisation-Id"]);
+  }
 
   if (req.headers.authorization) {
     token = req.headers.authorization.replace("Bearer%20", "");
@@ -42,8 +47,8 @@ server.addHook("onRequest", (req, _rep, done) => {
     token = req.cookies["Authorization"].replace("Bearer", "").trim();
   }
   if (token) {
-    const decoded = decode(token);
-    req.requestContext.set("context", decoded);
+    const decoded = decode(token) as Record<string, string>;
+    req.requestContext.set("context", { ...decoded, currentOrganisationId });
   }
   done();
 });

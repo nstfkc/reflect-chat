@@ -3,6 +3,10 @@ lockfileVersion: '6.0'
 importers:
 
   .:
+    dependencies:
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
     devDependencies:
       dotenv-cli:
         specifier: ^7.2.1
