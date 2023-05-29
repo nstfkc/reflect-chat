@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 import { addDays } from "date-fns";
 import { random } from "uniqolor";
 
