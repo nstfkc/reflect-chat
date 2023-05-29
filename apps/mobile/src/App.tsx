@@ -1,6 +1,8 @@
 import { CapacitorHttp } from "@capacitor/core";
-import { AuthProvider } from "auth";
-import { HttpProvider, HTTPHandler, useQuery, ConfigProvider } from "shared";
+import { AuthProvider, SignedIn, SignedOut, useUser, useSignOut } from "shared";
+import { HttpProvider, HTTPHandler, ConfigProvider, SignInForm } from "shared";
+import { SafeAreaProvider } from "./components/SafeAreaViewContext";
+import { SafeAreaView } from "./components/SafeAreaView";
 
 const http: HTTPHandler = async (params) => {
   const { url, data, headers, method } = params;
@@ -8,7 +10,10 @@ const http: HTTPHandler = async (params) => {
     url,
     method,
     data,
-    headers,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
   });
 
   const status = String(res.status);
@@ -24,28 +29,53 @@ const http: HTTPHandler = async (params) => {
 };
 
 const Component = () => {
-  const { data, error } = useQuery("listChannels");
+  const { user } = useUser();
+
+  if (user) {
+    return (
+      <div>
+        {user.memberships.map((m) => {
+          return <div key={m.organisationId}>{m.organisation.name}</div>;
+        })}
+      </div>
+    );
+  }
+
+  return <div>Loading...</div>;
+};
+
+const SignOutButton = () => {
+  const { trigger } = useSignOut();
 
   return (
-    <div className="py-16">
-      <pre className="text-sm">{JSON.stringify(error, null, 2)}</pre>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
+    <button className="bg-black text-white" onClick={trigger}>
+      Sign out
+    </button>
   );
 };
 
 const App = () => {
   return (
-    <ConfigProvider
-      apiUrl={import.meta.env.VITE_API_HOST}
-      assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
-    >
-      <HttpProvider http={http}>
-        <AuthProvider authURL="http://0.0.0.0:8080/auth">
-          <Component />
-        </AuthProvider>
-      </HttpProvider>
-    </ConfigProvider>
+    <SafeAreaProvider>
+      <ConfigProvider
+        apiUrl={import.meta.env.VITE_API_HOST}
+        assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
+      >
+        <HttpProvider http={http}>
+          <AuthProvider authURL="http://0.0.0.0:8080/auth">
+            <SafeAreaView>
+              <SignedIn>
+                <Component />
+                <SignOutButton />
+              </SignedIn>
+              <SignedOut>
+                <SignInForm />
+              </SignedOut>
+            </SafeAreaView>
+          </AuthProvider>
+        </HttpProvider>
+      </ConfigProvider>
+    </SafeAreaProvider>
   );
 };
 

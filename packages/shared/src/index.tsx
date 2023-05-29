@@ -3,6 +3,8 @@
 export * from "./components/context/ConfigContext";
 export * from "./components/context/HttpContext";
 
+export { SignInForm } from "./components/forms";
+
 /* export * from "./components/context/MessageContext";
  * export * from "./components/context/SocketContext";
  * export * from "./components/context/UserContext";
@@ -13,3 +15,14 @@ export * from "./components/context/HttpContext";
  *  */
 
 export { useQuery } from "./utils/useQuery";
+
+export {
+  AuthProvider,
+  SignedIn,
+  SignedOut,
+  useSignIn,
+  useSignUp,
+  useSignOut,
+  useUser,
+} from "./auth";
+export type { SignedInUser } from "./auth";

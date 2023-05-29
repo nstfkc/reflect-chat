@@ -10,7 +10,7 @@ export const me = createPrecedure({
         userProfile: true,
         memberships: {
           include: {
-            organization: true,
+            organisation: true,
           },
         },
       },

@@ -38,11 +38,13 @@ export const SignedIn = (props: PropsWithChildren) => {
   if (user && !isUserLoading) {
     return <>{props.children}</>;
   }
+  console.log({ fucker: user });
   return null;
 };
 
 export const SignedOut = (props: PropsWithChildren) => {
   const { isUserLoading, user } = useContext(AuthContext);
+  console.log({ user });
 
   if (!user && !isUserLoading) {
     return <>{props.children}</>;

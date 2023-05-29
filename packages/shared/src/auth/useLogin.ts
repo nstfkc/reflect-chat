@@ -5,13 +5,13 @@ import useSWRMutation from "swr/mutation";
 import { AuthContext } from "./Context";
 import { User } from "db";
 import { useMe, SignedInUser } from "./useMe";
-import { HttpContext } from "shared";
+import { HttpContext } from "../components/context/HttpContext";
 
 export function useSignIn() {
   const { http } = useContext(HttpContext);
   const { authURL } = useContext(AuthContext);
   const { mutate } = useMe(authURL);
-  const { trigger } = useSWRMutation(
+  return useSWRMutation(
     `${authURL}/sign-in`,
     async (
       url: string,
@@ -22,14 +22,10 @@ export function useSignIn() {
         method: "POST",
         data: arg,
       });
+      await mutate(data);
       return data as SignedInUser;
     }
   );
-  return (...params: Parameters<typeof trigger>) => {
-    trigger(...params).then((value) => {
-      mutate(value);
-    });
-  };
 }
 
 interface SignUpArgs extends Record<string, string> {
@@ -62,4 +58,38 @@ export function useUser() {
     isLoading,
     error,
   };
+}
+
+export function useSignOut() {
+  const { http } = useContext(HttpContext);
+  const { authURL } = useContext(AuthContext);
+  const { mutate } = useMe(authURL);
+
+  return useSWRMutation(`${authURL}/sign-out`, async (url: string) => {
+    await http({
+      url,
+    }).then(() => {
+      mutate(null);
+    });
+  });
+}
+
+export function useOrganisation() {}
+
+export function useSwitchOrganisation() {
+  const { http } = useContext(HttpContext);
+  const { authURL } = useContext(AuthContext);
+  const { mutate } = useMe(authURL);
+
+  return useSWRMutation(
+    `${authURL}/switch-organisation`,
+    async (url: string, { arg }: { arg: { organisationId: string } }) => {
+      await http({
+        url,
+        data: arg,
+      }).then(() => {
+        mutate(null);
+      });
+    }
+  );
 }

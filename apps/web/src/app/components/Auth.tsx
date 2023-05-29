@@ -1,5 +1,5 @@
 "use client";
-import { SignedIn, SignedOut } from "auth";
+import { SignedIn, SignedOut } from "shared";
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 

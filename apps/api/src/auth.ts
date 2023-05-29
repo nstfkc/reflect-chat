@@ -38,11 +38,6 @@ export function auth(server: Server) {
       password: string;
     };
 
-    const includeCookiesInReply = request.requestContext.get(
-      "includeCookiesInReply"
-    );
-    console.log({ includeCookiesInReply });
-
     try {
       const user = await prisma.user.findFirst({
         where: { email },
@@ -50,7 +45,7 @@ export function auth(server: Server) {
           userProfile: true,
           memberships: {
             include: {
-              organization: true,
+              organisation: true,
             },
           },
         },
@@ -64,7 +59,7 @@ export function auth(server: Server) {
               globalRole: user.role,
               membershipRoles: Object.fromEntries(
                 user.memberships.map((membership) => [
-                  membership.organization.publicId,
+                  membership.organisation.publicId,
                   membership.role,
                 ])
               ),
@@ -74,7 +69,6 @@ export function auth(server: Server) {
           const now = Date.now();
 
           reply.header("Access-Control-Allow-Credentials", "true");
-          reply.setCookie("Hi", "SUP");
           reply.setCookie("Authorization", `Bearer ${token}`, {
             expires: addDays(now, 1),
             path: "/",
@@ -125,5 +119,77 @@ export function auth(server: Server) {
       console.log(error);
       return { error };
     }
+  });
+
+  server.route({
+    preHandler: (req, res, done) => {
+      const { userId } = req.requestContext.get("context");
+      if (userId === "system") {
+        res.statusCode = 401;
+        done(Error("Authentication error"));
+      }
+      done();
+    },
+    url: "/auth/switch-organisation",
+    method: "POST",
+    handler: (req, res) => {
+      const { membershipRoles } = req.requestContext.get("context");
+      const { organisationId } = req.body as unknown as any;
+
+      if (membershipRoles[organisationId]) {
+        res.setCookie("X-Organisation-Id", organisationId);
+        return {
+          success: true,
+          data: {
+            organisationId,
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          message: "You are not allowed to this organisation",
+        },
+      };
+    },
+  });
+
+  server.route({
+    method: "GET",
+    preHandler: (req, res, done) => {
+      const { userId } = req.requestContext.get("context");
+      if (userId === "system") {
+        res.statusCode = 401;
+        done(Error("Authentication error"));
+      }
+      done();
+    },
+    url: "auth/get-organisation",
+    handler: async (req) => {
+      try {
+        const organisationId = req.cookies["X-Organisation-Id"];
+        const organisation = await prisma.organisation.findFirst({
+          where: { publicId: organisationId },
+        });
+        return {
+          success: true,
+          data: {
+            organisation,
+          },
+        };
+      } catch (error) {
+        return {
+          success: false,
+          error,
+        };
+      }
+    },
+  });
+
+  server.get("/auth/sign-out", (_, reply) => {
+    reply.clearCookie("Authorization");
+    return {
+      success: true,
+    };
   });
 }

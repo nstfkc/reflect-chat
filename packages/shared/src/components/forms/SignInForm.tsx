@@ -1,18 +1,16 @@
-"use client";
 import { useForm } from "react-hook-form";
-import { useSignIn } from "shared";
+import { useSignIn } from "../../auth";
 
-const SignInPage = () => {
+export const SignInForm = () => {
   const {
     register,
-
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-  const signIn = useSignIn();
+  const { trigger, isMutating } = useSignIn();
   const onSubmit = () => {
-    signIn({
+    trigger({
       email: watch("email"),
       password: watch("password"),
     });
@@ -37,11 +35,11 @@ const SignInPage = () => {
           />
         </div>
         <div>
-          <button type="submit">submit</button>
+          <button className="bg-black text-white" type="submit">
+            submit {isMutating ? "..." : ""}
+          </button>
         </div>
       </form>
     </div>
   );
 };
-
-export default SignInPage;

@@ -1,4 +1,4 @@
-import { AuthProvider } from "auth";
+import { AuthProvider } from "shared";
 
 import "./globals.css";
 

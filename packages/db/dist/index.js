@@ -176,7 +176,7 @@ var me = createPrecedure({
         userProfile: true,
         memberships: {
           include: {
-            organization: true
+            organisation: true
           }
         }
       }
@@ -211,6 +211,7 @@ var mutations = {
   createOrganisation: handleOrganisationCreate
 };
 var queries = {
+  "/auth/me": me,
   listChannels: queryChanelList
 };
 // Annotate the CommonJS export names for ESM import in node:

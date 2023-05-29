@@ -32,15 +32,8 @@ server.register(fastifyRequestContext, {
   },
 });
 
-server.addHook("onRequest", (req, rep, done) => {
-  console.log("HEADERS", req.cookies["Authorization"]);
-
+server.addHook("onRequest", (req, _rep, done) => {
   let token: null | string = null;
-
-  console.log('req.headers["X-Device-Type"]', req.headers["X-Device-Type"]);
-  if (req.headers["X-Device-Type"] === "mobile") {
-    req.requestContext.set("includeCookiesInReply", true);
-  }
 
   if (req.headers.authorization) {
     token = req.headers.authorization.replace("Bearer%20", "");

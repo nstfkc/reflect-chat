@@ -7,6 +7,7 @@ export const mutations = {
 };
 
 export const queries = {
+  "/auth/me": q.me,
   listChannels: q.queryChanelList,
 };
 
