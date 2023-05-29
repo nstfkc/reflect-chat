@@ -13,11 +13,11 @@ export function useQuery<T extends keyof Queries>(key: T) {
 
   const fetcher = async (url: string) => {
     const { data, res } = await http({
-      url: `${apiUrl}${url}`,
+      url: `${apiUrl}/${url}`,
     });
     if (!res.ok) {
       const error = new Error("An error occurred while fetching the data.");
-      (error as any).info = data.error;
+      (error as any).info = typeof data.error === "string" ? data : data.error;
       throw error;
     }
     type Data = HandlerReturn<InferPrecedureData<Queries[T]>>;

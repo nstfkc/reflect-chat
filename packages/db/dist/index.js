@@ -207,12 +207,11 @@ var queryChanelList = createPrecedure({
 
 // src/data/endpoints.ts
 var mutations = {
-  "/channel/create": handleChannelCreate,
-  "/organisation/create": handleOrganisationCreate
+  createChannel: handleChannelCreate,
+  createOrganisation: handleOrganisationCreate
 };
 var queries = {
-  "/auth/me": me,
-  "/channel/list": queryChanelList
+  listChannels: queryChanelList
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

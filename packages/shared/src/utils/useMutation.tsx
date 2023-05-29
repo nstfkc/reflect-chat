@@ -33,7 +33,7 @@ export function useMutation<T extends keyof Mutations>(key: T) {
     });
     if (!res.ok) {
       const error = new Error("An error occurred while fetching the data.");
-      (error as any).info = data.error;
+      (error as any).info = typeof data.error === "string" ? data : data.error;
       throw error;
     }
     const _data = data as UnwrapPromise<ReturnType<Mutations[T]["handler"]>>;

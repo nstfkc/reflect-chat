@@ -24,7 +24,7 @@ const http: HTTPHandler = async (params) => {
 };
 
 const Component = () => {
-  const { data, error } = useQuery("/channel/list");
+  const { data, error } = useQuery("listChannels");
 
   return (
     <div className="py-16">

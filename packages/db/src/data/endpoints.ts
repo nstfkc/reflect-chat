@@ -2,13 +2,12 @@ import * as m from "./mutations";
 import * as q from "./queries";
 
 export const mutations = {
-  "/channel/create": m.handleChannelCreate,
-  "/organisation/create": m.handleOrganisationCreate,
+  createChannel: m.handleChannelCreate,
+  createOrganisation: m.handleOrganisationCreate,
 };
 
 export const queries = {
-  "/auth/me": q.me,
-  "/channel/list": q.queryChanelList,
+  listChannels: q.queryChanelList,
 };
 
 export type Queries = typeof queries;

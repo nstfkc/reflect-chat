@@ -24,7 +24,7 @@ Object.entries(mutations).map(([url, config]) => {
       done();
     },
     method: ["POST", "HEAD"],
-    url,
+    url: `/${url}`.replace("//", "/"),
     handler: async (req, rep) => {
       const res = await config.handler(req.body, {
         ...req.requestContext.get("context"),
@@ -53,7 +53,7 @@ Object.entries(queries).map(([url, config]) => {
       done();
     },
     method: ["GET", "HEAD"],
-    url,
+    url: `/${url}`.replace("//", "/"),
     handler: async (req, rep) => {
       const res = await config.handler(req.query, {
         ...req.requestContext.get("context"),
