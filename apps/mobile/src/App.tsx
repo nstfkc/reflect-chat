@@ -1,6 +1,13 @@
 import { Device } from "@capacitor/device";
 import { CapacitorHttp } from "@capacitor/core";
-import { AuthProvider, SignedIn, SignedOut, useUser, useSignOut } from "shared";
+import {
+  AuthProvider,
+  SignedIn,
+  SignedOut,
+  useUser,
+  useSignOut,
+  SignInScreen,
+} from "shared";
 import { HttpProvider, HTTPHandler, ConfigProvider, SignInForm } from "shared";
 import { SafeAreaProvider } from "./components/SafeAreaViewContext";
 import { SafeAreaView } from "./components/SafeAreaView";
@@ -107,7 +114,7 @@ const App = () => {
             </SignedIn>
             <SignedOut>
               <SafeAreaView>
-                <SignInForm />
+                <SignInScreen />
               </SafeAreaView>
             </SignedOut>
           </AuthProvider>

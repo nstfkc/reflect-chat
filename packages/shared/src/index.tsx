@@ -26,3 +26,5 @@ export {
   useUser,
 } from "./auth";
 export type { SignedInUser } from "./auth";
+
+export { SignInScreen } from "./screens/SignInScreen";
