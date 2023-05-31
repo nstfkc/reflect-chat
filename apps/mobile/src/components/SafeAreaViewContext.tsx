@@ -1,23 +1,25 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { ScreenOrientation } from "@capawesome/capacitor-screen-orientation";
 import { Keyboard } from "@capacitor/keyboard";
-import { getPlatforms } from "@ionic/react";
 
 import { SafeArea } from "capacitor-plugin-safe-area";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { DeviceInfo } from "@capacitor/device";
 
 export const SafeAreaInsetsContext = createContext({
   insets: { top: 0, left: 0, bottom: 0, right: 0 },
   keyboardHeight: 0,
 });
 
-export const SafeAreaProvider = (props: { children: ReactNode }) => {
+export const SafeAreaProvider = (props: {
+  children: ReactNode;
+  platform: DeviceInfo["platform"];
+}) => {
   const [insets, setInsets] = useState(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
-    const platforms = getPlatforms();
-    if (!platforms.includes("mobileweb")) {
+    if (props.platform !== "web") {
       SafeArea.getSafeAreaInsets().then(({ insets }) => {
         setInsets(insets as any);
       });
@@ -42,7 +44,7 @@ export const SafeAreaProvider = (props: { children: ReactNode }) => {
       setInsets({ top: 0, left: 0, bottom: 0, right: 0 });
       setKeyboardHeight(0);
     }
-  }, []);
+  }, [props.platform]);
 
   if (!insets) {
     return null;

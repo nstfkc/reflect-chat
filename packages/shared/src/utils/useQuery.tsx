@@ -1,11 +1,14 @@
-import useSWR, { SWRResponse } from "swr";
+import useSWR, { SWRResponse, SWRConfiguration } from "swr";
 
 import { Queries, HandlerReturn, GenericError, InferPrecedureData } from "db";
 import { useContext } from "react";
 import { HttpContext } from "../components/context/HttpContext";
 import { ConfigContext } from "../components/context/ConfigContext";
 
-export function useQuery<T extends keyof Queries>(key: T) {
+export function useQuery<T extends keyof Queries>(
+  key: T,
+  options?: SWRConfiguration
+) {
   const { apiUrl } = useContext(ConfigContext);
   const { http } = useContext(HttpContext);
 
@@ -28,7 +31,7 @@ export function useQuery<T extends keyof Queries>(key: T) {
       return _data.data;
     }
   };
-  return useSWR(key, fetcher) as unknown as SWRResponse<
+  return useSWR(key, fetcher, options) as unknown as SWRResponse<
     InferPrecedureData<Queries[T]>,
     { info: GenericError }
   >;

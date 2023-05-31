@@ -1,14 +1,18 @@
 import { useForm } from "react-hook-form";
 import { useSignIn } from "../../auth";
+import { FormField } from "../lib/FormField";
+import { Button } from "../lib/Button";
+import { useEffect, useState } from "react";
 
 export const SignInForm = () => {
   const {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors },
   } = useForm();
-  const { trigger, isMutating } = useSignIn();
+  const { trigger, isMutating, error } = useSignIn();
   const onSubmit = () => {
     trigger({
       email: watch("email"),
@@ -16,27 +20,40 @@ export const SignInForm = () => {
     });
   };
 
+  useEffect(() => {
+    if (error?.info?.title === "INVALID_CREDENTIALS_ERROR") {
+      setError("password", { message: "Invalid credentials" });
+      setError("email", { message: "Invalid credentials" });
+    }
+    if (error?.info?.title === "VALIDATION_ERROR") {
+      error.info.payload.issues.forEach((issue) => {
+        setError(issue.path[0], { message: issue.message });
+      });
+    }
+  }, [error, setError]);
+
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label htmlFor="">Email</label>
-          <input defaultValue="enesxtufekci@gmail.com" {...register("email")} />
-        </div>
-        <div>
-          <label htmlFor="">Password</label>
-          <input
-            defaultValue="Gradestr.32"
-            type="password"
-            {...register("password")}
-          />
-        </div>
-        <div>
-          <button className="bg-black text-white" type="submit">
-            submit {isMutating ? "..." : ""}
-          </button>
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <FormField
+        label="Email"
+        id="email"
+        type="email"
+        {...register("email")}
+        error={errors?.["email"]?.message as any}
+      />
+
+      <FormField
+        label="Password"
+        id="password"
+        type="password"
+        error={errors?.["password"]?.message as any}
+        {...register("password")}
+      />
+      <div>
+        <Button type="submit" disabled={isMutating}>
+          Submit
+        </Button>
+      </div>
+    </form>
   );
 };

@@ -142,6 +142,9 @@ importers:
       '@capacitor/core':
         specifier: ^5.0.3
         version: 5.0.3
+      '@capacitor/device':
+        specifier: ^5.0.2
+        version: 5.0.2(@capacitor/core@5.0.3)
       '@capacitor/haptics':
         specifier: ^5.0.2
         version: 5.0.2(@capacitor/core@5.0.3)
@@ -242,6 +245,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.14
         version: 10.4.14(postcss@8.4.23)
+      device:
+        specifier: link:@types/@capacitor/device
+        version: link:@types/@capacitor/device
       eslint:
         specifier: ^8.38.0
         version: 8.38.0
@@ -1032,6 +1038,14 @@ packages:
     resolution: {integrity: sha512-VxzSoFvoiGDmvlKQMbg7ZZh+w3Z223630kZINDOsbs7UZr5gZws7+m26Y9Oc8n2miI737hE6qOf2VU4H/8Tytg==}
     dependencies:
       tslib: 2.5.2
+    dev: false
+
+  /@capacitor/device@5.0.2(@capacitor/core@5.0.3):
+    resolution: {integrity: sha512-RpFNxtxWoqi32Q984UMv8Uca8yirPuUCfJQNhp9zyXYA3x0Ks59xgimyBXsJiQXwAgA75W7PAttTalF5bulJIQ==}
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.0.3
     dev: false
 
   /@capacitor/haptics@5.0.2(@capacitor/core@5.0.3):

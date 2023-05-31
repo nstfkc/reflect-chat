@@ -4,7 +4,7 @@ import { addDays } from "date-fns";
 import { createPrecedure } from "./handlers";
 import { ChannelKind, MembershipRole } from "@prisma/client";
 import { prisma } from "../db";
-import { prismaError } from "./error";
+import { invalidCredentialsError, prismaError } from "./error";
 
 export const createChannel = createPrecedure({
   membershipRoles: [MembershipRole.ADMIN, MembershipRole.OWNER],
@@ -56,7 +56,10 @@ export const createOrganisation = createPrecedure({
 
 export const signIn = createPrecedure({
   isPublic: true,
-  schema: z.object({ email: z.string(), password: z.string() }),
+  schema: z.object({
+    email: z.string().email(),
+    password: z.string(),
+  }),
   handler: async (args, ctx) => {
     const { email, password } = args;
     const { helpers } = ctx;
@@ -100,11 +103,17 @@ export const signIn = createPrecedure({
             sameSite: true,
           });
           const { password: _, ...data } = user;
-          return data;
+          return {
+            success: true,
+            data,
+          };
+        } else {
+          helpers.setStatusCode(401);
+          return invalidCredentialsError({});
         }
       } else {
-        // helpers.setStatusCode(401);
-        return {};
+        helpers.setStatusCode(401);
+        return invalidCredentialsError({});
       }
     } catch (error) {
       return error;

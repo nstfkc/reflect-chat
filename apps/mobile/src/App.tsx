@@ -1,3 +1,4 @@
+import { Device } from "@capacitor/device";
 import { CapacitorHttp } from "@capacitor/core";
 import { AuthProvider, SignedIn, SignedOut, useUser, useSignOut } from "shared";
 import { HttpProvider, HTTPHandler, ConfigProvider, SignInForm } from "shared";
@@ -7,6 +8,7 @@ import {
   useOrganisation,
   useSwitchOrganisation,
 } from "shared/src/auth/useLogin";
+import { useEffect, useState } from "react";
 
 const http: HTTPHandler = async (params) => {
   const { url, data, headers, method } = params;
@@ -37,7 +39,6 @@ const Component = () => {
   const { organisation } = useOrganisation();
   const { trigger } = useSwitchOrganisation();
 
-  console.log("ORG", { organisation });
   if (user) {
     return (
       <div>
@@ -81,23 +82,34 @@ const SignOutButton = () => {
 };
 
 const App = () => {
+  const [platform, setPlatform] = useState(null);
+  useEffect(() => {
+    Device.getInfo().then(({ platform }) => {
+      setPlatform(platform);
+    });
+  }, []);
+
+  const baseAPIUrl = platform === "web" ? "" : "http://0.0.0.0:8080";
+
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider platform={platform}>
       <ConfigProvider
-        apiUrl={import.meta.env.VITE_API_HOST}
+        apiUrl={[baseAPIUrl, "api"].join("/")}
         assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
       >
         <HttpProvider http={http}>
-          <AuthProvider authURL="http://0.0.0.0:8080/auth">
-            <SafeAreaView>
-              <SignedIn>
+          <AuthProvider>
+            <SignedIn>
+              <SafeAreaView>
                 <Component />
                 <SignOutButton />
-              </SignedIn>
-              <SignedOut>
+              </SafeAreaView>
+            </SignedIn>
+            <SignedOut>
+              <SafeAreaView>
                 <SignInForm />
-              </SignedOut>
-            </SafeAreaView>
+              </SafeAreaView>
+            </SignedOut>
           </AuthProvider>
         </HttpProvider>
       </ConfigProvider>

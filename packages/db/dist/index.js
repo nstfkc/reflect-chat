@@ -126,6 +126,7 @@ function addDays(dirtyDate, dirtyAmount) {
 var ERROR_CODES = {
   INSUFFICIENT_PERMISSIONS: 1e3,
   VALIDATION_ERROR: 1001,
+  INVALID_CREDENTIALS_ERROR: 1002,
   PRISMA_ERROR: 2e3
 };
 function createError(errorKind) {
@@ -151,6 +152,7 @@ var insufficientPermissionsError = createError(
   "INSUFFICIENT_PERMISSIONS"
 );
 var validationError = createError("VALIDATION_ERROR");
+var invalidCredentialsError = createError("INVALID_CREDENTIALS_ERROR");
 
 // src/data/handlers.ts
 function createPrecedure(args) {
@@ -237,7 +239,10 @@ var createOrganisation = createPrecedure({
 });
 var signIn = createPrecedure({
   isPublic: true,
-  schema: import_zod.default.object({ email: import_zod.default.string(), password: import_zod.default.string() }),
+  schema: import_zod.default.object({
+    email: import_zod.default.string().email(),
+    password: import_zod.default.string()
+  }),
   handler: async (args, ctx) => {
     const { email, password } = args;
     const { helpers } = ctx;
@@ -278,10 +283,17 @@ var signIn = createPrecedure({
             sameSite: true
           });
           const { password: _, ...data } = user;
-          return data;
+          return {
+            success: true,
+            data
+          };
+        } else {
+          helpers.setStatusCode(401);
+          return invalidCredentialsError({});
         }
       } else {
-        return {};
+        helpers.setStatusCode(401);
+        return invalidCredentialsError({});
       }
     } catch (error) {
       return error;

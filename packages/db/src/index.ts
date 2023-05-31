@@ -9,4 +9,4 @@ export type {
   InferPrecedureArgs,
   InferPrecedureData,
 } from "./data/handlers";
-export type { GenericError } from "./data/error";
+export type { GenericError, ValidationIssue } from "./data/error";

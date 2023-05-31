@@ -8,11 +8,11 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8080",
+        target: "http://0.0.0.0:8080/api",
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
       "/socket.io": {
-        target: "ws://localhost:8080",
+        target: "ws://0.0.0.0:8080/socket.io",
         ws: true,
       },
     },

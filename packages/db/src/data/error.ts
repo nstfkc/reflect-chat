@@ -1,12 +1,14 @@
 const ERROR_CODES = {
   INSUFFICIENT_PERMISSIONS: 1000,
   VALIDATION_ERROR: 1001,
+  INVALID_CREDENTIALS_ERROR: 1002,
   PRISMA_ERROR: 2000,
 };
 
-type ValidationIssue = {
+export type ValidationIssue = {
   expected: string;
   received: string;
+  validation: string;
   code: string;
   path: string[];
   message: string;
@@ -55,3 +57,4 @@ export const insufficientPermissionsError = createError(
   "INSUFFICIENT_PERMISSIONS"
 );
 export const validationError = createError("VALIDATION_ERROR");
+export const invalidCredentialsError = createError("INVALID_CREDENTIALS_ERROR");
