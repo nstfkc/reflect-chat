@@ -68,6 +68,7 @@ const PreloadUsers = ({
 const Preload = ({ children }: PropsWithChildren) => {
   const { user } = useUser();
   const { organisation } = useOrganisation();
+
   if (!user || !organisation) {
     return <div>Loading..</div>;
   }

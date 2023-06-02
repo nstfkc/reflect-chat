@@ -60,10 +60,12 @@ export function useSignOut() {
 export function useOrganisation() {
   const { user, isLoading: userIsLoading } = useUser();
   const { data, isLoading: organisationIdIsLoading } = useQuery(
-    "getCurrentOrganisationId"
+    "getCurrentOrganisationId",
+    {}
   );
-  let organisation: Organisation | null = null;
-  if (data && user) {
+
+  let organisation: Organisation | null = user.memberships[0].organisation;
+  if (data?.currentOrganisationId && user) {
     organisation = user.memberships
       .map((m) => {
         return m.organisation;
