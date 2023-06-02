@@ -1,5 +1,6 @@
 import { ReactNode, createContext } from "react";
-import { User } from "../../../types/global";
+import { useUser } from "../../../auth";
+import { User } from "db";
 
 interface UserContextValue {
   user: User;
@@ -12,14 +13,14 @@ interface UserProviderProps {
 }
 
 export const UserProvider = (props: UserProviderProps) => {
-  const { isLoaded, user } = { user: { id: "1234" }, isLoaded: true };
+  const { user, error, isLoading } = useUser();
 
-  if (!isLoaded) {
-    return null;
+  if (isLoading) {
+    return <div>Loading</div>;
   }
 
   return (
-    <UserContext.Provider value={{ user: user as unknown as User }}>
+    <UserContext.Provider value={{ user }}>
       {props.children}
     </UserContext.Provider>
   );

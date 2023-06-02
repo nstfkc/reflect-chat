@@ -1,21 +1,22 @@
 import { Device } from "@capacitor/device";
 import { CapacitorHttp } from "@capacitor/core";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import {
   AuthProvider,
   SignedIn,
   SignedOut,
-  useUser,
-  useSignOut,
   SignInScreen,
+  SocketProvider,
+  useQuery,
 } from "shared";
-import { HttpProvider, HTTPHandler, ConfigProvider, SignInForm } from "shared";
+import { HttpProvider, HTTPHandler, ConfigProvider } from "shared";
 import { SafeAreaProvider } from "./components/SafeAreaViewContext";
 import { SafeAreaView } from "./components/SafeAreaView";
-import {
-  useOrganisation,
-  useSwitchOrganisation,
-} from "shared/src/auth/useLogin";
-import { useEffect, useState } from "react";
+
+import { PropsWithChildren, useEffect, useState } from "react";
+import { HomeScreen } from "./components/HomeScreen";
+import { useOrganisation, useUser } from "shared/src/auth";
 
 const http: HTTPHandler = async (params) => {
   const { url, data, headers, method } = params;
@@ -41,50 +42,41 @@ const http: HTTPHandler = async (params) => {
   };
 };
 
-const Component = () => {
-  const { user } = useUser();
-  const { organisation } = useOrganisation();
-  const { trigger } = useSwitchOrganisation();
+const router = createBrowserRouter([
+  {
+    path: "/:channelId?/:messageId?",
+    Component: () => (
+      <Preload>
+        <HomeScreen />
+      </Preload>
+    ),
+  },
+]);
 
-  if (user) {
-    return (
-      <div>
-        {user.memberships.map((m) => {
-          return (
-            <div>
-              <button
-                key={m.organisationId}
-                onClick={() =>
-                  trigger({ organisationId: m.organisation.publicId })
-                }
-              >
-                {m.organisation.name}{" "}
-                {organisation?.publicId === m.organisation.publicId
-                  ? "Active"
-                  : ""}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    );
+const PreloadUsers = ({
+  organisationId,
+  children,
+}: PropsWithChildren<{ organisationId: string }>) => {
+  const { data } = useQuery("listUsers", { organisationId });
+
+  if (!data) {
+    return <div>Loading....</div>;
   }
-
-  return <div>Loading...</div>;
+  return <>{children}</>;
 };
 
-const SignOutButton = () => {
-  const { trigger } = useSignOut();
-
+const Preload = ({ children }: PropsWithChildren) => {
+  const { user } = useUser();
+  const { organisation } = useOrganisation();
+  if (!user || !organisation) {
+    return <div>Loading..</div>;
+  }
   return (
-    <button
-      className="bg-black text-white"
-      onClick={() => {
-        trigger({});
-      }}
-    >
-      Sign out
-    </button>
+    <>
+      <PreloadUsers organisationId={organisation.publicId}>
+        {children}
+      </PreloadUsers>
+    </>
   );
 };
 
@@ -96,21 +88,20 @@ const App = () => {
     });
   }, []);
 
-  const baseAPIUrl = platform === "web" ? "" : "http://0.0.0.0:8080";
+  const serverHost = platform === "web" ? "" : "http://0.0.0.0:8080";
 
   return (
     <SafeAreaProvider platform={platform}>
       <ConfigProvider
-        apiUrl={[baseAPIUrl, "api"].join("/")}
+        serverHost={""}
         assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
       >
         <HttpProvider http={http}>
           <AuthProvider>
             <SignedIn>
-              <SafeAreaView>
-                <Component />
-                <SignOutButton />
-              </SafeAreaView>
+              <SocketProvider>
+                <RouterProvider router={router}></RouterProvider>
+              </SocketProvider>
             </SignedIn>
             <SignedOut>
               <SafeAreaView>

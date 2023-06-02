@@ -2,9 +2,10 @@ import { useContext } from "react";
 import { FileUploaderProvider, RawMedia } from "./FileUploader";
 import { Chat } from "./Chat";
 import { MessageContext } from "../../context/MessageContext";
-import { useQuery } from "../../../api-client/useQuery";
 import { UserContext } from "../../context/UserContext";
 import { UsersContext } from "../../context/UsersContext";
+import { useQuery } from "../../../utils/useQuery";
+import { useOrganisation } from "../../../auth";
 
 interface ChatHistoryProps {
   channelId: string;
@@ -12,6 +13,7 @@ interface ChatHistoryProps {
 }
 
 export const ChatHistory = (props: ChatHistoryProps) => {
+  return null;
   const { channelId, onMessageSend = () => {} } = props;
   const {
     sendMessage,
@@ -19,11 +21,12 @@ export const ChatHistory = (props: ChatHistoryProps) => {
     getMessageHistoryById,
     markMentionsAsRead,
   } = useContext(MessageContext);
+  const { organisation } = useOrganisation();
 
-  const { data: history = [] } = useQuery("/messages", {
-    where: { channelId },
+  const { data: history = [] } = useQuery("listMessages");
+  const { data: channels } = useQuery("listChannels", {
+    organisationId: organisation?.publicId,
   });
-  const { data: channels } = useQuery("/channels");
 
   const channel = channels?.find((c) => c.id === channelId)!;
   const { user } = useContext(UserContext);
@@ -37,7 +40,7 @@ export const ChatHistory = (props: ChatHistoryProps) => {
     onMessageSend();
     sendMessage(
       {
-        senderId: user.id,
+        senderId: user.publicId,
         channelId: channelId,
         text,
       },
@@ -47,16 +50,11 @@ export const ChatHistory = (props: ChatHistoryProps) => {
 
   const messages = [...history, ...getMessageHistoryById(channelId)];
   return (
-    <FileUploaderProvider pathPrefix={channel.id}>
-      <Chat
-        name={`#${channel.name!}`}
-        handleSendMessage={handleSendMessage}
-        messages={messages as any}
-        users={allUsers}
-        usersCanBeMentioned={allUsers}
-        markAsRead={markMessageAsRead(channel.id)}
-        markMentionsAsRead={markMentionsAsRead(channel.id)}
-      />
-    </FileUploaderProvider>
+    <Chat
+      messages={messages as any}
+      users={allUsers}
+      markAsRead={markMessageAsRead(channel.id)}
+      markMentionsAsRead={markMentionsAsRead(channel.id)}
+    />
   );
 };

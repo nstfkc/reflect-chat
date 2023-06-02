@@ -332,8 +332,11 @@ var queries_exports = {};
 __export(queries_exports, {
   getCurrentOrganisationId: () => getCurrentOrganisationId,
   listChannels: () => listChannels,
+  listMessages: () => listMessages,
+  listUsers: () => listUsers,
   me: () => me
 });
+var z2 = __toESM(require("zod"));
 var me = createPrecedure({
   handler: async (_, ctx) => {
     const user = await prisma.user.findFirst({
@@ -354,11 +357,13 @@ var me = createPrecedure({
   }
 });
 var listChannels = createPrecedure({
-  handler: async () => {
+  schema: z2.object({ organisationId: z2.string() }),
+  handler: async (args) => {
     try {
       const channels = await prisma.channel.findMany({
         where: {
-          kind: "PUBLIC"
+          kind: "PUBLIC",
+          organisationId: args.organisationId
         }
       });
       return {
@@ -380,6 +385,48 @@ var getCurrentOrganisationId = createPrecedure({
         currentOrganisationId
       }
     };
+  }
+});
+var listMessages = createPrecedure({
+  schema: z2.object({ channelId: z2.string() }),
+  handler: async (args) => {
+    try {
+      const messages = await prisma.message.findMany({
+        where: {
+          channelId: args.channelId
+        }
+      });
+      return {
+        success: true,
+        data: messages
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  }
+});
+var listUsers = createPrecedure({
+  schema: z2.object({ organisationId: z2.string() }),
+  handler: async (args) => {
+    try {
+      const users = await prisma.user.findMany({
+        where: {
+          memberships: {
+            some: {
+              organisation: {
+                publicId: { equals: args.organisationId }
+              }
+            }
+          }
+        }
+      });
+      return {
+        success: true,
+        data: users
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
   }
 });
 

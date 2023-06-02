@@ -1,4 +1,5 @@
 import {
+  PropsWithChildren,
   ReactNode,
   createContext,
   useCallback,
@@ -7,6 +8,7 @@ import {
   useState,
 } from "react";
 
+import { RxImage } from "react-icons/rx";
 import { createId } from "@paralleldrive/cuid2";
 import { useDropzone } from "react-dropzone";
 import { FileKind, getFileKindFromObject } from "./file";
@@ -184,5 +186,24 @@ export const FileUploaderProvider = (props: FileUploaderProviderProps) => {
     <FileUploaderContext.Provider value={value}>
       {children}
     </FileUploaderContext.Provider>
+  );
+};
+
+export const FileDropRoot = ({ children }: PropsWithChildren) => {
+  const { isDragActive, getRootProps } = useContext(FileUploaderContext);
+  return (
+    <div {...getRootProps()} className="relative">
+      {isDragActive ? (
+        <div className="absolute z-50 bg-gray-600/70 w-full h-full flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <RxImage className="text-4xl text-gray-100" />
+            <span className="text-white font-semibold tracking-wide">
+              Drag and drop files here
+            </span>
+          </div>
+        </div>
+      ) : null}
+      {children}
+    </div>
   );
 };

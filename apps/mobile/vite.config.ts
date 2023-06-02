@@ -12,7 +12,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
       "/socket.io": {
-        target: "ws://0.0.0.0:8080/socket.io",
+        target: "ws://0.0.0.0:8080",
         ws: true,
       },
     },

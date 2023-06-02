@@ -17,6 +17,7 @@ import { useSocket } from "../SocketContext/useSocket";
 import { UserContext } from "../UserContext/UserContext";
 import { MessageWithMedia } from "../../../types/global";
 import { RawMedia } from "../../ui/Chat/FileUploader";
+import { useUser } from "../../../auth";
 
 function useMappedState() {
   const store = useRef(new Map());
@@ -60,9 +61,12 @@ function useUnreadMessages() {
 
   const { socket } = useSocket();
 
-  const markMessageAsRead = (channelId: string) => (messageId: string) => {
-    removeItem(channelId, messageId);
-  };
+  const markMessageAsRead = useCallback(
+    (channelId: string) => (messageId: string) => {
+      removeItem(channelId, messageId);
+    },
+    [removeItem]
+  );
 
   const handler = useCallback(
     (message: Message) => {
@@ -93,9 +97,12 @@ function useChannelMentions() {
 
   const { socket } = useSocket();
 
-  const markMentionsAsRead = (channelId: string) => (messageId: string) => {
-    removeItem(channelId, messageId);
-  };
+  const markMentionsAsRead = useCallback(
+    (channelId: string) => (messageId: string) => {
+      removeItem(channelId, messageId);
+    },
+    [removeItem]
+  );
 
   const handler = useCallback(
     (params: { message: Message }) => {
@@ -132,14 +139,14 @@ function useLastSeenMessage() {
   function updateLastSeenMessage(message: Message) {
     if (!lastSeenMessage) {
       setLastSeenMessage(message);
-      socket?.emit("last-seen-message", { userId: user.id, message });
+      socket?.emit("last-seen-message", { userId: user.publicId, message });
     } else {
       const currentMessageTime = new Date(lastSeenMessage.createdAt);
       const nextMessageTime = new Date(message.createdAt);
 
       if (nextMessageTime.getTime() > currentMessageTime.getTime()) {
         setLastSeenMessage(message);
-        socket?.emit("last-seen-message", { userId: user.id, message });
+        socket?.emit("last-seen-message", { userId: user.publicId, message });
       }
     }
   }
@@ -162,7 +169,7 @@ function useMessageHistory() {
       let key = "";
 
       if (dm.receiverId) {
-        key = dm.senderId === user?.id ? dm.receiverId : dm.senderId;
+        key = dm.senderId === user?.publicId ? dm.receiverId : dm.senderId;
       }
 
       if (dm.channelId) {
@@ -177,7 +184,7 @@ function useMessageHistory() {
       current.push(dm);
       setDmHistory(new Map(dmHistoryMapRef.current));
     },
-    [user?.id]
+    [user?.publicId]
   );
 
   useEffect(() => {
@@ -219,14 +226,12 @@ interface MessageProviderProps {
 
 export const MessageProvider = (props: MessageProviderProps) => {
   const { children } = props;
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const { socket } = useSocket();
 
   const { markMessageAsRead, unreadMessages } = useUnreadMessages();
-
   const { markMentionsAsRead, unreadMentions } = useChannelMentions();
-  //TODO: fix
-  const { updateLastSeenMessage } = useLastSeenMessage() as any;
+  const { updateLastSeenMessage } = useLastSeenMessage();
 
   const { getMessageHistoryById, handleUpdateMessageHistory } =
     useMessageHistory();
@@ -262,19 +267,19 @@ export const MessageProvider = (props: MessageProviderProps) => {
         media: media as any,
       } as any; // TODO: fix
 
-      if (message.channelId && message.senderId === user?.id) return;
+      if (message.channelId && message.senderId === user?.publicId) return;
 
       handleUpdateMessageHistory(messageWithMedia);
     },
-    [handleUpdateMessageHistory, user?.id]
+    [handleUpdateMessageHistory, user?.publicId]
   );
 
-  const value: MessageContextValue = {
+  const value = {
     sendMessage,
+    getMessageHistoryById,
+    updateLastSeenMessage,
     unreadMentions,
     markMentionsAsRead,
-    updateLastSeenMessage,
-    getMessageHistoryById,
     unreadMessages,
     markMessageAsRead,
   };

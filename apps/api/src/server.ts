@@ -10,7 +10,7 @@ const server = fastify();
 
 server.register(fastifyIO, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   },
 });

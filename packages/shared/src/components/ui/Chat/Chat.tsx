@@ -1,4 +1,4 @@
-import { Media as MessageMedia } from "db";
+import { Media as MessageMedia, User } from "db";
 import format from "date-fns/format";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
@@ -19,7 +19,7 @@ import { debounce } from "ts-debounce";
 import { TextEditor } from "./TextEditor";
 import { FileUploaderContext } from "./FileUploader";
 import { RxImage } from "react-icons/rx";
-import { MessageWithMedia, User } from "../../../types/global";
+import { MessageWithMedia } from "../../../types/global";
 import { HiOutlineCloudDownload } from "react-icons/hi";
 import { groupItemsByCreatedAt, groupMessagesInTheSameMinute } from "./utils";
 
@@ -148,7 +148,7 @@ const MessageRender = (props: MessageProps) => {
       </div>
       <div className="flex flex-col">
         <div className="flex gap-2 items-start">
-          <span className="font-bold mt-[-4px]">{user?.username}</span>
+          <span className="font-bold mt-[-4px]">{user?.name}</span>
           <span className="text-sm  mt-[-3px] opacity-75">{hour}</span>
         </div>
         <ul className=" gap-1">
@@ -158,7 +158,7 @@ const MessageRender = (props: MessageProps) => {
                 onRender={onRender}
                 key={message.id}
                 id={message.id}
-                userId={user?.id}
+                userId={user?.publicId}
                 message={message}
                 markAsRead={markAsRead}
                 markMentionsAsRead={markMentionsAsRead}
@@ -173,26 +173,25 @@ const MessageRender = (props: MessageProps) => {
 };
 
 interface ChatProps {
-  handleSendMessage: (text: string, media: RawMedia[]) => void;
+  /* handleSendMessage: (text: string, media: RawMedia[]) => void; */
   messages: MessageWithMedia[];
   users: User[];
-  name: string;
   markAsRead: (id: string) => void;
   markMentionsAsRead?: (id: string) => void;
-  usersCanBeMentioned: User[];
+  /* usersCanBeMentioned: User[]; */
 }
 
 export const Chat = (props: ChatProps) => {
   const {
-    handleSendMessage,
+    /* handleSendMessage, */
     markAsRead,
     messages,
     users,
-    usersCanBeMentioned,
+    /* usersCanBeMentioned, */
     markMentionsAsRead = () => {},
-    name,
+    /* name, */
   } = props;
-  const { isDragActive, getRootProps } = useContext(FileUploaderContext);
+  /* const { isDragActive, getRootProps } = useContext(FileUploaderContext); */
   const virtuoso = useRef<VirtuosoHandle>(null);
   const container = useRef<HTMLDivElement>(null);
 
@@ -224,73 +223,61 @@ export const Chat = (props: ChatProps) => {
 
   return (
     <>
-      <div className="h-full flex flex-col justify-between" {...getRootProps()}>
-        {isDragActive ? (
-          <div className="absolute z-50 bg-gray-600/70 w-full h-full flex items-center justify-center">
-            <div className="flex flex-col items-center">
-              <RxImage className="text-4xl text-gray-100" />
-              <span className="text-white font-semibold tracking-wide">
-                Drag and drop files here
-              </span>
-            </div>
-          </div>
-        ) : null}
-        <div className="relative h-full">
-          <div
-            ref={container}
-            className="gap-8 overflow-scroll"
+      <div className="relative h-full">
+        <div
+          ref={container}
+          className="gap-8 overflow-scroll"
+          style={{ height: "100%" }}
+        >
+          <Virtuoso
+            ref={virtuoso}
+            data={data}
             style={{ height: "100%" }}
-          >
-            <Virtuoso
-              ref={virtuoso}
-              data={data}
-              style={{ height: "100%" }}
-              alignToBottom={true}
-              followOutput={true}
-              itemContent={(_, [date, messages]) => {
-                return (
-                  <Fragment key={date}>
-                    <div className="w-full flex w-full justify-center items-center opacity-75">
-                      <div className="border-b-[1px] border-gray-600/50 grow"></div>
-                      <div className="border-[1px] border-gray-600/50 rounded-full px-4 py-2 text-sm">
-                        {date}
-                      </div>
-
-                      <div className="border-b-[1px] border-gray-600/50 grow"></div>
+            alignToBottom={true}
+            followOutput={true}
+            itemContent={(_, [date, messages]) => {
+              return (
+                <Fragment key={date}>
+                  <div className="w-full flex w-full justify-center items-center opacity-75">
+                    <div className="border-b-[1px] border-gray-600/50 grow"></div>
+                    <div className="border-[1px] border-gray-600/50 rounded-full px-4 py-2 text-sm">
+                      {date}
                     </div>
-                    {Object.values(groupMessagesInTheSameMinute(messages)).map(
-                      (messages) => {
-                        const authorId = messages[0].senderId;
 
-                        const user = users.find(
-                          (user) => user?.id === authorId
-                        );
-                        return (
-                          <MessageRender
-                            onRender={onRender}
-                            user={user!}
-                            messages={messages as any}
-                            key={messages[0].id}
-                            markAsRead={markAsRead}
-                            markMentionsAsRead={markMentionsAsRead}
-                          />
-                        );
-                      }
-                    )}
-                  </Fragment>
-                );
-              }}
-            />
-          </div>
-        </div>
-        <div className="w-full border-t-2 border-black bg-gray-100/50">
-          <TextEditor
-            usersCanBeMentioned={usersCanBeMentioned}
-            placeholder={`Message ${name}`}
-            onSubmit={handleSendMessage}
-          ></TextEditor>
+                    <div className="border-b-[1px] border-gray-600/50 grow"></div>
+                  </div>
+                  {Object.values(groupMessagesInTheSameMinute(messages)).map(
+                    (messages) => {
+                      const authorId = messages[0].senderId;
+
+                      const user = users?.find(
+                        (user) => user?.publicId === authorId
+                      );
+                      return (
+                        <MessageRender
+                          onRender={onRender}
+                          user={user!}
+                          messages={messages as any}
+                          key={messages[0].id}
+                          markAsRead={markAsRead}
+                          markMentionsAsRead={markMentionsAsRead}
+                        />
+                      );
+                    }
+                  )}
+                </Fragment>
+              );
+            }}
+          />
         </div>
       </div>
+      {/* <div className="w-full border-t-2 border-black bg-gray-100/50">
+          <TextEditor
+          usersCanBeMentioned={usersCanBeMentioned}
+          placeholder={`Message ${name}`}
+          onSubmit={handleSendMessage}
+          ></TextEditor>
+          </div> */}
     </>
   );
 };

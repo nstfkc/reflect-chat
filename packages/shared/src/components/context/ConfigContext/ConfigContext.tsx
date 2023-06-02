@@ -2,19 +2,30 @@ import { ReactNode, createContext } from "react";
 
 interface ConfigContextValue {
   apiUrl: string;
+  socketUrl: string;
   assetsServiceUrl: string;
 }
 
 export const ConfigContext = createContext({} as ConfigContextValue);
 
-interface ConfigProviderProps extends ConfigContextValue {
+interface ConfigProviderProps {
+  serverHost: string;
+  assetsServiceUrl: string;
   children: ReactNode;
 }
 
 export const ConfigProvider = (props: ConfigProviderProps) => {
-  const { children, ...value } = props;
+  const { children, serverHost, assetsServiceUrl } = props;
 
   return (
-    <ConfigContext.Provider value={value}>{children}</ConfigContext.Provider>
+    <ConfigContext.Provider
+      value={{
+        apiUrl: [serverHost, "api"].join("/"),
+        socketUrl: serverHost,
+        assetsServiceUrl,
+      }}
+    >
+      {children}
+    </ConfigContext.Provider>
   );
 };

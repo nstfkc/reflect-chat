@@ -16,7 +16,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = (props: AuthProviderProps) => {
   const { children } = props;
-  const { data, isLoading, error } = useQuery("me", {
+  const { data, isLoading, error } = useQuery("me", null, {
     shouldRetryOnError: false,
     revalidateOnFocus: false,
   });
