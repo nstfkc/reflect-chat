@@ -31,19 +31,24 @@ const Channels = (props: ChannelsProps) => {
     return <div>Loading...</div>;
   }
   return (
-    <div>
-      <div>Channels</div>
-      <ul>
-        {data?.map((channel) => {
-          return (
-            <li key={channel.id}>
-              <button onClick={() => props.onSelect(channel.id)}>
-                {channel.name}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+    <div className="h-full py-4 pr-4 bg-white/50">
+      <div className="bg-white/50 backdrop-blur-sm h-full border-2 border-black/10 border-l-0 rounded-r-xl p-4">
+        <div className="text-xl font-bold tracking-wide">Channels</div>
+        <ul>
+          {data?.map((channel) => {
+            return (
+              <li key={channel.id}>
+                <button
+                  className="text-lg"
+                  onClick={() => props.onSelect(channel.id)}
+                >
+                  <span className="px-2">#</span> <span>{channel.name}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 };
@@ -152,14 +157,20 @@ export const HomeScreen = () => {
         onEnd: (details) => {
           const delta = details.currentX - details.startX;
 
-          if (delta * -1 > window.innerWidth / 2) {
+          const speed = Number(
+            (details.velocityX * details.velocityX).toFixed(2)
+          );
+          const multiplier = speed > 0.1 ? 5 : 2;
+          console.log(multiplier);
+
+          if (delta * -1 > window.innerWidth / multiplier) {
             currentSlot.current = Math.min(
               currentSlot.current + 1,
               slots.length
             );
           }
 
-          if (delta > window.innerWidth / 2) {
+          if (delta > window.innerWidth / multiplier) {
             currentSlot.current = Math.max(0, currentSlot.current - 1);
           }
 
@@ -188,18 +199,22 @@ export const HomeScreen = () => {
       >
         <div
           ref={scope}
-          className="absolute flex z-[100] bg-white"
+          className="absolute flex z-[100]"
           style={{ left: `${window.innerWidth * currentSlot.current * -1}px` }}
         >
           <SafeAreaView>
-            <OrganisationSelectScreen
-              onSelect={() => {
-                currentSlot.current = 1;
-                complete(() => {
-                  navigate("/");
-                });
-              }}
-            />
+            <div className="h-full py-4 pl-4 bg-white/50">
+              <div className="bg-white/50 backdrop-blur-sm h-full border-2 border-black/20 border-r-[1px] border-r-black/10 rounded-l-xl p-4">
+                <OrganisationSelectScreen
+                  onSelect={() => {
+                    currentSlot.current = 1;
+                    complete(() => {
+                      navigate("/");
+                    });
+                  }}
+                />
+              </div>
+            </div>
           </SafeAreaView>
           <SafeAreaView>
             <Channels

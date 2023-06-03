@@ -14,7 +14,7 @@ export const OrganisationSelectScreen = (
 
   if (user) {
     return (
-      <div className="p-4">
+      <div className="">
         <div>
           <span className="font-bold text-gray-900/80 text-xl">
             Your organisations

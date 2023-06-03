@@ -89,12 +89,13 @@ const App = () => {
     });
   }, []);
 
-  const serverHost = platform === "web" ? "" : "http://0.0.0.0:8080";
+  const serverHost =
+    platform === "web" ? "" : "https://reflect-chat-api.fly.dev";
 
   return (
     <SafeAreaProvider platform={platform}>
       <ConfigProvider
-        serverHost={""}
+        serverHost={serverHost}
         assetsServiceUrl={import.meta.env.VITE_ASSESTS_SERVICE_HOST}
       >
         <HttpProvider http={http}>
