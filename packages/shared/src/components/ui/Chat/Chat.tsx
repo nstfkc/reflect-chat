@@ -2,7 +2,6 @@ import { Media as MessageMedia, User } from "db";
 import format from "date-fns/format";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
-import type { RawMedia } from "./FileUploader";
 import {
   Fragment,
   ReactNode,
@@ -16,9 +15,6 @@ import { HiOutlineDocumentText, HiUser } from "react-icons/hi2";
 import { ConfigContext } from "../../context/ConfigContext";
 
 import { debounce } from "ts-debounce";
-import { TextEditor } from "./TextEditor";
-import { FileUploaderContext } from "./FileUploader";
-import { RxImage } from "react-icons/rx";
 import { MessageWithMedia } from "../../../types/global";
 import { HiOutlineCloudDownload } from "react-icons/hi";
 import { groupItemsByCreatedAt, groupMessagesInTheSameMinute } from "./utils";
@@ -173,25 +169,14 @@ const MessageRender = (props: MessageProps) => {
 };
 
 interface ChatProps {
-  /* handleSendMessage: (text: string, media: RawMedia[]) => void; */
   messages: MessageWithMedia[];
   users: User[];
   markAsRead: (id: string) => void;
   markMentionsAsRead?: (id: string) => void;
-  /* usersCanBeMentioned: User[]; */
 }
 
 export const Chat = (props: ChatProps) => {
-  const {
-    /* handleSendMessage, */
-    markAsRead,
-    messages,
-    users,
-    /* usersCanBeMentioned, */
-    markMentionsAsRead = () => {},
-    /* name, */
-  } = props;
-  /* const { isDragActive, getRootProps } = useContext(FileUploaderContext); */
+  const { markAsRead, messages, users, markMentionsAsRead = () => {} } = props;
   const virtuoso = useRef<VirtuosoHandle>(null);
   const container = useRef<HTMLDivElement>(null);
 
@@ -271,13 +256,6 @@ export const Chat = (props: ChatProps) => {
           />
         </div>
       </div>
-      {/* <div className="w-full border-t-2 border-black bg-gray-100/50">
-          <TextEditor
-          usersCanBeMentioned={usersCanBeMentioned}
-          placeholder={`Message ${name}`}
-          onSubmit={handleSendMessage}
-          ></TextEditor>
-          </div> */}
     </>
   );
 };

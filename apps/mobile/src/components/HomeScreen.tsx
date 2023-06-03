@@ -50,32 +50,15 @@ const Channels = (props: ChannelsProps) => {
 
 const ChatScreen = () => {
   const { channelId } = useParams();
-  const {
-    sendMessage,
-    getMessageHistoryById,
-    markMentionsAsRead,
-    markMessageAsRead,
-  } = useContext(MessageContext);
+  const { sendMessage, getMessageHistoryById, markMentionsAsRead } =
+    useContext(MessageContext);
   const { organisation } = useOrganisation();
   const { user } = useUser();
   const { data: users } = useQuery("listUsers", {
     organisationId: organisation?.publicId,
   });
 
-  console.log("render");
-
-  const { data: history = [] } = useQuery(
-    "listMessages",
-    { channelId },
-    {
-      revalidateOnFocus: false,
-      revalidateOnMount: false,
-      revalidateOnReconnect: false,
-      refreshWhenOffline: false,
-      refreshWhenHidden: false,
-      refreshInterval: 0,
-    }
-  );
+  const { data: history = [] } = useQuery("listMessages", { channelId });
 
   const { data: channels } = useQuery("listChannels", {
     organisationId: organisation?.publicId,
@@ -196,7 +179,6 @@ export const HomeScreen = () => {
       gesture?.destroy();
     };
   }, [gestureInit]);
-  console.log("render home");
 
   return (
     <MessageProvider>
@@ -213,7 +195,9 @@ export const HomeScreen = () => {
             <OrganisationSelectScreen
               onSelect={() => {
                 currentSlot.current = 1;
-                complete();
+                complete(() => {
+                  navigate("/");
+                });
               }}
             />
           </SafeAreaView>

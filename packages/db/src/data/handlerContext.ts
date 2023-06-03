@@ -13,6 +13,6 @@ export type HandlerContext = {
     setHeader: (name: string, value: string) => void;
     setStatusCode: (code: number) => void;
     verifyPassword: (a: string, b: string) => Promise<boolean>;
-    hashPassword: (a: string) => Promise<boolean>;
+    hashPassword: (a: string) => Promise<string>;
   };
 };

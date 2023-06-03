@@ -1,4 +1,5 @@
 import z from "zod";
+import { random } from "uniqolor";
 import { addDays } from "date-fns";
 
 import { createPrecedure } from "./handlers";
@@ -50,6 +51,48 @@ export const createOrganisation = createPrecedure({
       };
     } catch (err) {
       return prismaError({ payload: err, statusCode: 400 });
+    }
+  },
+});
+
+export const signUp = createPrecedure({
+  isPublic: true,
+  schema: z.object({
+    email: z.string().email(),
+    password: z.string(),
+    name: z.string(),
+  }),
+  handler: async (args, ctx) => {
+    try {
+      const { password: passwordRaw, email, name } = args;
+      const password = await ctx.helpers.hashPassword(passwordRaw);
+
+      const user = await prisma.user.create({
+        data: {
+          email,
+          name,
+          password,
+          role: "CUSTOMER",
+          userProfile: {
+            create: {
+              username: name,
+              profileColor: random({ saturation: 0.5 }).color,
+            },
+          },
+        },
+        select: {
+          name: true,
+          email: true,
+        },
+      });
+
+      return {
+        success: true,
+        data: { user },
+      };
+    } catch (error) {
+      console.log(error);
+      return { success: false, error };
     }
   },
 });
