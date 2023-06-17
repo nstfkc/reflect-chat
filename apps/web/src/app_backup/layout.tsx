@@ -1,4 +1,4 @@
-/* import { AuthProvider } from "shared"; */
+import { AuthProvider } from "shared";
 
 import "./globals.css";
 
@@ -16,8 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className="h-screen max-h-screen min-h-screen overflow-hidden bg-gray-200/70 text-gray-800">
-          {children}
-          {/* <AuthProvider>{children}</AuthProvider> */}
+          <AuthProvider>{children}</AuthProvider>
         </div>
       </body>
     </html>

@@ -21,10 +21,6 @@ async function createWindow() {
 
   if (isProduction) {
     // load bundled React app
-    console.log(
-      'path.join(UI_PATH, "index.html")',
-      path.join(UI_PATH, "index.html")
-    );
     mainWindow.loadFile(path.join(UI_PATH, "index.html"));
   } else {
     // show loading spinner while local server is ready

@@ -3,6 +3,7 @@
 import { ReactNode, createContext, useCallback } from "react";
 import { useSocket } from "../SocketContext/useSocket";
 import { User } from "../../../types/global";
+import { use } from "db";
 
 interface UsersContextValue {
   allUsers: User[];
