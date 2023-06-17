@@ -1,10 +1,21 @@
 const socketHost = process.env.SOCKET_HOST;
 
+const local = {
+  clientHost: "http://localhost:4000/client",
+  apiHost: "http://localhost:8080",
+  assetsWorkerHost: "https://reflect.flak-media.workers.dev",
+};
+
+const production = {
+  clientHost: "https://app.reflect.rocks",
+  apiHost: "https://reflect-chat-api.fly.dev",
+  assetsWorkerHost: "https://reflect.flak-media.workers.dev",
+};
+
+const config = process.env.NODE_ENV === "production" ? production : local;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -16,27 +27,27 @@ const nextConfig = {
     return [
       {
         source: "/client",
-        destination: "https://app.reflect.rocks",
+        destination: config.clientHost,
       },
       {
         source: "/client/:path*",
-        destination: "https://app.reflect.rocks/:path*",
+        destination: `${config.clientHost}/:path*`,
       },
-      // {
-      //   source: "/socket.io",
-      //   destination: `${socketHost}/socket.io/`,
-      // },
-      // {
-      //   source: "/socket.io/:path*",
-      //   destination: `${socketHost}/socket.io/:path*`,
-      // },
-      // {
-      //   source: "/media/:path*",
-      //   destination: `https:flak.flak-media.workers.dev/:path*`,
-      // },
+      {
+        source: "/socket.io",
+        destination: `${config.apiHost}/socket.io/`,
+      },
+      {
+        source: "/socket.io/:path*",
+        destination: `${config.apiHost}/socket.io/:path*`,
+      },
+      {
+        source: "/media/:path*",
+        destination: `${config.assetsWorkerHost}/:path*`,
+      },
       {
         source: "/api/:path*",
-        destination: `https://reflect-chat-api.fly.dev/:path*`,
+        destination: `${config.apiHost}/:path*`,
       },
     ];
   },
