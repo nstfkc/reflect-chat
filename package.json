@@ -12,7 +12,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "preview": "dotenv -- turbo run preview",
     "deploy": "dotenv -- turbo run deploy",
-    "postinstall": "pnpm run db:generate"
+    "postinstall": "pnpm run db:generate",
+    "deploy:api": "fly deploy",
+    "pack": "dotenv -- turbo run pack"
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",

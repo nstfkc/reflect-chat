@@ -30,6 +30,7 @@
     "db:push": {},
     "db:studio": {},
     "deploy": {},
-    "preview": {}
+    "preview": {},
+    "pack": {}
   }
 }

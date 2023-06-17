@@ -1,10 +1,10 @@
-FROM node:16
+FROM node:18
 
 WORKDIR /usr/src/app
 ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"
 
-RUN npm i -g pnpm@7.19.0
+RUN npm i -g pnpm@8.5.1
 
 # Copy root package.json and lockfile
 COPY . .

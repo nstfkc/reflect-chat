@@ -12,7 +12,8 @@
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "electron ./dist/main.js",
-    "clean": "rm -fr dist"
+    "clean": "rm -fr dist",
+    "build": "tsup src"
   },
   "build": {
     "asar": true,
