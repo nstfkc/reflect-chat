@@ -13,7 +13,11 @@
         "api/**",
         "public/build/**"
       ],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "^db:generate"]
+    },
+    "web#build": {
+      "dependsOn": ["^build", "^db:generate"],
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
     "dev": {
