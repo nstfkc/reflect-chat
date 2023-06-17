@@ -34,10 +34,10 @@ const nextConfig = {
       //   source: "/media/:path*",
       //   destination: `https:flak.flak-media.workers.dev/:path*`,
       // },
-      // {
-      //   source: "/api/:path*",
-      //   destination: `http:localhost:8080/:path*`,
-      // },
+      {
+        source: "/api/:path*",
+        destination: `https://reflect-chat-api.fly.dev/:path*`,
+      },
     ];
   },
 };
