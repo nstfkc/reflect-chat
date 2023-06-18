@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "tiptap-react-native-example",
-    "slug": "tiptap-react-native-example",
+    "name": "reflect-rocks",
+    "slug": "reflect-rocks",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.enestufekci.reflectrocks"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "42878307-77c6-4fd9-bf0e-a0c962ea4753"
+      }
     }
   }
 }
