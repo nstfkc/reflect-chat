@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
   ConfigProvider,
   HttpProvider,
+  HTTPHandler,
   AuthProvider,
   SignedOut,
   SignInForm,
@@ -57,22 +58,31 @@ function useAccessToken() {
 
 function App() {
   const { isLoading, token, updateToken } = useAccessToken();
+  const [electronApi, setElectronApi] = useState(null);
+  useEffect(() => {
+    if ((window as any).electronAPI) {
+      setElectronApi((window as any).electronAPI);
+    }
+  }, []);
+
+  let http: HTTPHandler | null = null;
+  if (electronApi) {
+    http = async (params) => {
+      const { url, ...options } = params;
+      return await (window as any).electronAPI.fetch(
+        url,
+        JSON.stringify(options)
+      );
+    };
+  }
+
   if (isLoading) {
     return null;
   }
 
   return (
     <ConfigProvider baseUrl={"http://localhost:3000"}>
-      <HttpProvider
-        accessToken={token}
-        http={async (params) => {
-          const { url, ...options } = params;
-          return await (window as any).electronAPI.fetch(
-            url,
-            JSON.stringify(options)
-          );
-        }}
-      >
+      <HttpProvider accessToken={token} http={http}>
         <AuthProvider>
           <SignedOut>
             <SignInForm

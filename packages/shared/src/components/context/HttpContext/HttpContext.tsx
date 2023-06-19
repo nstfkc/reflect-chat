@@ -36,7 +36,7 @@ export const HttpContext = createContext({
 });
 
 interface HttpProviderProps {
-  http?: HTTPHandler;
+  http: HTTPHandler | null;
   accessToken: string | null;
   children: ReactNode;
 }
@@ -44,14 +44,16 @@ interface HttpProviderProps {
 export const HttpProvider = (props: HttpProviderProps) => {
   const { children, accessToken, http = defaultHttp } = props;
   const httpHandler = useCallback(
-    (params: HttpParams) =>
-      http({
+    (params: HttpParams) => {
+      const handler = http ?? defaultHttp;
+      return handler({
         ...params,
         headers: {
           ...params.headers,
           Authorization: `Bearer ${accessToken}`,
         },
-      }),
+      });
+    },
     [accessToken, http]
   );
 

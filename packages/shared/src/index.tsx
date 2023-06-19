@@ -1,7 +1,8 @@
 /* export * from "./types/global"; */
 
 export * from "./components/context/ConfigContext";
-export * from "./components/context/HttpContext";
+export { HttpContext, HttpProvider } from "./components/context/HttpContext";
+export type { HTTPHandler } from "./components/context/HttpContext";
 
 export { SignInForm } from "./components/forms";
 
