@@ -64,7 +64,6 @@ Object.entries(queries).map(([url, config]) => {
       }
 
       const { userId } = req.requestContext.get("context");
-      console.log({ userId });
       if (userId === "system") {
         res.statusCode = 401;
         done(Error("Authentication error"));

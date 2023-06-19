@@ -8,4 +8,9 @@ export default defineConfig({
     port: 4000,
   },
   base: "/client",
+  resolve: {
+    alias: {
+      "react-native": "react-native-web",
+    },
+  },
 });

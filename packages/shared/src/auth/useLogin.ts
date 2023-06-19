@@ -1,10 +1,6 @@
 "use client";
 
-import { useContext } from "react";
-import useSWRMutation from "swr/mutation";
-import { AuthContext } from "./Context";
-import { Organisation, User } from "db";
-import { HttpContext } from "../components/context/HttpContext";
+import { Organisation } from "db";
 import { useQuery } from "../utils/useQuery";
 import { useMutation } from "../utils/useMutation";
 
@@ -17,26 +13,8 @@ export function useSignIn() {
   });
 }
 
-interface SignUpArgs extends Record<string, string> {
-  email: string;
-  password: string;
-  name: string;
-}
-
 export function useSignUp() {
-  const { http } = useContext(HttpContext);
-  const { authURL } = useContext(AuthContext);
-  return useSWRMutation(
-    `${authURL}/sign-up`,
-    async (url: string, { arg }: { arg: SignUpArgs }) => {
-      const { data } = await http({
-        url,
-        method: "POST",
-        data: arg,
-      });
-      return data as Pick<User, "name" | "email">;
-    }
-  );
+  return useMutation("signUp");
 }
 
 export function useUser() {
@@ -48,11 +26,14 @@ export function useUser() {
   };
 }
 
-export function useSignOut() {
+export function useSignOut(onSuccess?: VoidFunction) {
   const { mutate } = useQuery("me");
   return useMutation("signOut", {
     onSuccess: () => {
       mutate(null);
+      if (onSuccess) {
+        onSuccess();
+      }
     },
   });
 }

@@ -105,6 +105,7 @@ export const signIn = createPrecedure({
   }),
   handler: async (args, ctx) => {
     const { email, password } = args;
+    console.log({ email, password });
     const { helpers } = ctx;
 
     try {
@@ -148,7 +149,7 @@ export const signIn = createPrecedure({
           const { password: _, ...data } = user;
           return {
             success: true,
-            data,
+            data: { ...data, token },
           };
         } else {
           helpers.setStatusCode(401);
@@ -169,7 +170,7 @@ export const signOut = createPrecedure({
     ctx.helpers.deleteCookie("Authorization");
     return {
       success: true,
-      data: {},
+      data: { removeToken: true },
     };
   },
 });

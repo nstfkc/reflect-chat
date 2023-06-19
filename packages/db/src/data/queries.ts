@@ -1,11 +1,14 @@
 import * as z from "zod";
 
 import { prisma } from "../db";
-import { prismaError } from "./error";
+import { prismaError, insufficientPermissionsError } from "./error";
 import { createPrecedure } from "./handlers";
 
 export const me = createPrecedure({
   handler: async (_, ctx) => {
+    if (!ctx.userId) {
+      return insufficientPermissionsError({ statusCode: 403 });
+    }
     const user = await prisma.user.findFirst({
       where: { publicId: ctx.userId },
       include: {

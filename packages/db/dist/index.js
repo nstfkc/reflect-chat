@@ -493,6 +493,7 @@ var signIn = createPrecedure({
   }),
   handler: async (args, ctx) => {
     const { email, password } = args;
+    console.log({ email, password });
     const { helpers } = ctx;
     try {
       const user = await prisma.user.findFirst({
@@ -533,7 +534,7 @@ var signIn = createPrecedure({
           const { password: _, ...data } = user;
           return {
             success: true,
-            data
+            data: { ...data, token }
           };
         } else {
           helpers.setStatusCode(401);
@@ -553,7 +554,7 @@ var signOut = createPrecedure({
     ctx.helpers.deleteCookie("Authorization");
     return {
       success: true,
-      data: {}
+      data: { removeToken: true }
     };
   }
 });
@@ -587,6 +588,9 @@ __export(queries_exports, {
 var z2 = __toESM(require("zod"));
 var me = createPrecedure({
   handler: async (_, ctx) => {
+    if (!ctx.userId) {
+      return insufficientPermissionsError({ statusCode: 403 });
+    }
     const user = await prisma.user.findFirst({
       where: { publicId: ctx.userId },
       include: {

@@ -1,35 +1,93 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { useState, useEffect } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+import {
+  ConfigProvider,
+  HttpProvider,
+  AuthProvider,
+  SignedOut,
+  SignInForm,
+  SignedIn,
+  useSignOut,
+} from "shared";
 
+/* import { getConfig } from "config"; */
+
+/* const config = getConfig(import.meta.env.PROD); */
+
+interface SignOutProps {
+  onSignOut: VoidFunction;
+}
+const SignOut = (props: SignOutProps) => {
+  const { trigger } = useSignOut(props.onSignOut);
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <button onClick={() => trigger({}).then(() => {})}>Sign out</button>
+    </div>
+  );
+};
+
+function useAccessToken() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<null | string>(null);
+
+  useEffect(() => {
+    const persistedToken = localStorage.getItem("access_token");
+    if (persistedToken) {
+      setToken(persistedToken);
+    }
+    setIsLoading(false);
+  }, []);
+
+  const updateToken = (newToken: string | null) => {
+    if (newToken === null) {
+      localStorage.removeItem("access_token");
+    } else {
+      localStorage.setItem("access_token", newToken);
+    }
+    setToken(newToken);
+  };
+
+  return {
+    isLoading,
+    token,
+    updateToken,
+  };
 }
 
-export default App
+function App() {
+  const { isLoading, token, updateToken } = useAccessToken();
+  if (isLoading) {
+    return null;
+  }
+
+  return (
+    <ConfigProvider baseUrl={"http://localhost:3000"}>
+      <HttpProvider
+        accessToken={token}
+        http={async (params) => {
+          const { url, ...options } = params;
+          return await (window as any).electronAPI.fetch(
+            url,
+            JSON.stringify(options)
+          );
+        }}
+      >
+        <AuthProvider>
+          <SignedOut>
+            <SignInForm
+              onSuccess={(token) => {
+                updateToken(token);
+              }}
+            />
+          </SignedOut>
+          <SignedIn>
+            <SignOut onSignOut={() => updateToken(null)} />
+          </SignedIn>
+        </AuthProvider>
+      </HttpProvider>
+    </ConfigProvider>
+  );
+}
+
+export default App;

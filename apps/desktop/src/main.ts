@@ -1,4 +1,6 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
+import fetch from "electron-fetch";
+
 import * as path from "path";
 
 import { waitForServerUp } from "./wait";
@@ -6,20 +8,20 @@ import { waitForServerUp } from "./wait";
 // TODO: maybe better "production detection"
 const isProduction = process.env.NODE_ENV !== "development";
 const UI_PATH = path.join(__dirname, "./");
-const localServer = "http://0.0.0.0:5173/";
+const localServer = "http://0.0.0.0:3000/client";
 
 async function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      webSecurity: false,
+      allowRunningInsecureContent: true,
     },
-    width: 800,
+    width: 1200,
   });
 
-  if (isProduction) {
+  if (!isProduction) {
     // load bundled React app
     mainWindow.loadFile(path.join(UI_PATH, "index.html"));
   } else {
@@ -37,9 +39,28 @@ async function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", () => {
+app.whenReady().then(() => {
+  ipcMain.handle("fetch", async (event, args) => {
+    const { url, options } = args;
+    const { data: body, headers, ...rest } = JSON.parse(options);
+    const init = options
+      ? {
+          body: JSON.stringify(body),
+          headers: { ...headers, "Content-Type": "application/json" },
+          ...rest,
+        }
+      : undefined;
+    const res = await fetch(url as any, init);
+    const data = await res.json();
+    return {
+      data,
+      res: {
+        status: res.status,
+        ok: res.ok,
+      },
+    };
+  });
   createWindow();
-
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

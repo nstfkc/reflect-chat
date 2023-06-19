@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, createContext } from "react";
+import { ReactNode, createContext, useCallback } from "react";
 
 export interface HttpParams {
   url: string;
@@ -8,7 +8,7 @@ export interface HttpParams {
   headers?: Record<string, string>;
 }
 
-const http = async (params: HttpParams) => {
+const defaultHttp = async (params: HttpParams) => {
   const { data, headers = {}, method = "GET", url } = params;
   const res = await fetch(url, {
     method,
@@ -29,21 +29,39 @@ const http = async (params: HttpParams) => {
   };
 };
 
-export type HTTPHandler = typeof http;
+export type HTTPHandler = typeof defaultHttp;
 
 export const HttpContext = createContext({
-  http,
+  http: defaultHttp,
 });
 
 interface HttpProviderProps {
-  http: typeof http;
+  http?: HTTPHandler;
+  accessToken: string | null;
   children: ReactNode;
 }
 
 export const HttpProvider = (props: HttpProviderProps) => {
+  const { children, accessToken, http = defaultHttp } = props;
+  const httpHandler = useCallback(
+    (params: HttpParams) =>
+      http({
+        ...params,
+        headers: {
+          ...params.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    [accessToken, http]
+  );
+
   return (
-    <HttpContext.Provider value={{ http: props.http }}>
-      {props.children}
+    <HttpContext.Provider
+      value={{
+        http: httpHandler,
+      }}
+    >
+      {children}
     </HttpContext.Provider>
   );
 };

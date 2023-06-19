@@ -29,15 +29,20 @@ server.addHook("onRequest", (req, _rep, done) => {
   }
 
   if (req.headers.authorization) {
-    token = req.headers.authorization.replace("Bearer%20", "");
+    token = req.headers.authorization
+      .replace("Bearer%20", "")
+      .replace("Bearer", "")
+      .trim();
   }
   if (req.cookies["Authorization"]) {
     token = req.cookies["Authorization"].replace("Bearer", "").trim();
   }
+
   if (token) {
     const decoded = decode(token) as Record<string, string>;
     req.requestContext.set("context", { ...decoded, currentOrganisationId });
   }
+
   done();
 });
 

@@ -10,20 +10,19 @@ interface ConfigContextValue {
 export const ConfigContext = createContext({} as ConfigContextValue);
 
 interface ConfigProviderProps {
-  serverHost: string;
-  assetsServiceUrl: string;
+  baseUrl: string;
   children: ReactNode;
 }
 
 export const ConfigProvider = (props: ConfigProviderProps) => {
-  const { children, serverHost, assetsServiceUrl } = props;
+  const { children, baseUrl } = props;
 
   return (
     <ConfigContext.Provider
       value={{
-        apiUrl: [serverHost, "api"].join("/"),
-        socketUrl: serverHost,
-        assetsServiceUrl,
+        apiUrl: [baseUrl, "api"].join("/"),
+        socketUrl: baseUrl,
+        assetsServiceUrl: [baseUrl, "media"].join("/"),
       }}
     >
       {children}

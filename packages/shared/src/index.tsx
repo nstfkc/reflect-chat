@@ -14,6 +14,8 @@ export * from "./components/context/UsersContext";
 export { ChatHistory } from "./components/ui/Chat/ChatHistory";
 
 export { useQuery } from "./utils/useQuery";
+export { useMutation } from "./utils/useMutation";
+export { SWRConfig } from "swr";
 
 export {
   AuthProvider,

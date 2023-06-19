@@ -1,11 +1,16 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import { Text, View, TextInput, Button, Alert } from "react-native";
 import { useSignIn } from "../../auth";
 import { FormField } from "../lib/FormField";
-import { Button } from "../lib/Button";
 import { useEffect, useState } from "react";
 
-export const SignInForm = () => {
+interface Props {
+  onSuccess: (token: string) => void;
+}
+
+export const SignInForm = (props: Props) => {
   const {
+    control,
     register,
     handleSubmit,
     watch,
@@ -14,9 +19,14 @@ export const SignInForm = () => {
   } = useForm();
   const { trigger, isMutating, error } = useSignIn();
   const onSubmit = () => {
+    console.log("submit");
     trigger({
       email: watch("email"),
       password: watch("password"),
+    }).then((res) => {
+      if (res?.success === true) {
+        props.onSuccess((res.data as any).token);
+      }
     });
   };
 
@@ -33,27 +43,42 @@ export const SignInForm = () => {
   }, [error, setError]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <FormField
-        label="Email"
-        id="email"
-        type="email"
-        {...register("email")}
-        error={errors?.["email"]?.message as any}
+    <View>
+      <Text>{JSON.stringify(error)}</Text>
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Email"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="email"
+      />
+      {errors.email && <Text>This is required.</Text>}
+
+      <Controller
+        control={control}
+        rules={{
+          maxLength: 100,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Password"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="password"
       />
 
-      <FormField
-        label="Password"
-        id="password"
-        type="password"
-        error={errors?.["password"]?.message as any}
-        {...register("password")}
-      />
-      <div>
-        <Button type="submit" disabled={isMutating}>
-          Submit
-        </Button>
-      </div>
-    </form>
+      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+    </View>
   );
 };
