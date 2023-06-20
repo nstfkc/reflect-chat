@@ -6,6 +6,7 @@ export type { HTTPHandler } from "./components/context/HttpContext";
 
 export { SignInForm } from "./components/forms";
 export { Button } from "./components/lib/Button";
+export { Box } from "./components/lib/layout";
 
 export * from "./components/context/SocketContext";
 export * from "./components/context/MessageContext";

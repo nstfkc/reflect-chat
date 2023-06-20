@@ -85,14 +85,18 @@ function App() {
       <HttpProvider accessToken={token} http={http}>
         <AuthProvider>
           <SignedOut>
-            <SignInForm
-              onSuccess={(token) => {
-                updateToken(token);
-              }}
-            />
+            <div className="flex w-full h-screen justify-center items-center">
+              <SignInForm
+                onSuccess={(token) => {
+                  updateToken(token);
+                }}
+              />
+            </div>
           </SignedOut>
           <SignedIn>
-            <SignOut onSignOut={() => updateToken(null)} />
+            <div className="flex">
+              <SignOut onSignOut={() => updateToken(null)} />
+            </div>
           </SignedIn>
         </AuthProvider>
       </HttpProvider>

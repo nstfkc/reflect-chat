@@ -21,6 +21,7 @@
     "@radix-ui/react-switch": "^1.0.2",
     "class-variance-authority": "^0.5.2",
     "db": "workspace:*",
+    "nativewind": "^2.0.11",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.43.9",
     "react-icons": "^4.8.0",
