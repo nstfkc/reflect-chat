@@ -5,17 +5,35 @@ import {
   HttpProvider,
   HTTPHandler,
   AuthProvider,
+  MessageProvider,
+  SocketProvider,
   SignedOut,
   SignInForm,
   SignedIn,
-  useSignOut,
-  Button,
 } from "shared";
-import { HomeScreen } from "./screens/HomeScreen";
 
+import { HomeScreen } from "./screens/HomeScreen";
+import { ChatScreen } from "./screens/ChatScreen";
 import { getConfig } from "config";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const config = getConfig(import.meta.env.PROD);
+
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <HomeScreen />,
+      children: [
+        {
+          path: ":channelId",
+          element: <ChatScreen />,
+        },
+      ],
+    },
+  ],
+  { basename: "/client" }
+);
 
 function useAccessToken() {
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +101,11 @@ function App() {
             </div>
           </SignedOut>
           <SignedIn>
-            <HomeScreen />
+            <SocketProvider>
+              <MessageProvider>
+                <RouterProvider router={router} />
+              </MessageProvider>
+            </SocketProvider>
           </SignedIn>
         </AuthProvider>
       </HttpProvider>

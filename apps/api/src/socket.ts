@@ -20,6 +20,9 @@ function parseMentions(htmlString: string) {
 
 export function sockets(io: Server) {
   io.on("connection", (socket) => {
+    setInterval(() => {
+      io.emit("ping");
+    }, 1000);
     console.log("connected", socket.id);
     userIdSocketMap.set(socket.handshake.query.userId, socket);
 

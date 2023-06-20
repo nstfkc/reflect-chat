@@ -21,6 +21,7 @@
     "@prisma/client": "^4.13.0",
     "@types/node": "^17.0.12",
     "swr": "^2.1.5",
+    "uniqolor": "^1.1.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

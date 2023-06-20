@@ -2,12 +2,22 @@ import fastify from "fastify";
 import cookie from "@fastify/cookie";
 import fastifyIO from "fastify-socket.io";
 import { decode } from "jsonwebtoken";
-
+import fastifyCors from "@fastify/cors";
 import { fastifyRequestContext } from "@fastify/request-context";
 
 const server = fastify();
 
-server.register(fastifyIO);
+server.register(fastifyCors, {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+});
+
+server.register(fastifyIO, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  },
+});
 
 server.register(cookie, {
   secret: process.env.SECRET,

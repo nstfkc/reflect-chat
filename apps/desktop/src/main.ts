@@ -8,7 +8,7 @@ import { waitForServerUp } from "./wait";
 // TODO: maybe better "production detection"
 const isProduction = process.env.NODE_ENV !== "development";
 const UI_PATH = path.join(__dirname, "./");
-const localServer = "http://0.0.0.0:3000/client";
+const localServer = "http://localhost:3000/client";
 
 async function createWindow() {
   // Create the browser window.
@@ -17,6 +17,7 @@ async function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       allowRunningInsecureContent: true,
+      webSecurity: false,
     },
     width: 1200,
   });

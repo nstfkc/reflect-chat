@@ -2,13 +2,15 @@
   "name": "desktop",
   "version": "0.0.0",
   "private": true,
-  "author": "enesxtufekci@gmail.com",
+  "author": "Enes Tufekci <enesxtufekci@gmail.com>",
+  "productName": "reflect",
   "description": "The best chat app",
   "main": "./dist/main.js",
+  "homepage": "reflect.rocks",
   "scripts": {
     "dev": "tsup src --watch --onSuccess \"electron dist/main.js\"",
-    "electron:postinstall": "electron-builder install-app-deps",
-    "pack": "electron-builder --mac",
+    "postinstall": "electron-builder install-app-deps",
+    "pack": "electron-builder --mac --dir",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "electron ./dist/main.js",
@@ -16,9 +18,13 @@
     "build": "tsup src"
   },
   "build": {
+    "electronVersion": "20.0.0",
     "asar": true,
+    "extends": null,
     "files": [
-      "./dist/**/*"
+      "./dist/**/*",
+      "node_modules/**/*",
+      "../../node_modules/**/*"
     ],
     "appId": "reflect.chat",
     "mac": {
@@ -33,7 +39,7 @@
     "eslint-config-custom": "workspace:*"
   },
   "dependencies": {
-    "electron": "^25.1.1",
+    "electron": "20.0.0",
     "electron-fetch": "^1.9.1",
     "node-fetch": "^3.3.1"
   }
