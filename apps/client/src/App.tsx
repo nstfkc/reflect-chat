@@ -13,21 +13,9 @@ import {
 } from "shared";
 import { HomeScreen } from "./screens/HomeScreen";
 
-/* import { getConfig } from "config"; */
+import { getConfig } from "config";
 
-/* const config = getConfig(import.meta.env.PROD); */
-
-interface SignOutProps {
-  onSignOut: VoidFunction;
-}
-const SignOut = (props: SignOutProps) => {
-  const { trigger } = useSignOut(props.onSignOut);
-  return (
-    <div>
-      <Button onPress={() => trigger({}).then(() => {})}>Sign out</Button>
-    </div>
-  );
-};
+const config = getConfig(import.meta.env.PROD);
 
 function useAccessToken() {
   const [isLoading, setIsLoading] = useState(true);
@@ -82,7 +70,7 @@ function App() {
   }
 
   return (
-    <ConfigProvider baseUrl={"http://localhost:3000"}>
+    <ConfigProvider baseUrl={config.baseUrl}>
       <HttpProvider accessToken={token} http={http}>
         <AuthProvider>
           <SignedOut>
