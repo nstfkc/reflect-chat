@@ -4,9 +4,9 @@ import Redis from "ioredis";
 
 const userIdSocketMap = new Map();
 
-let redis = new Redis(
-  "redis://default:530f03c0f1194bb4855c090d902a6c24@eu2-sterling-cheetah-31030.upstash.io:31030"
-);
+// let redis = new Redis(
+//   "redis://default:530f03c0f1194bb4855c090d902a6c24@eu2-sterling-cheetah-31030.upstash.io:31030"
+// );
 
 function parseMentions(htmlString: string) {
   const mentionRegex = /<span[^>]+class="mention"[^>]+data-id="([^"]+)"/g;
@@ -32,7 +32,7 @@ export function sockets(io: Server) {
     });
 
     socket.on("last-seen-message", async ({ userId, message }) => {
-      await redis.set(`last-seen-message:${userId}`, JSON.stringify(message));
+      // await redis.set(`last-seen-message:${userId}`, JSON.stringify(message));
     });
 
     socket.on("channel-created", (channel) => {

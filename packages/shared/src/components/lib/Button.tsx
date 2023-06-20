@@ -1,18 +1,36 @@
-import { cx } from "class-variance-authority";
-import { ComponentProps } from "react";
+import { PropsWithChildren } from "react";
+import {
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  StyleSheet,
+} from "react-native";
 
-interface ButtonProps extends ComponentProps<"button"> {}
+interface ButtonProps extends TouchableOpacityProps {}
 
-export const Button = (props: ButtonProps) => {
-  const { className, ...rest } = props;
-
+export const Button = (props: PropsWithChildren<ButtonProps>) => {
+  const { children, ...rest } = props;
   return (
-    <button
-      className={cx(
-        "bg-black text-white px-4 py-2 font-semibold tracking-wide rounded-lg disabled:opacity-50",
-        className
-      )}
-      {...rest}
-    />
+    <TouchableOpacity {...rest} style={styles().button}>
+      <Text style={styles().label}>{children}</Text>
+    </TouchableOpacity>
   );
 };
+
+const styles = () =>
+  StyleSheet.create({
+    button: {
+      borderRadius: 6,
+      paddingHorizontal: 8,
+      paddingVertical: 12,
+      textAlign: "center",
+      backgroundColor: "#000",
+    },
+    label: {
+      textAlign: "center",
+      fontSize: 16,
+      fontWeight: "600",
+      letterSpacing: 1,
+      color: "#FFF",
+    },
+  });

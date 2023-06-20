@@ -72,19 +72,22 @@ export default function App() {
       }}
     >
       <ConfigProvider baseUrl={config.baseUrl}>
-        <HttpProvider accessToken={token}>
+        <HttpProvider accessToken={token} http={null}>
           <AuthProvider>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1 }}>
-              <Text>Token: {token}</Text>
               <SignedOut>
-                <SignInForm
-                  onSuccess={(token) => {
-                    setItemAsync("access-token", token).then(() => {
-                      setToken(token);
-                    });
-                  }}
-                />
+                <View
+                  style={{ flex: 1, padding: 16, justifyContent: "center" }}
+                >
+                  <SignInForm
+                    onSuccess={(token) => {
+                      setItemAsync("access-token", token).then(() => {
+                        setToken(token);
+                      });
+                    }}
+                  />
+                </View>
               </SignedOut>
               <SignedIn>
                 <User />

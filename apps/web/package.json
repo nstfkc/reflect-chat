@@ -42,7 +42,6 @@
     "tailwindcss": "3.3.1",
     "tippy.js": "^6.3.7",
     "ts-debounce": "^4.0.0",
-    "ui": "workspace:*",
     "use-local-storage-state": "^18.3.2"
   },
   "devDependencies": {

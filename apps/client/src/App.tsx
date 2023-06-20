@@ -1,4 +1,3 @@
-import "./App.css";
 import { useState, useEffect } from "react";
 
 import {
@@ -10,6 +9,7 @@ import {
   SignInForm,
   SignedIn,
   useSignOut,
+  Button,
 } from "shared";
 
 /* import { getConfig } from "config"; */
@@ -23,7 +23,7 @@ const SignOut = (props: SignOutProps) => {
   const { trigger } = useSignOut(props.onSignOut);
   return (
     <div>
-      <button onClick={() => trigger({}).then(() => {})}>Sign out</button>
+      <Button onPress={() => trigger({}).then(() => {})}>Sign out</Button>
     </div>
   );
 };

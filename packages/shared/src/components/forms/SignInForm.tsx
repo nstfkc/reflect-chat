@@ -1,8 +1,11 @@
 import { useForm, Controller } from "react-hook-form";
-import { Text, View, TextInput, Button, Alert } from "react-native";
+import { Text, View, TextInput, Alert, TouchableOpacity } from "react-native";
+import { Button } from "../lib/Button";
+
 import { useSignIn } from "../../auth";
 import { FormField } from "../lib/FormField";
 import { useEffect, useState } from "react";
+import { Input } from "../lib/Input";
 
 interface Props {
   onSuccess: (token: string) => void;
@@ -43,15 +46,14 @@ export const SignInForm = (props: Props) => {
   }, [error, setError]);
 
   return (
-    <View>
-      <Text>{JSON.stringify(error)}</Text>
+    <View style={{ gap: 8 }}>
       <Controller
         control={control}
         rules={{
           required: true,
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <Input
             placeholder="Email"
             onBlur={onBlur}
             onChangeText={onChange}
@@ -68,8 +70,9 @@ export const SignInForm = (props: Props) => {
           maxLength: 100,
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <Input
             placeholder="Password"
+            secureTextEntry={true}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -78,7 +81,7 @@ export const SignInForm = (props: Props) => {
         name="password"
       />
 
-      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+      <Button onPress={handleSubmit(onSubmit)}>Submit</Button>
     </View>
   );
 };
