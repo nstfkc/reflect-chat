@@ -11,6 +11,7 @@ import {
   useSignOut,
   Button,
 } from "shared";
+import { HomeScreen } from "./screens/HomeScreen";
 
 /* import { getConfig } from "config"; */
 
@@ -94,9 +95,7 @@ function App() {
             </div>
           </SignedOut>
           <SignedIn>
-            <div className="flex">
-              <SignOut onSignOut={() => updateToken(null)} />
-            </div>
+            <HomeScreen />
           </SignedIn>
         </AuthProvider>
       </HttpProvider>

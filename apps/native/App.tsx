@@ -2,10 +2,9 @@ import "text-encoding-polyfill";
 import * as React from "react";
 
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, SafeAreaView, Text, Button } from "react-native";
-import { RichTextEditor } from "./src/components/RichTextEditor";
+import { View, SafeAreaView } from "react-native";
 import * as Device from "expo-device";
-import { setItemAsync, getItemAsync, deleteItemAsync } from "expo-secure-store";
+import { setItemAsync, getItemAsync } from "expo-secure-store";
 
 import { getConfig } from "config";
 import {
@@ -13,37 +12,13 @@ import {
   ConfigProvider,
   HttpProvider,
   SignInForm,
-  useUser,
   SignedIn,
   SignedOut,
-  useSignOut,
   SWRConfig,
+  ChannelList,
 } from "shared";
 
 const config = getConfig(Device.isDevice);
-
-const User = () => {
-  const { user } = useUser();
-  return (
-    <View>
-      <Text>{JSON.stringify(user)}</Text>
-    </View>
-  );
-};
-
-const SignOut = (props: { onSignOut: VoidFunction }) => {
-  const { trigger } = useSignOut(() => {
-    props.onSignOut();
-  });
-  const { user } = useUser();
-
-  return (
-    <Button
-      onPress={() => trigger({})}
-      title={`Sign out ${user.name}`}
-    ></Button>
-  );
-};
 
 export default function App() {
   const [token, setToken] = React.useState("");
@@ -90,12 +65,9 @@ export default function App() {
                 </View>
               </SignedOut>
               <SignedIn>
-                <User />
-                <SignOut
-                  onSignOut={() => {
-                    deleteItemAsync("access-token").then(() => setToken(""));
-                  }}
-                />
+                <View style={{ padding: 4 }}>
+                  <ChannelList onChannelClick={() => {}} />
+                </View>
               </SignedIn>
             </SafeAreaView>
           </AuthProvider>
@@ -104,10 +76,3 @@ export default function App() {
     </SWRConfig>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});
