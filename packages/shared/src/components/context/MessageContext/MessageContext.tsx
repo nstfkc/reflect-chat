@@ -1,7 +1,6 @@
 "use client";
 
 import { createId } from "@paralleldrive/cuid2";
-import useLocalStorageState from "use-local-storage-state";
 import { debounce } from "ts-debounce";
 import { Message } from "db";
 import {
@@ -129,10 +128,7 @@ function useChannelMentions() {
 
 function useLastSeenMessage() {
   const { user } = useContext(UserContext);
-  const [lastSeenMessage, setLastSeenMessage] =
-    useLocalStorageState<null | Message>("last-seen-message", {
-      defaultValue: null,
-    });
+  const [lastSeenMessage, setLastSeenMessage] = useState<null | Message>(null);
 
   const { socket } = useSocket();
 
