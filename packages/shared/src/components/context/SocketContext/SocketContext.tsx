@@ -1,7 +1,7 @@
 "use client";
 
-import { MessageMedia, MessageWithMedia, User } from "../../../types/global";
-import type { Channel, Message } from "db";
+import { MessageMedia, MessageWithMedia } from "../../../types/global";
+import type { Channel, Message, User } from "db";
 import {
   ReactNode,
   createContext,

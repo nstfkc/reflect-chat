@@ -7,7 +7,7 @@ export const SignInScreen = (props: SignInScreenProps) => {
 
   return (
     <div className="p-4">
-      <SignInForm />
+      <SignInForm onSuccess={() => {}} />
     </div>
   );
 };

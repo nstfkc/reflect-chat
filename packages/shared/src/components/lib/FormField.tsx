@@ -15,7 +15,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
         <label htmlFor={id} className="font-semibold tracking-wide text-sm">
           {label}
         </label>
-        <Input hasError={!!error} ref={ref} {...inputProps} />
+        <Input hasError={!!error} {...inputProps} />
         {error ? (
           <p className="text-red-600 text-xs font-semibold text-right">
             {error}

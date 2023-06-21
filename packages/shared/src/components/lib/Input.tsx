@@ -1,6 +1,6 @@
 import { TextInput, TextInputProps } from "react-native";
 
-export const Input = (props: TextInputProps) => {
+export const Input = (props: TextInputProps & { hasError?: boolean }) => {
   const {} = props;
   return (
     <TextInput

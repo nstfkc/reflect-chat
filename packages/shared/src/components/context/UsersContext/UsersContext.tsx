@@ -2,13 +2,10 @@
 
 import { ReactNode, createContext, useCallback } from "react";
 import { useSocket } from "../SocketContext/useSocket";
-import { User } from "../../../types/global";
-import { use } from "db";
+import { User } from "db";
+import { useQuery } from "../../../utils/useQuery";
 
-interface UsersContextValue {
-  allUsers: User[];
-  getUserById: (id: string) => User | undefined;
-}
+interface UsersContextValue {}
 
 export const UsersContext = createContext({} as UsersContextValue);
 
@@ -18,30 +15,5 @@ interface UserProviderProps {
 
 export const UsersProvider = (props: UserProviderProps) => {
   const { children } = props;
-  const { data: users = [], mutate } = useQuery("/users");
-
-  useSocket("user-connected", ({ user }) => {
-    if (!users.find((u) => u.id === user.id)) {
-      mutate([...users, user]);
-    }
-  });
-
-  const getUserById = useCallback(
-    (id: string) => {
-      return users.find((user) => user.id === id);
-    },
-    [users]
-  );
-
-  if (!users) {
-    return null;
-  }
-
-  const value: UsersContextValue = {
-    allUsers: users,
-    getUserById,
-  };
-  return (
-    <UsersContext.Provider value={value}>{children}</UsersContext.Provider>
-  );
+  return <UsersContext.Provider value={{}}>{children}</UsersContext.Provider>;
 };

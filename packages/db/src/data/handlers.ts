@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 import type { ZodObject, ZodRawShape } from "zod";
 import { MembershipRole, GlobalRole } from "@prisma/client";
 import { HandlerContext } from "./handlerContext";

@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 import { random } from "uniqolor";
 import { addDays } from "date-fns";
 

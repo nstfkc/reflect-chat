@@ -30,7 +30,7 @@ export const ChatHistory = (props: ChatHistoryProps) => {
 
   const channel = channels?.find((c) => c.id === channelId)!;
   const { user } = useContext(UserContext);
-  const { allUsers } = useContext(UsersContext);
+  const allUsers = [];
 
   if (!channel) {
     return null;
