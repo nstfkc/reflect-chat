@@ -12,7 +12,7 @@ import {
 import { Svg, Circle, Rect } from "react-native-svg";
 
 import { StackScreenProps } from "./types";
-import { ChatHistory, JSONContent } from "shared";
+import { ChatHistory, JSONContent, MessageContext, useUser } from "shared";
 import { RichTextEditor } from "../components/RichTextEditor";
 
 interface MessageRendererProps {
@@ -154,6 +154,8 @@ const MessageRenderer = (props: MessageRendererProps) => {
 
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const { width, height } = useWindowDimensions();
+  const { sendMessage } = React.useContext(MessageContext);
+  const { user } = useUser();
   return (
     <KeyboardAvoidingView
       keyboardVerticalOffset={80}
@@ -172,7 +174,18 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
           }}
         />
       </ScrollView>
-      <RichTextEditor></RichTextEditor>
+      <RichTextEditor
+        onSend={(message) => {
+          sendMessage(
+            {
+              channelId: route.params.channel.id,
+              senderId: user?.publicId,
+              text: message,
+            },
+            []
+          );
+        }}
+      ></RichTextEditor>
     </KeyboardAvoidingView>
   );
 };

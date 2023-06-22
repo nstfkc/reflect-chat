@@ -240,6 +240,7 @@ export const MessageProvider = (props: MessageProviderProps) => {
 
   const sendMessage = useCallback(
     (message: Partial<Message>, medias: RawMedia[]) => {
+      console.log({ message });
       const media = medias.map((media) => ({
         filename: media.file.name,
         kind: media.fileKind,

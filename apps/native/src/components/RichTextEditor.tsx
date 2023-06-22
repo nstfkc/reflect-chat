@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import editorHtml11 from "../editor/dist/index.html";
+import editorHtml13 from "../editor/dist/index.html";
 import type {
   EditorState,
   NativeMessage,
@@ -17,11 +17,12 @@ import type {
 
 interface RichTextEditorProps {
   content?: string;
+  onSend: (message: string) => void;
 }
 export const RichTextEditor = (props: RichTextEditorProps) => {
-  const { content = "" } = props;
+  const { content = "", onSend } = props;
   const [editorState, setEditorState] = useState<EditorState>({
-    html: "",
+    content: "",
     canBold: false,
     canItalic: false,
     canStrike: false,
@@ -108,34 +109,63 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
           <Text>Lift List item</Text>
         </TouchableOpacity>
       </View>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          sendMessageToWebView({ kind: "editor", payload: "focus" });
-        }}
-      >
-        <WebView
-          ref={webViewRef}
-          style={styles.webview}
-          originWhitelist={["*"]}
-          scrollEnabled={false}
-          onMessage={(event) => {
-            const webViewMessage = JSON.parse(
-              event.nativeEvent.data
-            ) as WebViewMessage;
 
-            if (webViewMessage.kind === "editorStateUpdate") {
-              setEditorState(webViewMessage.payload);
-            }
-            if (webViewMessage.kind === "editorInitialised") {
-              sendMessageToWebView({
-                kind: "initialContent",
-                payload: content,
-              });
-            }
+      <View style={{ flex: 1, position: "relative" }}>
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            zIndex: 1000,
+            right: 8,
+            bottom: 0,
+            paddingVertical: 4,
+            paddingHorizontal: 8,
+            borderRadius: 6,
+            backgroundColor: "black",
           }}
-          source={{ html: `${editorHtml11}` }}
-        />
-      </TouchableWithoutFeedback>
+          onPress={() => {
+            onSend(editorState.content);
+            sendMessageToWebView({ kind: "initialContent", payload: "" });
+          }}
+        >
+          <Text style={{ color: "white" }}>Send</Text>
+        </TouchableOpacity>
+        <View
+          style={{
+            width: 24,
+            height: 24,
+            backgroundColor: "blue",
+            position: "absolute",
+          }}
+        ></View>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            sendMessageToWebView({ kind: "editor", payload: "focus" });
+          }}
+        >
+          <WebView
+            ref={webViewRef}
+            style={styles.webview}
+            originWhitelist={["*"]}
+            scrollEnabled={false}
+            onMessage={(event) => {
+              const webViewMessage = JSON.parse(
+                event.nativeEvent.data
+              ) as WebViewMessage;
+
+              if (webViewMessage.kind === "editorStateUpdate") {
+                setEditorState(webViewMessage.payload);
+              }
+              if (webViewMessage.kind === "editorInitialised") {
+                sendMessageToWebView({
+                  kind: "initialContent",
+                  payload: content,
+                });
+              }
+            }}
+            source={{ html: `${editorHtml13}` }}
+          />
+        </TouchableWithoutFeedback>
+      </View>
     </View>
   );
 };

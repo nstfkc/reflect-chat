@@ -2,7 +2,7 @@ import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 
 export type EditorState = {
-  html: string;
+  content: string;
   canBold: boolean;
   canItalic: boolean;
   canStrike: boolean;
@@ -27,7 +27,7 @@ function sendMessageFromWebView(params: WebViewMessage) {
 
 function getEditorState(editor: Editor): EditorState {
   return {
-    html: editor.getHTML(),
+    content: JSON.stringify(editor.getJSON()),
     canBold: editor.can().chain().focus().toggleBold().run(),
     canItalic: editor.can().chain().focus().toggleItalic().run(),
     canStrike: editor.can().chain().focus().toggleStrike().run(),
