@@ -7,7 +7,11 @@ export const HomeScreen = () => {
   return (
     <div className="flex h-screen w-screen">
       <div className="bg-gray-100 min-w-[300px] p-2">
-        <ChannelList onChannelClick={(channel) => navigate(channel.id)} />
+        <ChannelList
+          onChannelClick={(channel) =>
+            navigate(channel.id, { state: { channel } })
+          }
+        />
       </div>
       <div>
         <Outlet />

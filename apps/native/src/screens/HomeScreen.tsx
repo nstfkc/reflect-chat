@@ -9,8 +9,7 @@ export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
     <ChannelList
       onChannelClick={(channel) =>
         navigation.navigate("Chat", {
-          channelId: channel.id,
-          channelName: channel.name,
+          channel,
         })
       }
     ></ChannelList>

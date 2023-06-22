@@ -25,26 +25,26 @@ import { createMentionSuggestions } from "./createMentionSuggestions";
 import { FileUploaderContext, RawMedia } from "./FileUploader";
 import { UploadQueue } from "./UploadQueue";
 import { TbIndentDecrease, TbIndentIncrease } from "react-icons/tb";
-import { User } from "../../../types/global";
+import { User } from "db";
 
-/* let shiftEnter = false; */
+let shiftEnter = false;
 
-const HandleEnter = (_handlePressEnter: (editor: EditorInstance) => void) =>
+const HandleEnter = (handlePressEnter: (editor: EditorInstance) => void) =>
   Extension.create({
     addKeyboardShortcuts(this) {
       return {
         "Shift-Enter": (editor) => {
-          /* shiftEnter = true; */
+          shiftEnter = true;
           editor.editor.commands.enter();
-          /* shiftEnter = false; */
+          shiftEnter = false;
           return true;
         },
-        Enter: ({ editor: _ }) => {
-          /* if (!shiftEnter) {
-           *   handlePressEnter(editor as any);
-           *   shiftEnter = false;
-           *   return true;
-           * } */
+        Enter: ({ editor }) => {
+          if (!shiftEnter) {
+            handlePressEnter(editor as any);
+            shiftEnter = false;
+            return true;
+          }
           return false;
         },
       };
@@ -72,7 +72,7 @@ export const TextEditor = (props: TextEditorProps) => {
 
   const handlePressEnter = (editor: EditorInstance) => {
     if (pendingMedias.current.length === 0) {
-      onSubmit(editor.getHTML(), uploadedMedias.current);
+      onSubmit(JSON.stringify(editor.getJSON()), uploadedMedias.current);
       editor.commands.clearContent();
       clearUplaodQueue();
     }

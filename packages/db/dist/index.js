@@ -60,7 +60,7 @@ __export(mutations_exports, {
   signOut: () => signOut,
   signUp: () => signUp
 });
-var import_zod = __toESM(require("zod"));
+var z = __toESM(require("zod"));
 var import_uniqolor = require("uniqolor");
 
 // ../../node_modules/@babel/runtime/helpers/esm/typeof.js
@@ -198,12 +198,12 @@ function createPrecedure(args) {
 var import_client2 = require("@prisma/client");
 var createChannel = createPrecedure({
   membershipRoles: [import_client2.MembershipRole.ADMIN, import_client2.MembershipRole.OWNER],
-  schema: import_zod.default.object({
-    name: import_zod.default.string({ required_error: "Name is required" }).min(3, "Channel name is too short"),
-    kind: import_zod.default.enum([import_client2.ChannelKind.PRIVATE, import_client2.ChannelKind.PUBLIC], {
+  schema: z.object({
+    name: z.string({ required_error: "Name is required" }).min(3, "Channel name is too short"),
+    kind: z.enum([import_client2.ChannelKind.PRIVATE, import_client2.ChannelKind.PUBLIC], {
       required_error: "Channel kind is required"
     }),
-    organisationId: import_zod.default.string({ required_error: "Organisation id is required" })
+    organisationId: z.string({ required_error: "Organisation id is required" })
   }),
   handler: async (args, ctx) => {
     const { kind, name, organisationId } = args;
@@ -222,7 +222,7 @@ var createChannel = createPrecedure({
   }
 });
 var createOrganisation = createPrecedure({
-  schema: import_zod.default.object({ name: import_zod.default.string() }),
+  schema: z.object({ name: z.string() }),
   handler: async (args, ctx) => {
     try {
       const org = await prisma.organisation.create({
@@ -241,10 +241,10 @@ var createOrganisation = createPrecedure({
 });
 var signUp = createPrecedure({
   isPublic: true,
-  schema: import_zod.default.object({
-    email: import_zod.default.string().email(),
-    password: import_zod.default.string(),
-    name: import_zod.default.string()
+  schema: z.object({
+    email: z.string().email(),
+    password: z.string(),
+    name: z.string()
   }),
   handler: async (args, ctx) => {
     try {
@@ -280,9 +280,9 @@ var signUp = createPrecedure({
 });
 var signIn = createPrecedure({
   isPublic: true,
-  schema: import_zod.default.object({
-    email: import_zod.default.string().email(),
-    password: import_zod.default.string()
+  schema: z.object({
+    email: z.string().email(),
+    password: z.string()
   }),
   handler: async (args, ctx) => {
     const { email, password } = args;
@@ -352,7 +352,7 @@ var signOut = createPrecedure({
   }
 });
 var setCurrentOrganisationId = createPrecedure({
-  schema: import_zod.default.object({ organisationId: import_zod.default.string() }),
+  schema: z.object({ organisationId: z.string() }),
   handler: async (args, ctx) => {
     const { helpers } = ctx;
     helpers.setCookie("X-Organisation-Id", args.organisationId, {

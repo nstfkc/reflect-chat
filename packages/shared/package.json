@@ -2,7 +2,7 @@
   "name": "shared",
   "version": "0.0.0",
   "main": "./src/index.tsx",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.tsx",
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",

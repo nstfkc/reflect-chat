@@ -8,6 +8,8 @@ export { SignInForm } from "./components/forms";
 export { Button } from "./components/lib/Button";
 export { Box } from "./components/lib/layout";
 export { ChannelList } from "./components/ui/ChannelList";
+export { TextEditor } from "./components/ui/Chat/TextEditor";
+export { FileUploaderProvider } from "./components/ui/Chat/FileUploader";
 
 export * from "./components/context/SocketContext";
 export * from "./components/context/MessageContext";
@@ -27,8 +29,12 @@ export {
   useSignUp,
   useSignOut,
   useUser,
+  useOrganisation,
+  useSwitchOrganisation,
 } from "./auth";
 export type { SignedInUser } from "./auth";
 
 export { SignInScreen } from "./screens/SignInScreen";
 export { OrganisationSelectScreen } from "./screens/OrganisationSelectScreen";
+
+export type { JSONContent } from "@tiptap/react";
