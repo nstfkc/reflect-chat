@@ -7,6 +7,8 @@ import {
   StyleProp,
   TextStyle,
 } from "react-native";
+import { Svg, Circle, Rect } from "react-native-svg";
+
 import { StackScreenProps } from "./types";
 import { ChatHistory, JSONContent } from "shared";
 
@@ -24,11 +26,59 @@ function convertMarks(marks: JSONContent["marks"]): StyleProp<TextStyle> {
   });
 }
 
+const Bullet = ({ level }: { level: number }) => {
+  return (
+    <View
+      style={[
+        {
+          width: 16,
+          height: 16,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      ]}
+    >
+      <Svg height="50%" width="50%" viewBox="0 0 16 16">
+        {level % 3 === 0 ? (
+          <Circle
+            cx="8"
+            cy="8"
+            r="4"
+            stroke="black"
+            strokeWidth="1"
+            fill="black"
+          />
+        ) : level % 3 === 1 ? (
+          <Circle
+            cx="8"
+            cy="8"
+            r="4"
+            stroke="black"
+            strokeWidth="1"
+            fill="transparent"
+          />
+        ) : level % 3 === 2 ? (
+          <Rect
+            x="4"
+            y="4"
+            width="8"
+            height="8"
+            stroke="black"
+            strokeWidth="1"
+            fill="black"
+          />
+        ) : null}
+      </Svg>
+    </View>
+  );
+};
+
 const MessageRendererFragment = ({
-  textPrefix = "",
+  listDepth = 0,
   content,
 }: {
   textPrefix?: string;
+  listDepth?: number;
   content: JSONContent["content"];
 }) => {
   if (!content) {
@@ -41,12 +91,19 @@ const MessageRendererFragment = ({
         switch (c.type) {
           case "paragraph":
             return (
-              <Text key={index}>
-                {textPrefix ? (
-                  <Text style={{ paddingHorizontal: 8 }}>{textPrefix}</Text>
-                ) : null}
-                <MessageRendererFragment key={index} content={c.content} />
-              </Text>
+              <View
+                key={index}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
+                <Bullet level={listDepth - 1} />
+                <Text key={index}>
+                  <MessageRendererFragment
+                    listDepth={listDepth}
+                    key={index}
+                    content={c.content}
+                  />
+                </Text>
+              </View>
             );
           case "text":
             return (
@@ -59,7 +116,10 @@ const MessageRendererFragment = ({
           case "bulletList":
             return (
               <View key={index}>
-                <MessageRendererFragment content={c.content} />
+                <MessageRendererFragment
+                  listDepth={listDepth}
+                  content={c.content}
+                />
               </View>
             );
           case "listItem":
@@ -68,6 +128,7 @@ const MessageRendererFragment = ({
                 <MessageRendererFragment
                   textPrefix={`\u2022`}
                   content={c.content}
+                  listDepth={listDepth + 1}
                 />
               </View>
             );

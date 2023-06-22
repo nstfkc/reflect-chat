@@ -1,6 +1,4 @@
 import React from "react";
-import { View, Text } from "react-native";
-
 import { ChannelList } from "shared";
 import { StackScreenProps } from "./types";
 

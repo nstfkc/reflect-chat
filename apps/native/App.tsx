@@ -17,7 +17,6 @@ import {
   SignedIn,
   SignedOut,
   SWRConfig,
-  ChannelList,
 } from "shared";
 import { RootScreen } from "./src/screens/Root";
 
