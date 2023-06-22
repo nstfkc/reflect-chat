@@ -240,7 +240,6 @@ export const MessageProvider = (props: MessageProviderProps) => {
 
   const sendMessage = useCallback(
     (message: Partial<Message>, medias: RawMedia[]) => {
-      console.log({ message });
       const media = medias.map((media) => ({
         filename: media.file.name,
         kind: media.fileKind,
@@ -250,11 +249,15 @@ export const MessageProvider = (props: MessageProviderProps) => {
         height: media.height,
       }));
 
-      socketRef.current?.emit(
-        "message:create",
-        message,
-        media as any //TODO fix
-      );
+      try {
+        socketRef.current?.emit(
+          "message:create",
+          message,
+          media as any //TODO fix
+        );
+      } catch (err) {
+        console.log(err);
+      }
 
       const messageWithMedia = {
         ...message,
@@ -264,6 +267,7 @@ export const MessageProvider = (props: MessageProviderProps) => {
         media: media as any,
       } as any; // TODO: fix
 
+      // TODO message.receiverId
       if (message.channelId && message.senderId === user?.publicId) return;
 
       handleUpdateMessageHistory(messageWithMedia);

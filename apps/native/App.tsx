@@ -2,7 +2,7 @@ import "react-native-gesture-handler";
 import "text-encoding-polyfill";
 import * as React from "react";
 import { StatusBar } from "expo-status-bar";
-import { View, SafeAreaView } from "react-native";
+import { View, SafeAreaView, Text } from "react-native";
 import * as Device from "expo-device";
 import { setItemAsync, getItemAsync } from "expo-secure-store";
 

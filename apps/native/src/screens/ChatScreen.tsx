@@ -12,7 +12,13 @@ import {
 import { Svg, Circle, Rect } from "react-native-svg";
 
 import { StackScreenProps } from "./types";
-import { ChatHistory, JSONContent, MessageContext, useUser } from "shared";
+import {
+  ChatHistory,
+  ConfigContext,
+  JSONContent,
+  MessageContext,
+  useUser,
+} from "shared";
 import { RichTextEditor } from "../components/RichTextEditor";
 
 interface MessageRendererProps {
@@ -154,6 +160,7 @@ const MessageRenderer = (props: MessageRendererProps) => {
 
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const { width, height } = useWindowDimensions();
+  const config = React.useContext(ConfigContext);
   const { sendMessage } = React.useContext(MessageContext);
   const { user } = useUser();
   return (

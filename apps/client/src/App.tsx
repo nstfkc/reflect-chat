@@ -38,7 +38,6 @@ const router = createBrowserRouter(
 function useAccessToken() {
   const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useState<null | string>(null);
-
   useEffect(() => {
     const persistedToken = localStorage.getItem("access_token");
     if (persistedToken) {

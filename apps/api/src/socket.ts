@@ -23,8 +23,11 @@ export function sockets(io: Server) {
     setInterval(() => {
       io.emit("ping");
     }, 1000);
-    console.log("connected", socket.id);
-    userIdSocketMap.set(socket.handshake.query.userId, socket);
+    if (userIdSocketMap.has(socket.handshake.query.userId)) {
+      userIdSocketMap.get(socket.handshake.query.userId).push(socket);
+    } else {
+      userIdSocketMap.set(socket.handshake.query.userId, [socket]);
+    }
 
     // Emit new user joined
     // Update the user list
@@ -32,6 +35,9 @@ export function sockets(io: Server) {
 
     socket.on("user-connected", ({ userId }) => {
       io.emit("user-connected", { userId });
+    });
+    socket.on("user-disconnected", ({ userId }) => {
+      console.log(userId, "disconnected");
     });
 
     socket.on("last-seen-message", async ({ userId, message }) => {
@@ -45,6 +51,7 @@ export function sockets(io: Server) {
     });
 
     socket.on("message:create", (message, medias) => {
+      console.log(message);
       if (message.channelId) {
         prisma.message
           .create({
@@ -83,7 +90,9 @@ export function sockets(io: Server) {
           })
           .then((dm) => {
             // userIdSocketMap.get(dm.senderId)?.emit("message:created", dm);
-            userIdSocketMap.get(dm.receiverId)?.emit("message:created", dm);
+            for (const socket of userIdSocketMap.get(dm.receiverId)) {
+              socket?.emit("message:created", dm);
+            }
           })
           .catch((error) => console.log(error));
         //

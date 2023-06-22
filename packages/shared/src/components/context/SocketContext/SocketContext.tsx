@@ -46,7 +46,6 @@ function useSocket(userId: string) {
   const { socketUrl } = useContext(ConfigContext);
   const [connected, setConnected] = useState(false);
   const socketRef = useRef<InternalSocket | null>(null);
-
   useEffect(() => {
     const socket = io(socketUrl, {
       query: { userId: userId },
@@ -63,6 +62,11 @@ function useSocket(userId: string) {
       (socketRef as any).current = socket;
 
       socket.emit("user-connected", { userId });
+    });
+    socket.on("disconnect", () => {
+      console.log("SOCKET DISCONNECTED!", socket.id);
+
+      socket.emit("user-disconnected", { userId });
     });
     return () => {
       if (socket) {

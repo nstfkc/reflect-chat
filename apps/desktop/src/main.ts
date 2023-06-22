@@ -31,7 +31,6 @@ async function createWindow() {
     await waitForServerUp(localServer);
     // load locally served React app in dev mode
     mainWindow.loadURL(localServer);
-
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
   }
