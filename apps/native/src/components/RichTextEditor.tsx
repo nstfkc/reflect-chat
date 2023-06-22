@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import editorHtml5 from "../editor/dist/index.html";
+import editorHtml11 from "../editor/dist/index.html";
 import type {
   EditorState,
   NativeMessage,
@@ -133,7 +133,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
               });
             }
           }}
-          source={{ html: `${editorHtml5}` }}
+          source={{ html: `${editorHtml11}` }}
         />
       </TouchableWithoutFeedback>
     </View>
@@ -143,8 +143,9 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
 const styles = {
   ...StyleSheet.create({
     container: {
-      flex: 1,
-      maxHeight: 200,
+      backgroundColor: "white",
+      height: 160,
+      paddingBottom: 24,
     },
     actions: { flexDirection: "row", gap: 4, padding: 4 },
     actionDefault: {
@@ -158,7 +159,6 @@ const styles = {
     },
     webview: {
       flex: 1,
-      minHeight: 140,
     },
   }),
 };

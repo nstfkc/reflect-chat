@@ -6,6 +6,8 @@ import {
   ScrollView,
   StyleProp,
   TextStyle,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Svg, Circle, Rect } from "react-native-svg";
 
@@ -151,9 +153,13 @@ const MessageRenderer = (props: MessageRendererProps) => {
 };
 
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   return (
-    <View style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={80}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
       <ScrollView>
         <ChatHistory
           channel={route.params.channel}
@@ -167,6 +173,6 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
         />
       </ScrollView>
       <RichTextEditor></RichTextEditor>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
