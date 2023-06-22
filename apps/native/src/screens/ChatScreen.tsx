@@ -11,6 +11,7 @@ import { Svg, Circle, Rect } from "react-native-svg";
 
 import { StackScreenProps } from "./types";
 import { ChatHistory, JSONContent } from "shared";
+import { RichTextEditor } from "../components/RichTextEditor";
 
 interface MessageRendererProps {
   content: JSONContent;
@@ -152,17 +153,20 @@ const MessageRenderer = (props: MessageRendererProps) => {
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const { width } = useWindowDimensions();
   return (
-    <ScrollView>
-      <ChatHistory
-        channel={route.params.channel}
-        renderer={(message) => {
-          return (
-            <View key={message.id}>
-              <MessageRenderer content={JSON.parse(message.text)} />
-            </View>
-          );
-        }}
-      />
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView>
+        <ChatHistory
+          channel={route.params.channel}
+          renderer={(message) => {
+            return (
+              <View key={message.id}>
+                <MessageRenderer content={JSON.parse(message.text)} />
+              </View>
+            );
+          }}
+        />
+      </ScrollView>
+      <RichTextEditor></RichTextEditor>
+    </View>
   );
 };
