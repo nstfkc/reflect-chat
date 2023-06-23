@@ -151,7 +151,6 @@ const MessageRendererFragment = ({
 };
 
 const MessageRenderer = (props: MessageRendererProps) => {
-  /* return <Text>{JSON.stringify(props.content.content)}</Text>; */
   return (
     <MessageRendererFragment
       content={props.content.content}
@@ -185,9 +184,8 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
         keyExtractor={(item: any) => item[0]}
         getItemCount={(data) => data.length}
         renderItem={({ item }) => {
-          const [date, messages] = item;
-          return (
-            <View>
+          if (typeof item === "string") {
+            return (
               <View style={{ paddingVertical: 16 }}>
                 <Text
                   style={{
@@ -196,20 +194,22 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
                     letterSpacing: 1,
                   }}
                 >
-                  {date}
+                  {item}
                 </Text>
               </View>
-              <ChatMessage
-                messages={messages}
-                fragmentRenderer={(message) => {
-                  return (
-                    <View key={message.id}>
-                      <MessageRenderer content={JSON.parse(message.text)} />
-                    </View>
-                  );
-                }}
-              />
-            </View>
+            );
+          }
+          return (
+            <ChatMessage
+              messages={item}
+              fragmentRenderer={(message) => {
+                return (
+                  <View key={message.id}>
+                    <MessageRenderer content={JSON.parse(message.text)} />
+                  </View>
+                );
+              }}
+            />
           );
         }}
       ></VirtualizedList>

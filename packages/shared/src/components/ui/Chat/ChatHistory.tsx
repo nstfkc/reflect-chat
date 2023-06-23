@@ -10,7 +10,11 @@ import { UsersContext } from "../../context/UsersContext";
 import { useQuery } from "../../../utils/useQuery";
 import { useOrganisation } from "../../../auth";
 import { Channel, Message } from "db";
-import { groupItemsByCreatedAt, groupMessagesInTheSameMinute } from "./utils";
+import {
+  groupItemsByCreatedAt,
+  groupMessagesInTheSameMinute,
+  insertDateBetweenMessages,
+} from "./utils";
 
 interface ChatHistoryProps {
   channel: Channel;
@@ -66,7 +70,8 @@ export const useChatHistory = (channel: Channel | undefined) => {
     channelId: channel?.id,
   });
 
-  return Object.entries(
-    groupItemsByCreatedAt([...history, ...getMessageHistoryById(channel?.id)])
-  );
+  return insertDateBetweenMessages([
+    ...history,
+    ...getMessageHistoryById(channel?.id),
+  ]);
 };

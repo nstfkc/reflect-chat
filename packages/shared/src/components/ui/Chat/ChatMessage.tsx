@@ -14,54 +14,56 @@ interface ChatMessageProps {
 export const ChatMessage = (props: ChatMessageProps) => {
   const { fragmentRenderer, messages } = props;
   const { getUserById } = useContext(UsersContext);
+  if (!messages[0]) {
+    return null;
+  }
   const author = getUserById(messages[0].senderId);
-  const hour = format(new Date(messages[0].createdAt), "h:mm a");
+  const hour = format(new Date(messages[0].createdAt), "M.d h:mm a");
+
   return (
     <>
-      {Object.values(groupMessagesInTheSameMinute(messages)).map((messages) => (
+      <View
+        key={messages[0].id}
+        style={{
+          width: "100%",
+          paddingVertical: 6,
+          paddingHorizontal: 12,
+        }}
+      >
         <View
-          key={messages[0].id}
-          style={{
-            width: "100%",
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-          }}
+          style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}
         >
           <View
-            style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}
-          >
+            style={{
+              width: 24,
+              height: 24,
+              backgroundColor: author.userProfile?.profileColor,
+              borderRadius: 6,
+            }}
+          ></View>
+          <View>
             <View
               style={{
-                width: 24,
-                height: 24,
-                backgroundColor: author.userProfile?.profileColor,
-                borderRadius: 6,
+                flexDirection: "row",
+                alignItems: "flex-end",
+                gap: 8,
               }}
-            ></View>
+            >
+              <Text style={{ fontWeight: "800" }}>{author?.name}</Text>
+              <Text style={{ fontSize: 12, opacity: 0.6, paddingBottom: 1 }}>
+                {hour}
+              </Text>
+            </View>
             <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "flex-end",
-                  gap: 8,
-                }}
-              >
-                <Text style={{ fontWeight: "800" }}>{author?.name}</Text>
-                <Text style={{ fontSize: 12, opacity: 0.6, paddingBottom: 1 }}>
-                  {hour}
-                </Text>
-              </View>
-              <View>
-                {messages.map((message) => (
-                  <Fragment key={message.id}>
-                    {fragmentRenderer(message)}
-                  </Fragment>
-                ))}
-              </View>
+              {messages.map((message) => (
+                <Fragment key={message.id}>
+                  {fragmentRenderer(message)}
+                </Fragment>
+              ))}
             </View>
           </View>
         </View>
-      ))}
+      </View>
     </>
   );
 };

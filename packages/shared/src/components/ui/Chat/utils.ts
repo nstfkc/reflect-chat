@@ -17,6 +17,28 @@ export function groupItemsByCreatedAt<T extends Message>(
   return groups;
 }
 
+export function insertDateBetweenMessages(
+  messages: Message[]
+): (string | Message[])[] {
+  let messagesInTheSameDay: Record<string, Message[]> = {};
+
+  for (let message of messages) {
+    const date = format(new Date(message.createdAt), "eeee, LLLL do");
+    if (!messagesInTheSameDay[date]) {
+      messagesInTheSameDay[date] = [];
+    }
+    messagesInTheSameDay[date].push(message);
+  }
+
+  const output = Object.entries(messagesInTheSameDay).map(
+    ([date, messages]) => [
+      date,
+      ...Object.values(groupMessagesInTheSameMinute(messages)),
+    ]
+  );
+  return output.flat();
+}
+
 function uniqueById<T extends Message>(messages: T[]): T[] {
   let out: T[] = [];
   let cache: string[] = [];

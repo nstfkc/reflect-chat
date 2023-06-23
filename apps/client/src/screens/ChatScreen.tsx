@@ -1,7 +1,6 @@
 import {
   useContext,
   Fragment,
-  ReactNode,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -10,7 +9,6 @@ import {
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { useParams } from "react-router-dom";
 import {
-  ChatHistory,
   useQuery,
   useOrganisation,
   TextEditor,
@@ -127,13 +125,21 @@ export const ChatScreen = () => {
               style={{ height: "100%" }}
               alignToBottom={true}
               followOutput={true}
-              itemContent={(_, [date, messages]) => {
+              itemContent={(index, messagesOrDate) => {
+                if (typeof messagesOrDate === "string") {
+                  return (
+                    <div
+                      className="py-8 text-center font-semibold text-sm"
+                      key={index}
+                    >
+                      {messagesOrDate}
+                    </div>
+                  );
+                }
                 return (
-                  <Fragment>
-                    <div>{date}</div>
+                  <Fragment key={index}>
                     <ChatMessage
-                      key={date}
-                      messages={messages}
+                      messages={messagesOrDate}
                       fragmentRenderer={(message) => (
                         <MessageRendererFragment
                           content={JSON.parse(message.text).content}
