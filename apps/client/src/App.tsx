@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
 import {
+  RootProvider,
+  SWRConfig,
   ConfigProvider,
   HttpProvider,
   HTTPHandler,
   AuthProvider,
-  MessageProvider,
-  SocketProvider,
   SignedOut,
   SignInForm,
   SignedIn,
@@ -87,28 +87,32 @@ function App() {
   }
 
   return (
-    <ConfigProvider baseUrl={config.baseUrl}>
-      <HttpProvider accessToken={token} http={http}>
-        <AuthProvider>
-          <SignedOut>
-            <div className="flex w-full h-screen justify-center items-center">
-              <SignInForm
-                onSuccess={(token) => {
-                  updateToken(token);
-                }}
-              />
-            </div>
-          </SignedOut>
-          <SignedIn>
-            <SocketProvider>
-              <MessageProvider>
+    <SWRConfig
+      value={{
+        provider: () => new Map(),
+      }}
+    >
+      <ConfigProvider baseUrl={config.baseUrl}>
+        <HttpProvider accessToken={token} http={http}>
+          <AuthProvider>
+            <SignedOut>
+              <div className="flex w-full h-screen justify-center items-center">
+                <SignInForm
+                  onSuccess={(token) => {
+                    updateToken(token);
+                  }}
+                />
+              </div>
+            </SignedOut>
+            <SignedIn>
+              <RootProvider>
                 <RouterProvider router={router} />
-              </MessageProvider>
-            </SocketProvider>
-          </SignedIn>
-        </AuthProvider>
-      </HttpProvider>
-    </ConfigProvider>
+              </RootProvider>
+            </SignedIn>
+          </AuthProvider>
+        </HttpProvider>
+      </ConfigProvider>
+    </SWRConfig>
   );
 }
 

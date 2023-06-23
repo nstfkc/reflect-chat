@@ -8,8 +8,7 @@ import { setItemAsync, getItemAsync } from "expo-secure-store";
 
 import { getConfig } from "config";
 import {
-  MessageProvider,
-  SocketProvider,
+  RootProvider,
   AuthProvider,
   ConfigProvider,
   HttpProvider,
@@ -67,11 +66,9 @@ export default function App() {
                 </View>
               </SignedOut>
               <SignedIn>
-                <SocketProvider>
-                  <MessageProvider>
-                    <RootScreen />
-                  </MessageProvider>
-                </SocketProvider>
+                <RootProvider>
+                  <RootScreen />
+                </RootProvider>
               </SignedIn>
             </SafeAreaView>
           </AuthProvider>

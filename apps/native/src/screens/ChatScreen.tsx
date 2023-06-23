@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  useWindowDimensions,
   Text,
   View,
   ScrollView,
@@ -8,15 +7,17 @@ import {
   TextStyle,
   KeyboardAvoidingView,
   Platform,
+  VirtualizedList,
 } from "react-native";
 import { Svg, Circle, Rect } from "react-native-svg";
 
 import { StackScreenProps } from "./types";
 import {
   ChatHistory,
-  ConfigContext,
+  ChatMessage,
   JSONContent,
   MessageContext,
+  useChatHistory,
   useUser,
 } from "shared";
 import { RichTextEditor } from "../components/RichTextEditor";
@@ -159,28 +160,60 @@ const MessageRenderer = (props: MessageRendererProps) => {
 };
 
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
-  const { width, height } = useWindowDimensions();
-  const config = React.useContext(ConfigContext);
   const { sendMessage } = React.useContext(MessageContext);
+  const chatHistory = useChatHistory(route.params.channel);
+  const virtualListRef = React.useRef<VirtualizedList<any>>(null);
   const { user } = useUser();
+
+  React.useEffect(() => {
+    if (chatHistory.length) {
+      virtualListRef.current?.scrollToEnd();
+    }
+  }, [chatHistory]);
+
   return (
     <KeyboardAvoidingView
       keyboardVerticalOffset={80}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <ScrollView>
-        <ChatHistory
-          channel={route.params.channel}
-          renderer={(message) => {
-            return (
-              <View key={message.id}>
-                <MessageRenderer content={JSON.parse(message.text)} />
+      <VirtualizedList
+        ref={virtualListRef}
+        initialNumToRender={10}
+        data={chatHistory}
+        getItem={(data, index) => data[index]}
+        keyExtractor={(item: any) => item[0]}
+        getItemCount={(data) => data.length}
+        renderItem={({ item }) => {
+          const [date, messages] = item;
+          return (
+            <View>
+              <View style={{ paddingVertical: 16 }}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    letterSpacing: 1,
+                  }}
+                >
+                  {date}
+                </Text>
               </View>
-            );
-          }}
-        />
-      </ScrollView>
+              <ChatMessage
+                messages={messages}
+                fragmentRenderer={(message) => {
+                  return (
+                    <View key={message.id}>
+                      <MessageRenderer content={JSON.parse(message.text)} />
+                    </View>
+                  );
+                }}
+              />
+            </View>
+          );
+        }}
+      ></VirtualizedList>
+
       <RichTextEditor
         onSend={(message) => {
           sendMessage(

@@ -95,6 +95,9 @@ export const listUsers = createPrecedure({
             },
           },
         },
+        include: {
+          userProfile: true,
+        },
       });
 
       return {

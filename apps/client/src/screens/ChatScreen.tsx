@@ -1,5 +1,13 @@
-import { useContext } from "react";
-
+import {
+  useContext,
+  Fragment,
+  ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from "react";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { useParams } from "react-router-dom";
 import {
   ChatHistory,
@@ -10,11 +18,9 @@ import {
   MessageContext,
   useUser,
   JSONContent,
+  ChatMessage,
+  useChatHistory,
 } from "shared";
-
-interface MessageRendererProps {
-  content: JSONContent;
-}
 
 const MessageRendererFragment = ({
   content,
@@ -34,6 +40,7 @@ const MessageRendererFragment = ({
           case "text":
             return (
               <span
+                key={index}
                 className={`${c.marks
                   ?.map((mark) =>
                     mark.type === "bold"
@@ -51,13 +58,13 @@ const MessageRendererFragment = ({
             );
           case "bulletList":
             return (
-              <ul>
+              <ul key={index}>
                 <MessageRendererFragment key={index} content={c.content} />
               </ul>
             );
           case "listItem":
             return (
-              <li>
+              <li key={index}>
                 <MessageRendererFragment key={index} content={c.content} />
               </li>
             );
@@ -66,15 +73,6 @@ const MessageRendererFragment = ({
         }
       })}
     </div>
-  );
-};
-
-const MessageRenderer = (props: MessageRendererProps) => {
-  /* return <div>{JSON.stringify(props.content.content)}</div>; */
-  return (
-    <MessageRendererFragment
-      content={props.content.content}
-    ></MessageRendererFragment>
   );
 };
 
@@ -88,37 +86,83 @@ export const ChatScreen = () => {
   });
 
   const channel = channels.find(({ id }) => id === channelId);
-  if (!channel) {
-    return null;
-  }
+
+  const chatHistory = useChatHistory(channel);
+
+  const virtuoso = useRef<VirtuosoHandle>(null);
+  const container = useRef<HTMLDivElement>(null);
+
+  const resizeObserver = useMemo(
+    () =>
+      new ResizeObserver(() => {
+        virtuoso?.current?.scrollTo({ top: 99999 });
+      }),
+    []
+  );
+
+  useLayoutEffect(() => {
+    virtuoso?.current?.scrollToIndex({
+      index: chatHistory.length - 1,
+      align: "end",
+      behavior: "auto",
+    });
+  });
+
+  useEffect(() => {
+    resizeObserver.observe(container?.current!);
+  }, [resizeObserver]);
 
   return (
-    <div>
-      <ChatHistory
-        channel={channel as any}
-        renderer={(message) => (
-          <MessageRenderer
-            key={message.id}
-            content={JSON.parse(message.text)}
-          ></MessageRenderer>
-        )}
-      />
-      <FileUploaderProvider pathPrefix={(channel as any).id}>
-        <TextEditor
-          onSubmit={(message) => {
-            sendMessage(
-              {
-                channelId: (channel as any).id,
-                senderId: user?.publicId,
-                text: message,
-              },
-              []
-            );
-          }}
-          placeholder={(channel as any)?.name}
-          usersCanBeMentioned={[]}
-        />
-      </FileUploaderProvider>
-    </div>
+    <FileUploaderProvider pathPrefix={channelId!}>
+      <div className="h-full flex flex-col justify-between">
+        <div className="relative h-full">
+          <div
+            ref={container}
+            className="gap-8 overflow-scroll"
+            style={{ height: "100%" }}
+          >
+            <Virtuoso
+              ref={virtuoso}
+              data={chatHistory}
+              style={{ height: "100%" }}
+              alignToBottom={true}
+              followOutput={true}
+              itemContent={(_, [date, messages]) => {
+                return (
+                  <Fragment>
+                    <div>{date}</div>
+                    <ChatMessage
+                      key={date}
+                      messages={messages}
+                      fragmentRenderer={(message) => (
+                        <MessageRendererFragment
+                          content={JSON.parse(message.text).content}
+                        ></MessageRendererFragment>
+                      )}
+                    />
+                  </Fragment>
+                );
+              }}
+            />
+          </div>
+        </div>
+        <div className="w-full border-t-2 border-black bg-gray-100/50">
+          <TextEditor
+            onSubmit={(message) => {
+              sendMessage(
+                {
+                  channelId: channelId,
+                  senderId: user?.publicId,
+                  text: message,
+                },
+                []
+              );
+            }}
+            placeholder={(channel as any)?.name}
+            usersCanBeMentioned={[]}
+          />
+        </div>
+      </div>
+    </FileUploaderProvider>
   );
 };

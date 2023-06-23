@@ -463,6 +463,9 @@ var listUsers = createPrecedure({
               }
             }
           }
+        },
+        include: {
+          userProfile: true
         }
       });
       return {

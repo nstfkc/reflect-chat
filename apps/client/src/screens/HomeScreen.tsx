@@ -6,14 +6,14 @@ export const HomeScreen = () => {
   const navigate = useNavigate();
   return (
     <div className="flex h-screen w-screen">
-      <div className="bg-gray-100 min-w-[300px] p-2">
+      <div className="bg-gray-100 min-w-[240px] p-2">
         <ChannelList
           onChannelClick={(channel) =>
             navigate(channel.id, { state: { channel } })
           }
         />
       </div>
-      <div>
+      <div className="w-full">
         <Outlet />
       </div>
     </div>
