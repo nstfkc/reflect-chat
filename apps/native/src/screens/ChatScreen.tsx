@@ -2,18 +2,16 @@ import * as React from "react";
 import {
   Text,
   View,
-  ScrollView,
+  FlatList,
   StyleProp,
   TextStyle,
   KeyboardAvoidingView,
   Platform,
-  VirtualizedList,
 } from "react-native";
 import { Svg, Circle, Rect } from "react-native-svg";
 
 import { StackScreenProps } from "./types";
 import {
-  ChatHistory,
   ChatMessage,
   JSONContent,
   MessageContext,
@@ -21,10 +19,6 @@ import {
   useUser,
 } from "shared";
 import { RichTextEditor } from "../components/RichTextEditor";
-
-interface MessageRendererProps {
-  content: JSONContent;
-}
 
 function convertMarks(marks: JSONContent["marks"]): StyleProp<TextStyle> {
   return marks?.map((mark) => {
@@ -150,25 +144,11 @@ const MessageRendererFragment = ({
   );
 };
 
-const MessageRenderer = (props: MessageRendererProps) => {
-  return (
-    <MessageRendererFragment
-      content={props.content.content}
-    ></MessageRendererFragment>
-  );
-};
-
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const { sendMessage } = React.useContext(MessageContext);
   const chatHistory = useChatHistory(route.params.channel);
-  const virtualListRef = React.useRef<VirtualizedList<any>>(null);
+  const virtualListRef = React.useRef<FlatList<any>>(null);
   const { user } = useUser();
-
-  React.useEffect(() => {
-    if (chatHistory.length) {
-      virtualListRef.current?.scrollToEnd();
-    }
-  }, [chatHistory]);
 
   return (
     <KeyboardAvoidingView
@@ -176,13 +156,10 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <VirtualizedList
+      <FlatList
         ref={virtualListRef}
-        initialNumToRender={10}
-        data={chatHistory}
-        getItem={(data, index) => data[index]}
-        keyExtractor={(item: any) => item[0]}
-        getItemCount={(data) => data.length}
+        data={chatHistory.reverse()}
+        inverted={true}
         renderItem={({ item }) => {
           if (typeof item === "string") {
             return (
@@ -205,14 +182,16 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
               fragmentRenderer={(message) => {
                 return (
                   <View key={message.id}>
-                    <MessageRenderer content={JSON.parse(message.text)} />
+                    <MessageRendererFragment
+                      content={JSON.parse(message.text).content}
+                    />
                   </View>
                 );
               }}
             />
           );
         }}
-      ></VirtualizedList>
+      ></FlatList>
 
       <RichTextEditor
         onSend={(message) => {
