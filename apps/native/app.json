@@ -11,16 +11,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.enestufekci.reflectrocks"
-    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.enestufekci.reflectrocks"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,6 +28,9 @@
       "eas": {
         "projectId": "42878307-77c6-4fd9-bf0e-a0c962ea4753"
       }
+    },
+    "ios": {
+      "bundleIdentifier": "com.enestufekci.reflectrocks"
     }
   }
 }

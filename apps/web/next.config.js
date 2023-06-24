@@ -34,6 +34,10 @@ const nextConfig = {
         destination: `${config.clientHost}/:path*`,
       },
       {
+        source: "/client/:path*",
+        destination: `${config.clientHost}/:path*`,
+      },
+      {
         source: "/socket.io",
         destination: `${config.apiHost}/socket.io/`,
       },

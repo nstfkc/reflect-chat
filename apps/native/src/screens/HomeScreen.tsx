@@ -1,6 +1,6 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
-import { ChannelList, Button, useSignOut } from "shared";
+import { View } from "react-native";
+import { ChannelList, Button, useSignOut, ProfileButton } from "shared";
 import { StackScreenProps } from "./types";
 
 export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
@@ -14,8 +14,17 @@ export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
           })
         }
       ></ChannelList>
-      <View style={{ flexDirection: "row" }}>
-        <Button onPress={() => signOut({})}>Sign Out</Button>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <ProfileButton onPress={() => {}} />
+        <View style={{ flexDirection: "row" }}>
+          <Button onPress={() => signOut({})}>Sign Out</Button>
+        </View>
       </View>
     </View>
   );

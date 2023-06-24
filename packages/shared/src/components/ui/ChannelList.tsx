@@ -22,14 +22,16 @@ export const ChannelList = (props: ChannelListProps) => {
     <View>
       <Text style={{ fontWeight: "600", fontSize: 18 }}>Channels</Text>
       <FlatList
+        style={{ paddingVertical: 8 }}
         data={data}
         renderItem={({ item }) => {
           return (
             <TouchableOpacity
+              style={{ paddingVertical: 1 }}
               onPress={() => onChannelClick(item)}
               key={item.id}
             >
-              <Text># {item.name}</Text>
+              <Text style={{ fontSize: 16 }}># {item.name}</Text>
             </TouchableOpacity>
           );
         }}

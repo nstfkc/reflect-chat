@@ -17,7 +17,7 @@ export const RootScreen = () => {
         <Stack.Screen
           name="Chat"
           component={ChatScreen}
-          options={({ route }) => ({ title: route.params.channelName })}
+          options={({ route }) => ({ title: `# ${route.params.channel.name}` })}
         />
       </Stack.Navigator>
     </NavigationContainer>
