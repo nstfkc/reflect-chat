@@ -90,7 +90,7 @@ const MessageRendererFragment = ({
   }
 
   return (
-    <>
+    <React.Fragment>
       {content.map((c, index) => {
         switch (c.type) {
           case "paragraph":
@@ -116,7 +116,7 @@ const MessageRendererFragment = ({
               </Text>
             );
           case "hardBreak":
-            return <View style={{ height: 16 }} />;
+            return <View key={index} style={{ height: 16 }} />;
           case "bulletList":
             return (
               <View key={index}>
@@ -140,7 +140,7 @@ const MessageRendererFragment = ({
             return <Text key={index}>{JSON.stringify(c)}</Text>;
         }
       })}
-    </>
+    </React.Fragment>
   );
 };
 
@@ -192,7 +192,6 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
           );
         }}
       ></FlatList>
-
       <RichTextEditor
         onSend={(message) => {
           sendMessage(

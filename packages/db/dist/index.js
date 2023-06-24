@@ -286,7 +286,6 @@ var signIn = createPrecedure({
   }),
   handler: async (args, ctx) => {
     const { email, password } = args;
-    console.log({ email, password });
     const { helpers } = ctx;
     try {
       const user = await prisma.user.findFirst({
@@ -338,7 +337,7 @@ var signIn = createPrecedure({
         return invalidCredentialsError({});
       }
     } catch (error) {
-      return error;
+      return invalidCredentialsError({});
     }
   }
 });

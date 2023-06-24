@@ -22,11 +22,10 @@ import { RootScreen } from "./src/screens/Root";
 const config = getConfig(Device.isDevice);
 
 export default function App() {
-  const [token, setToken] = React.useState("");
+  const [token, setToken] = React.useState<string | null>(null);
   React.useEffect(() => {
     getItemAsync("access-token").then((value) => setToken(value));
   }, []);
-
   return (
     <SWRConfig
       value={{
@@ -49,7 +48,7 @@ export default function App() {
     >
       <ConfigProvider baseUrl={config.baseUrl}>
         <HttpProvider accessToken={token} http={null}>
-          <AuthProvider>
+          <AuthProvider onSignOut={() => setToken("")}>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1 }}>
               <SignedOut>

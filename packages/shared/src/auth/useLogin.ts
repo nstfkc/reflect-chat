@@ -3,11 +3,15 @@
 import { Organisation } from "db";
 import { useQuery } from "../utils/useQuery";
 import { useMutation } from "../utils/useMutation";
+import { useContext } from "react";
+import { AuthContext } from "./Context";
 
 export function useSignIn() {
+  const { onSignIn } = useContext(AuthContext);
   const { mutate } = useQuery("me");
   return useMutation("signIn", {
     onSuccess: (user) => {
+      onSignIn(user.token);
       mutate(user as any);
     },
   });
@@ -26,14 +30,13 @@ export function useUser() {
   };
 }
 
-export function useSignOut(onSuccess?: VoidFunction) {
+export function useSignOut() {
+  const { onSignOut } = useContext(AuthContext);
   const { mutate } = useQuery("me");
   return useMutation("signOut", {
     onSuccess: () => {
       mutate(null);
-      if (onSuccess) {
-        onSuccess();
-      }
+      onSignOut();
     },
   });
 }
@@ -45,7 +48,7 @@ export function useOrganisation() {
     {}
   );
 
-  let organisation: Organisation | null = user.memberships[0].organisation;
+  let organisation: Organisation | null = user.memberships[0]?.organisation;
   if (data?.currentOrganisationId && user) {
     organisation = user.memberships
       .map((m) => {

@@ -105,7 +105,6 @@ export const signIn = createPrecedure({
   }),
   handler: async (args, ctx) => {
     const { email, password } = args;
-    console.log({ email, password });
     const { helpers } = ctx;
 
     try {
@@ -160,7 +159,7 @@ export const signIn = createPrecedure({
         return invalidCredentialsError({});
       }
     } catch (error) {
-      return error;
+      return invalidCredentialsError({});
     }
   },
 });

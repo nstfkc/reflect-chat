@@ -67,7 +67,7 @@ const MessageRendererFragment = ({
               </li>
             );
           default:
-            return <pre>{JSON.stringify(c)}</pre>;
+            return <pre key={index}>{JSON.stringify(c)}</pre>;
         }
       })}
     </div>

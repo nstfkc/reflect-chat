@@ -7,7 +7,7 @@ export type HandlerContext = {
   currentOrganisationId: string;
   SECRET: string;
   helpers: {
-    jwtSign: (payload: any) => void;
+    jwtSign: (payload: any) => string;
     setCookie: (name: string, value: string, options: any) => void;
     deleteCookie: (name: string) => void;
     setHeader: (name: string, value: string) => void;

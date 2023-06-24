@@ -5,6 +5,8 @@ import { useQuery } from "../utils/useQuery";
 
 interface AuthContextValue {
   user: SignedInUser;
+  onSignOut: VoidFunction;
+  onSignIn: (token: string) => void;
   isUserLoading: boolean;
 }
 
@@ -12,11 +14,13 @@ export const AuthContext = createContext({} as AuthContextValue);
 
 interface AuthProviderProps {
   children: ReactNode;
+  onSignOut?: VoidFunction;
+  onSignIn?: (token: string) => void;
 }
 
 export const AuthProvider = (props: AuthProviderProps) => {
-  const { children } = props;
-  const { data, isLoading, error } = useQuery("me", null, {
+  const { children, onSignOut = () => {}, onSignIn = (_) => {} } = props;
+  const { data, isLoading, mutate } = useQuery("me", null, {
     shouldRetryOnError: false,
     revalidateOnFocus: false,
   });
@@ -24,6 +28,11 @@ export const AuthProvider = (props: AuthProviderProps) => {
   return (
     <AuthContext.Provider
       value={{
+        onSignIn,
+        onSignOut: () => {
+          console.log("mutated");
+          mutate(null);
+        },
         isUserLoading: isLoading,
         user: data as any,
       }}

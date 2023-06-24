@@ -155,7 +155,7 @@ function useLastSeenMessage() {
 
 function useMessageHistory() {
   const dmHistoryMapRef = useRef(new Map<string, MessageWithMedia[]>());
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const { socket } = useSocket();
 
   const [dmHistory, setDmHistory] = useState(dmHistoryMapRef.current);
@@ -183,12 +183,38 @@ function useMessageHistory() {
     [user?.publicId]
   );
 
+  const handleUpdateMessageHistoryInternal = useCallback(
+    (dm: MessageWithMedia) => {
+      if (dm.senderId === user.publicId) {
+        return;
+      }
+      let key = "";
+
+      if (dm.receiverId) {
+        key = dm.senderId === user?.publicId ? dm.receiverId : dm.senderId;
+      }
+
+      if (dm.channelId) {
+        key = dm.channelId;
+      }
+
+      if (!dmHistoryMapRef.current.has(key)) {
+        !dmHistoryMapRef.current.set(key, []);
+      }
+
+      const current = dmHistoryMapRef.current.get(key)!;
+      current.push(dm);
+      setDmHistory(new Map(dmHistoryMapRef.current));
+    },
+    [user?.publicId]
+  );
+
   useEffect(() => {
-    socket?.on("message:created", handleUpdateMessageHistory);
+    socket?.on("message:created", handleUpdateMessageHistoryInternal);
     return () => {
-      socket?.off("message:created", handleUpdateMessageHistory);
+      socket?.off("message:created", handleUpdateMessageHistoryInternal);
     };
-  }, [socket, handleUpdateMessageHistory]);
+  }, [socket, handleUpdateMessageHistoryInternal]);
 
   const getMessageHistoryById = (id: string) => {
     return dmHistory.get(id) ?? [];
@@ -249,8 +275,9 @@ export const MessageProvider = (props: MessageProviderProps) => {
         height: media.height,
       }));
 
+      console.log(socket.connected);
       try {
-        socketRef.current?.emit(
+        socket.emit(
           "message:create",
           message,
           media as any //TODO fix
@@ -268,11 +295,11 @@ export const MessageProvider = (props: MessageProviderProps) => {
       } as any; // TODO: fix
 
       // TODO message.receiverId
-      if (message.channelId && message.senderId === user?.publicId) return;
+      /* if (message.channelId && message.senderId === user?.publicId) return; */
 
       handleUpdateMessageHistory(messageWithMedia);
     },
-    [handleUpdateMessageHistory, user?.publicId]
+    [handleUpdateMessageHistory, socket]
   );
 
   const value = {
