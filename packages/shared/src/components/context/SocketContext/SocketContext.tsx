@@ -44,8 +44,7 @@ export const SocketContext = createContext({} as SocketContextValue);
 
 function useSocket(userId: string) {
   const { socketUrl } = useContext(ConfigContext);
-  const [connected, setConnected] = useState(false);
-  const socketRef = useRef<InternalSocket | null>(null);
+  const [socket, setSocket] = useState<InternalSocket | null>(null);
   useEffect(() => {
     const socket = io(socketUrl, {
       query: { userId: userId },
@@ -58,8 +57,7 @@ function useSocket(userId: string) {
     // log socket connection
     socket.on("connect", () => {
       console.log("SOCKET CONNECTED!", socket.id);
-      setConnected(true);
-      (socketRef as any).current = socket;
+      setSocket(socket);
 
       socket.emit("user-connected", { userId });
     });
@@ -76,9 +74,16 @@ function useSocket(userId: string) {
     };
   }, [userId, socketUrl]);
 
+  if (socket === null) {
+    return {
+      socket,
+      connected: false,
+    };
+  }
+
   return {
-    connected,
-    socket: socketRef.current,
+    connected: socket?.connected ?? false,
+    socket,
   };
 }
 

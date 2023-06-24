@@ -20,14 +20,19 @@ export function groupItemsByCreatedAt<T extends Message>(
 export function insertDateBetweenMessages(
   messages: Message[]
 ): (string | Message[])[] {
+  let cache = new Set<string>();
   let messagesInTheSameDay: Record<string, Message[]> = {};
 
   for (let message of messages) {
-    const date = format(new Date(message.createdAt), "eeee, LLLL do");
-    if (!messagesInTheSameDay[date]) {
-      messagesInTheSameDay[date] = [];
+    if (!cache.has(message.id)) {
+      const date = format(new Date(message.createdAt), "eeee, LLLL do");
+      if (!messagesInTheSameDay[date]) {
+        messagesInTheSameDay[date] = [];
+      }
+
+      cache.add(message.id);
+      messagesInTheSameDay[date].push(message);
     }
-    messagesInTheSameDay[date].push(message);
   }
 
   const output = Object.entries(messagesInTheSameDay).map(

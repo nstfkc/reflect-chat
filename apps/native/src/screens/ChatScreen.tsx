@@ -31,6 +31,9 @@ function convertMarks(marks: JSONContent["marks"]): StyleProp<TextStyle> {
 }
 
 const Bullet = ({ level }: { level: number }) => {
+  if (level < 0) {
+    return null;
+  }
   return (
     <View
       style={[
@@ -144,6 +147,40 @@ const MessageRendererFragment = ({
   );
 };
 
+const RenderMessage = React.memo(({ item }: { item: string | any[] }) => {
+  if (typeof item === "string") {
+    return (
+      <View style={{ paddingVertical: 16 }}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontWeight: "bold",
+            letterSpacing: 1,
+          }}
+        >
+          {item}
+        </Text>
+      </View>
+    );
+  }
+  return (
+    <ChatMessage
+      messages={item}
+      fragmentRenderer={(message) => {
+        return (
+          <View key={message.id}>
+            <MessageRendererFragment
+              content={JSON.parse(message.text).content}
+            />
+          </View>
+        );
+      }}
+    />
+  );
+});
+
+RenderMessage.displayName = "RenderMessage";
+
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const { sendMessage } = React.useContext(MessageContext);
   const chatHistory = useChatHistory(route.params.channel);
@@ -160,37 +197,7 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
         ref={virtualListRef}
         data={chatHistory.reverse()}
         inverted={true}
-        renderItem={({ item }) => {
-          if (typeof item === "string") {
-            return (
-              <View style={{ paddingVertical: 16 }}>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    letterSpacing: 1,
-                  }}
-                >
-                  {item}
-                </Text>
-              </View>
-            );
-          }
-          return (
-            <ChatMessage
-              messages={item}
-              fragmentRenderer={(message) => {
-                return (
-                  <View key={message.id}>
-                    <MessageRendererFragment
-                      content={JSON.parse(message.text).content}
-                    />
-                  </View>
-                );
-              }}
-            />
-          );
-        }}
+        renderItem={({ item }) => <RenderMessage item={item} />}
       ></FlatList>
       <RichTextEditor
         onSend={(message) => {

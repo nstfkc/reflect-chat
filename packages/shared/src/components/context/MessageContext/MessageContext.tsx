@@ -238,6 +238,8 @@ interface MessageContextValue {
 
   updateLastSeenMessage: (message: Message) => void;
   getMessageHistoryById: (id: string) => MessageWithMedia[];
+
+  canSendMessage: boolean;
 }
 
 export const MessageContext = createContext({} as MessageContextValue);
@@ -248,8 +250,7 @@ interface MessageProviderProps {
 
 export const MessageProvider = (props: MessageProviderProps) => {
   const { children } = props;
-  const { user } = useUser();
-  const { socket } = useSocket();
+  const { socket, connected } = useSocket();
 
   const { markMessageAsRead, unreadMessages } = useUnreadMessages();
   const { markMentionsAsRead, unreadMentions } = useChannelMentions();
@@ -257,12 +258,6 @@ export const MessageProvider = (props: MessageProviderProps) => {
 
   const { getMessageHistoryById, handleUpdateMessageHistory } =
     useMessageHistory();
-
-  const socketRef = useRef(socket);
-
-  useEffect(() => {
-    socketRef.current = socket;
-  }, [socket]);
 
   const sendMessage = useCallback(
     (message: Partial<Message>, medias: RawMedia[]) => {
@@ -275,7 +270,6 @@ export const MessageProvider = (props: MessageProviderProps) => {
         height: media.height,
       }));
 
-      console.log(socket.connected);
       try {
         socket.emit(
           "message:create",
@@ -294,9 +288,6 @@ export const MessageProvider = (props: MessageProviderProps) => {
         media: media as any,
       } as any; // TODO: fix
 
-      // TODO message.receiverId
-      /* if (message.channelId && message.senderId === user?.publicId) return; */
-
       handleUpdateMessageHistory(messageWithMedia);
     },
     [handleUpdateMessageHistory, socket]
@@ -310,6 +301,7 @@ export const MessageProvider = (props: MessageProviderProps) => {
     markMentionsAsRead,
     unreadMessages,
     markMessageAsRead,
+    canSendMessage: connected,
   };
 
   return (

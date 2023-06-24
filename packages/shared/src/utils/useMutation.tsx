@@ -41,8 +41,6 @@ export function useMutation<T extends keyof Mutations>(
         data: arg,
       });
 
-      console.log({ data, res });
-
       if (!res.ok) {
         const error = new Error("An error occurred while fetching the data.");
         (error as any).info =

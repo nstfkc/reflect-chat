@@ -4,7 +4,6 @@ import { View, Text } from "react-native";
 import format from "date-fns/format";
 import { UsersContext } from "../../context/UsersContext";
 import { Message } from "db";
-import { groupMessagesInTheSameMinute } from "./utils";
 
 interface ChatMessageProps {
   messages: Message[];
@@ -18,7 +17,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
     return null;
   }
   const author = getUserById(messages[0].senderId);
-  const hour = format(new Date(messages[0].createdAt), "M.d h:mm a");
+  const hour = format(new Date(messages[0].createdAt), "h:mm a");
 
   return (
     <>
@@ -37,7 +36,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
             style={{
               width: 24,
               height: 24,
-              backgroundColor: author.userProfile?.profileColor,
+              backgroundColor: author?.userProfile?.profileColor ?? "#32abc2",
               borderRadius: 6,
             }}
           ></View>

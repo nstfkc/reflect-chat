@@ -17,5 +17,5 @@ export function useSocket<T extends keyof ListenEvents>(
     }
   }, [socket, connected, event, listener]);
 
-  return { socket };
+  return { socket, connected };
 }

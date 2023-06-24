@@ -78,7 +78,7 @@ export const ChatScreen = () => {
   const { channelId } = useParams();
   const { organisation } = useOrganisation();
   const { user } = useUser();
-  const { sendMessage } = useContext(MessageContext);
+  const { sendMessage, canSendMessage } = useContext(MessageContext);
   const { data: channels = [] } = useQuery("listChannels", {
     organisationId: organisation?.publicId!,
   });
@@ -153,6 +153,7 @@ export const ChatScreen = () => {
           </div>
         </div>
         <div className="w-full border-t-2 border-black bg-gray-100/50">
+          <div>{canSendMessage ? "" : "Cant send message"}</div>
           <TextEditor
             onSubmit={(message) => {
               sendMessage(
