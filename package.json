@@ -14,7 +14,10 @@
     "deploy": "dotenv -- turbo run deploy",
     "postinstall": "pnpm run db:generate",
     "deploy:api": "fly deploy",
-    "pack": "dotenv -- turbo run pack"
+    "pack": "dotenv -- turbo run pack",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
@@ -23,7 +26,8 @@
     "prettier": "^2.5.1",
     "tsup": "6.7.0",
     "turbo": "^1.9.9",
-    "typescript": "5.0.2"
+    "typescript": "5.0.2",
+    "@babel/core": "^7.20.0"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -37,6 +41,12 @@
   "packageManager": "pnpm@8.5.1",
   "name": "reflect-chat",
   "dependencies": {
-    "date-fns": "^2.30.0"
-  }
+    "date-fns": "^2.30.0",
+    "expo": "~48.0.18",
+    "expo-splash-screen": "~0.18.2",
+    "expo-status-bar": "~1.4.4",
+    "react": "18.2.0",
+    "react-native": "0.71.8"
+  },
+  "version": "1.0.0"
 }
