@@ -1,5 +1,3 @@
-/* import { AuthProvider } from "shared"; */
-
 import "./globals.css";
 
 export const metadata = {
@@ -14,11 +12,28 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <div className="h-screen max-h-screen min-h-screen overflow-hidden bg-gray-200/70 text-gray-800">
-          {children}
-          {/* <AuthProvider>{children}</AuthProvider> */}
-        </div>
+      <body className="bg-red-50">
+        {children}
+        <footer className="bg-gray-700 text-red-50">
+          <div className="container mx-auto max-w-4xl px-4 md:px-0 py-8">
+            <div className="flex flex-col gap-8">
+              <div>
+                For more information you can write to{" "}
+                <a className="underline" href="">
+                  info@reflect.rocks
+                </a>{" "}
+                or send us a DM on{" "}
+                <a className="underline" href="">
+                  twitter
+                </a>
+                .
+              </div>
+              <div>
+                <small className="tracking-widest">2023 reflect.rocks</small>
+              </div>
+            </div>
+          </div>
+        </footer>
       </body>
     </html>
   );
