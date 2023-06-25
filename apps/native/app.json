@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "reflect-rocks",
-    "slug": "reflect-rocks",
+    "name": "reflect",
+    "slug": "reflect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,15 +11,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.enestufekci.reflectrocks"
+      "package": "com.nstfkc.reflect"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,7 +28,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.enestufekci.reflectrocks"
+      "bundleIdentifier": "com.nstfkc.reflect"
     }
   }
 }
