@@ -19,11 +19,16 @@ export default function RootLayout({
             <div className="flex flex-col gap-8">
               <div>
                 For more information you can write to{" "}
-                <a className="underline" href="">
-                  info@reflect.rocks
+                <a className="underline" href="mailto:hi@reflect.rocks">
+                  hi@reflect.rocks
                 </a>{" "}
                 or send us a DM on{" "}
-                <a className="underline" href="">
+                <a
+                  className="underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://twitter.com/reflectrocks"
+                >
                   twitter
                 </a>
                 .
