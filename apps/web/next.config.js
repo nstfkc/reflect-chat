@@ -24,36 +24,38 @@ const nextConfig = {
   },
 
   rewrites: async () => {
-    return [
-      {
-        source: "/client",
-        destination: config.clientHost,
-      },
-      {
-        source: "/client/:path*",
-        destination: `${config.clientHost}/:path*`,
-      },
-      {
-        source: "/client/:path*",
-        destination: `${config.clientHost}/:path*`,
-      },
-      {
-        source: "/socket.io",
-        destination: `${config.apiHost}/socket.io/`,
-      },
-      {
-        source: "/socket.io/:path*",
-        destination: `${config.apiHost}/socket.io/:path*`,
-      },
-      {
-        source: "/media/:path*",
-        destination: `${config.assetsWorkerHost}/:path*`,
-      },
-      {
-        source: "/api/:path*",
-        destination: `${config.apiHost}/api/:path*`,
-      },
-    ];
+    return process.env.NO_PROXY
+      ? []
+      : [
+          {
+            source: "/client",
+            destination: config.clientHost,
+          },
+          {
+            source: "/client/:path*",
+            destination: `${config.clientHost}/:path*`,
+          },
+          {
+            source: "/client/:path*",
+            destination: `${config.clientHost}/:path*`,
+          },
+          {
+            source: "/socket.io",
+            destination: `${config.apiHost}/socket.io/`,
+          },
+          {
+            source: "/socket.io/:path*",
+            destination: `${config.apiHost}/socket.io/:path*`,
+          },
+          {
+            source: "/media/:path*",
+            destination: `${config.assetsWorkerHost}/:path*`,
+          },
+          {
+            source: "/api/:path*",
+            destination: `${config.apiHost}/api/:path*`,
+          },
+        ];
   },
 };
 

@@ -1,43 +1,7 @@
-import Link from "next/link";
-
 export default function Home() {
   return (
-    <main className="text-gray-700 bg-red-50">
-      <header>
-        <nav>
-          <div className="container mx-auto max-w-4xl px-4 md:px-0">
-            <div className="flex items-center justify-between py-4">
-              <div>
-                <Link className="text-lg font-black" href="/">
-                  reflect
-                </Link>
-              </div>
-              <div className="flex gap-8">
-                <Link
-                  href="#features"
-                  className="font-semibold text-sm tracking-wide"
-                >
-                  features
-                </Link>
-                <Link
-                  href="#roadmap"
-                  className="font-semibold text-sm tracking-wide"
-                >
-                  roadmap
-                </Link>
-                <a
-                  href="#features"
-                  className="font-semibold text-sm tracking-wide"
-                >
-                  contact
-                </a>
-              </div>
-            </div>
-          </div>
-        </nav>
-      </header>
+    <main className="">
       <div className="h-16"></div>
-
       <div className="container mx-auto max-w-4xl px-4 md:px-0">
         <section id="hero">
           <div className="flex flex-col">
@@ -46,7 +10,7 @@ export default function Home() {
             </span>
             <h1 className="text-4xl md:text-6xl font-black">
               Communication <br />
-              and knowledge sharing
+              and knowledge base
               <br />
               software
             </h1>
@@ -58,13 +22,13 @@ export default function Home() {
 
           <div className="h-8"></div>
           <div>
-            <span className="italic">Available on all platforms</span>
+            <span className="italic">Available on all platforms (soon)</span>
             <p>iOS, Android, MacOS, Windows, Linux and Web</p>
           </div>
         </section>
         <div className="h-16"></div>
         <section id="features">
-          <h2 className="font-semibold tracking-wider text-xl">Features</h2>
+          <h2 className="tracking-wider text-xl tracking-widest">Features</h2>
           <div className="h-4"></div>
           <div className="max-w-lg">
             <div className="flex flex-col gap-8 leading-relaxed">
@@ -144,17 +108,76 @@ export default function Home() {
                   through APIs.
                 </p>
               </div>
+              <div>
+                <h3 className="font-black text-xl tracking-wider">
+                  And many more..
+                </h3>
+                <p>
+                  If you want to know if your favorite feature is going to be
+                  implemented or if you want to share your ideas hit us a DM on{" "}
+                  <a
+                    className="underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://twitter.com/reflectrocks"
+                  >
+                    twitter
+                  </a>
+                  .
+                </p>
+              </div>
             </div>
           </div>
         </section>
         <div className="h-16"></div>
-        {/* <section id="roadmap">
-            <h2 className="font-semibold tracking-wider text-xl">Roadmap</h2>
+        <section id="roadmap" className="max-w-lg">
+          <h2 className="tracking-wider text-xl tracking-widest">Roadmap</h2>
+          <div className="py-2"></div>
+          <div>
+            <h3 className="font-black text-xl tracking-wider">
+              Next milestone
+            </h3>
             <div>
-            <h3>In progress</h3>
-            <div>Users can create and manage their organisations</div>
+              <p>
+                <strong>0.1.0</strong> web version is live for private testing.
+              </p>
+              <div className="h-2"></div>
+              <h4 className="font-bold">Features</h4>
+              <p>- Real-time chat</p>
+              <p>- Personal assistant POC</p>
             </div>
-            </section> */}
+          </div>
+          <div className="h-8"></div>
+          <div>
+            <h3 className="font-black text-xl tracking-wider">
+              What we are working on right now
+            </h3>
+
+            <div className="h-4"></div>
+            <div className="flex flex-col gap-2">
+              <div>
+                <h4 className="font-bold">Authentication</h4>
+                <p>- Users can register</p>
+              </div>
+              <div>
+                <h4 className="font-bold">Home Screen</h4>
+                <p>
+                  - Users can see the list of channels they received messages
+                  with badges indicates the amount of mentions user received
+                </p>
+                <p>
+                  - Users can see the list of direct messages with badges
+                  indicates the amount of messages user haven’t read
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">User Screen</h4>
+                <p>- Users can edit their profile</p>
+                <p>- Users can set their status (busy, away etc.)</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );
