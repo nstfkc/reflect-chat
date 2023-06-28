@@ -38,7 +38,9 @@ export default function RootLayout({
                     roadmap
                   </Link>
                   <a
-                    href="#features"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://twitter.com/reflectrocks"
                     className="font-semibold text-sm tracking-wide"
                   >
                     twitter
@@ -74,7 +76,9 @@ export default function RootLayout({
                   roadmap
                 </Link>
                 <a
-                  href="#features"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://twitter.com/reflectrocks"
                   className="font-semibold text-sm tracking-wide"
                 >
                   twitter
