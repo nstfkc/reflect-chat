@@ -6,7 +6,14 @@ import { StackScreenProps } from "./types";
 export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
   const { trigger: signOut } = useSignOut();
   return (
-    <View style={{ justifyContent: "space-between", flex: 1, padding: 8 }}>
+    <View
+      style={{
+        justifyContent: "space-between",
+        flex: 1,
+        padding: 8,
+        backgroundColor: "#fef2f2",
+      }}
+    >
       <ChannelList
         onChannelClick={(channel) =>
           navigation.navigate("Chat", {

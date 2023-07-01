@@ -101,10 +101,10 @@ export const TextEditor = (props: TextEditorProps) => {
         suggestion: createMentionSuggestions({
           users: usersCanBeMentioned,
           onExit: () => {
-            /* shiftEnter = false; */
+            shiftEnter = false;
           },
           onStart: () => {
-            /* shiftEnter = true; */
+            shiftEnter = true;
           },
         }),
       }),
@@ -118,8 +118,8 @@ export const TextEditor = (props: TextEditorProps) => {
   const buttonClass = "p-1 rounded-md text-lg text-gray-600";
 
   return (
-    <div className="w-full flex flex-col gap-4 p-4">
-      <div className="flex gap-4">
+    <div className="w-full flex flex-col gap-4">
+      <div className="flex gap-4 px-2 py-3">
         <div className="flex gap-2 items-center">
           <button
             className={cx(
@@ -129,7 +129,7 @@ export const TextEditor = (props: TextEditorProps) => {
             onClick={() => editor?.chain().focus().toggleBold().run()}
             disabled={!editor?.can().chain().focus().toggleBold().run()}
           >
-            <RxFontBold />
+            <RxFontBold className="drop-shadow-md" />
           </button>
           <button
             className={cx(
@@ -139,7 +139,7 @@ export const TextEditor = (props: TextEditorProps) => {
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             disabled={!editor?.can().chain().focus().toggleItalic().run()}
           >
-            <RxFontItalic />
+            <RxFontItalic className="drop-shadow-md" />
           </button>
           <button
             className={cx(
@@ -149,13 +149,13 @@ export const TextEditor = (props: TextEditorProps) => {
             onClick={() => editor?.chain().focus().toggleStrike().run()}
             disabled={!editor?.can().chain().focus().toggleStrike().run()}
           >
-            <RxStrikethrough></RxStrikethrough>
+            <RxStrikethrough className="drop-shadow-md" />
           </button>
         </div>
         <div className="border-l-[1px] border-gray-400"></div>
         <div className="flex gap-2 items-center ">
           <button className={cx(buttonClass)}>
-            <RxLink1 />
+            <RxLink1 className="drop-shadow-md" />
           </button>
         </div>
         <div className="border-l-[1px] border-gray-400"></div>
@@ -170,7 +170,7 @@ export const TextEditor = (props: TextEditorProps) => {
             }}
             disabled={!editor?.can().chain().focus().toggleOrderedList().run()}
           >
-            <MdOutlineFormatListNumbered />
+            <MdOutlineFormatListNumbered className="drop-shadow-md" />
           </button>
 
           <button
@@ -183,7 +183,7 @@ export const TextEditor = (props: TextEditorProps) => {
             }}
             disabled={!editor?.can().chain().focus().toggleBulletList().run()}
           >
-            <RxListBullet />
+            <RxListBullet className="drop-shadow-md" />
           </button>
           <button
             className={cx(buttonClass)}
@@ -191,7 +191,7 @@ export const TextEditor = (props: TextEditorProps) => {
               editor?.chain().focus().liftListItem("listItem").run();
             }}
           >
-            <TbIndentDecrease />
+            <TbIndentDecrease className="drop-shadow-md" />
           </button>
           <button
             className={cx(buttonClass)}
@@ -199,27 +199,29 @@ export const TextEditor = (props: TextEditorProps) => {
               editor?.chain().focus().sinkListItem("listItem").run();
             }}
           >
-            <TbIndentIncrease />
+            <TbIndentIncrease className="drop-shadow-md" />
           </button>
         </div>
       </div>
 
-      <EditorContent editor={editor} style={{ minHeight: "40px" }} />
+      <div className="px-4">
+        <EditorContent editor={editor} style={{ minHeight: "40px" }} />
+      </div>
       <UploadQueue />
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between p-2">
         <UploadButton
           handleChange={() => {
             editor?.commands.focus();
           }}
         />
         <button
-          className="bg-indigo-900/80 text-white  p-3 rounded-full"
+          className="p-2 rounded-lg border-[1px] border-black/10 bg-white/30"
           onClick={() => {
             handlePressEnter(editor!);
             editor?.commands.focus();
           }}
         >
-          <RxPaperPlane />
+          <RxPaperPlane className="drop-shadow-md text-sm" />
         </button>
       </div>
     </div>
@@ -241,9 +243,9 @@ const UploadButton = (props: UploadButtonProps) => {
   });
 
   return (
-    <button {...getRootProps()} className="bg-green-900/30 p-2 rounded-full">
-      <input {...getInputProps()} />
-      <RxPlus className="text-xl" />
+    <button {...getRootProps()} className="p-2 rounded-full">
+      <input {...(getInputProps() as any)} />
+      <RxPlus className="text-lg drop-shadow-md" />
     </button>
   );
 };

@@ -152,22 +152,24 @@ export const ChatScreen = () => {
             />
           </div>
         </div>
-        <div className="w-full border-t-2 border-black bg-gray-100/50">
-          <div>{canSendMessage ? "" : "Cant send message"}</div>
-          <TextEditor
-            onSubmit={(message) => {
-              sendMessage(
-                {
-                  channelId: channelId,
-                  senderId: user?.publicId,
-                  text: message,
-                },
-                []
-              );
-            }}
-            placeholder={(channel as any)?.name}
-            usersCanBeMentioned={[]}
-          />
+        <div className="p-3">
+          <div className="w-full shadow-xl rounded-xl bg-white/10">
+            <div>{canSendMessage ? "" : "Cant send message"}</div>
+            <TextEditor
+              onSubmit={(message) => {
+                sendMessage(
+                  {
+                    channelId: channelId,
+                    senderId: user?.publicId,
+                    text: message,
+                  },
+                  []
+                );
+              }}
+              placeholder={`Message #General`}
+              usersCanBeMentioned={[]}
+            />
+          </div>
         </div>
       </div>
     </FileUploaderProvider>

@@ -18,7 +18,7 @@ const PrivateSwitch = (props: ComponentProps<typeof Switch.Root>) => {
     >
       <Switch.Thumb
         className={cx(
-          "block w-[21px] h-[21px] bg-white rounded-full",
+          "block w-[21px] h-[21px] rounded-full",
           "border-[2px] border-gray-800 transition-transform duration-100",
           "translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]"
         )}

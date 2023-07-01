@@ -191,7 +191,7 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
     <KeyboardAvoidingView
       keyboardVerticalOffset={80}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: "#fef2f2" }}
     >
       <FlatList
         ref={virtualListRef}

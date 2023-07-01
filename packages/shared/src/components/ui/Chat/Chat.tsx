@@ -105,7 +105,7 @@ const MessageFragment = (props: MessageFragmentProps) => {
                 key={`${media.id}-${index}`}
                 onRender={onRender}
               >
-                <div className="bg-white rounded-lg flex gap-2 items-center overflow-hidden shadow-md p-4">
+                <div className="rounded-lg flex gap-2 items-center overflow-hidden shadow-md p-4">
                   <HiOutlineDocumentText className="text-2xl" />
                   <span className="text-sm tracking-wide">
                     {media.filename}
