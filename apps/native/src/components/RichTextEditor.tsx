@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import editorHtml15 from "../editor/dist/index.html";
+import editorHtml20 from "../editor/dist/index.html";
 import type {
   EditorState,
   NativeMessage,
@@ -190,7 +190,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                   });
                 }
               }}
-              source={{ html: `${editorHtml15}` }}
+              source={{ html: `${editorHtml20}` }}
             />
           </TouchableWithoutFeedback>
         </View>

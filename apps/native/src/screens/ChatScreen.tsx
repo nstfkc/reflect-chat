@@ -169,9 +169,7 @@ const RenderMessage = React.memo(({ item }: { item: string | any[] }) => {
       fragmentRenderer={(message) => {
         return (
           <View key={message.id}>
-            <MessageRendererFragment
-              content={JSON.parse(message.text).content}
-            />
+            <MessageRendererFragment content={JSON.parse(message.text)} />
           </View>
         );
       }}

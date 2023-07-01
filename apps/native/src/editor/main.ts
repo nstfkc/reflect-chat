@@ -27,7 +27,7 @@ function sendMessageFromWebView(params: WebViewMessage) {
 
 function getEditorState(editor: Editor): EditorState {
   return {
-    content: JSON.stringify(editor.getJSON()),
+    content: JSON.stringify(editor.getJSON().content),
     canBold: editor.can().chain().focus().toggleBold().run(),
     canItalic: editor.can().chain().focus().toggleItalic().run(),
     canStrike: editor.can().chain().focus().toggleStrike().run(),

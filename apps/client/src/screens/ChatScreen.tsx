@@ -1,11 +1,4 @@
-import {
-  useContext,
-  Fragment,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { useParams } from "react-router-dom";
 import {
@@ -30,7 +23,7 @@ const MessageRendererFragment = ({
   }
 
   return (
-    <div className="ProseMirror">
+    <>
       {content.map((c, index) => {
         switch (c.type) {
           case "paragraph":
@@ -70,7 +63,7 @@ const MessageRendererFragment = ({
             return <pre key={index}>{JSON.stringify(c)}</pre>;
         }
       })}
-    </div>
+    </>
   );
 };
 
@@ -137,16 +130,16 @@ export const ChatScreen = () => {
                   );
                 }
                 return (
-                  <Fragment key={index}>
+                  <div className="ProseMirror" key={index}>
                     <ChatMessage
                       messages={messagesOrDate}
                       fragmentRenderer={(message) => (
                         <MessageRendererFragment
-                          content={JSON.parse(message.text).content}
+                          content={JSON.parse(message.text)}
                         ></MessageRendererFragment>
                       )}
                     />
-                  </Fragment>
+                  </div>
                 );
               }}
             />
@@ -166,7 +159,7 @@ export const ChatScreen = () => {
                   []
                 );
               }}
-              placeholder={`Message #General`}
+              placeholder={`Message #${channel?.name}`}
               usersCanBeMentioned={[]}
             />
           </div>
