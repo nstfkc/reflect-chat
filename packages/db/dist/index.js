@@ -469,7 +469,8 @@ var listMessages = createPrecedure({
         messages = await prisma.message.findMany({
           where: {
             channelId: args.channelId
-          }
+          },
+          orderBy: { createdAt: "asc" }
         });
       }
       if (args.receiverId !== "undefined") {
@@ -479,7 +480,8 @@ var listMessages = createPrecedure({
               { receiverId: args.receiverId, senderId: ctx.userId },
               { senderId: args.receiverId, receiverId: ctx.userId }
             ]
-          }
+          },
+          orderBy: { createdAt: "asc" }
         });
       }
       return {

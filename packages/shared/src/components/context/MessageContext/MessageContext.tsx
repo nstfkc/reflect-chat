@@ -176,7 +176,9 @@ function useMessageHistory() {
         !dmHistoryMapRef.current.set(key, []);
       }
 
+      console.log(key);
       const current = dmHistoryMapRef.current.get(key)!;
+      console.log({ dm });
       current.push(dm);
       setDmHistory(new Map(dmHistoryMapRef.current));
     },
@@ -185,9 +187,9 @@ function useMessageHistory() {
 
   const handleUpdateMessageHistoryInternal = useCallback(
     (dm: MessageWithMedia) => {
-      /* if (dm.senderId === user.publicId) {
-       *   return;
-       * } */
+      if (dm.senderId === user.publicId) {
+        return;
+      }
       let key = "";
 
       if (dm.receiverId) {

@@ -20,7 +20,7 @@ export * from "./components/context/MessageContext";
 export * from "./components/context/UsersContext";
 export { RootProvider } from "./components/context/RootProvider";
 
-export { ChatHistory, useChatHistory } from "./components/ui/Chat/ChatHistory";
+export { useChatHistory } from "./components/ui/Chat/ChatHistory";
 export { ChatMessage } from "./components/ui/Chat/ChatMessage";
 export { ProfileButton } from "./components/ui/ProfileButton";
 export { PeopleList } from "./components/ui/PeopleList";

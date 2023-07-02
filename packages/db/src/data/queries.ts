@@ -105,6 +105,8 @@ export const listMessages = createPrecedure({
           where: {
             channelId: args.channelId,
           },
+
+          orderBy: { createdAt: "asc" },
         });
       }
 
@@ -116,6 +118,7 @@ export const listMessages = createPrecedure({
               { senderId: args.receiverId, receiverId: ctx.userId },
             ],
           },
+          orderBy: { createdAt: "asc" },
         });
       }
 
