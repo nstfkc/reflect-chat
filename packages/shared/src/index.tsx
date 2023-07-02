@@ -19,6 +19,7 @@ export { RootProvider } from "./components/context/RootProvider";
 export { ChatHistory, useChatHistory } from "./components/ui/Chat/ChatHistory";
 export { ChatMessage } from "./components/ui/Chat/ChatMessage";
 export { ProfileButton } from "./components/ui/ProfileButton";
+export { PeopleList } from "./components/ui/PeopleList";
 
 export { useQuery } from "./utils/useQuery";
 export { useMutation } from "./utils/useMutation";

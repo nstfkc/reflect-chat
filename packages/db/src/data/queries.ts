@@ -3,6 +3,7 @@ import * as z from "zod";
 import { prisma } from "../db";
 import { prismaError, insufficientPermissionsError } from "./error";
 import { createPrecedure } from "./handlers";
+import { Message } from "@prisma/client";
 
 export const me = createPrecedure({
   handler: async (_, ctx) => {
@@ -48,6 +49,30 @@ export const listChannels = createPrecedure({
   },
 });
 
+export const listDirectMessages = createPrecedure({
+  schema: z.object({ userId: z.string() }),
+  handler: async (args) => {
+    try {
+      const directMessages = await prisma.message.findMany({
+        distinct: ["senderId", "receiverId"],
+        where: {
+          OR: [
+            { senderId: { equals: args.userId } },
+            { receiverId: { equals: args.userId } },
+          ],
+        },
+      });
+
+      return {
+        success: true,
+        data: directMessages,
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  },
+});
+
 export const getCurrentOrganisationId = createPrecedure({
   handler: async (_, ctx) => {
     const { currentOrganisationId } = ctx;
@@ -62,14 +87,33 @@ export const getCurrentOrganisationId = createPrecedure({
 });
 
 export const listMessages = createPrecedure({
-  schema: z.object({ channelId: z.string() }),
+  schema: z.object({
+    channelId: z.string().optional(),
+    receiverId: z.string().optional(),
+  }),
   handler: async (args) => {
+    if (!args.channelId && !args.receiverId) {
+      return prismaError({ payload: { issues: [] }, statusCode: 400 });
+    }
+
+    let messages: Message[] = [];
+
     try {
-      const messages = await prisma.message.findMany({
-        where: {
-          channelId: args.channelId,
-        },
-      });
+      if (args.channelId) {
+        messages = await prisma.message.findMany({
+          where: {
+            channelId: args.channelId,
+          },
+        });
+      }
+
+      if (args.receiverId) {
+        messages = await prisma.message.findMany({
+          where: {
+            receiverId: args.receiverId,
+          },
+        });
+      }
 
       return {
         success: true,

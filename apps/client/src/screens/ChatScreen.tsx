@@ -1,9 +1,7 @@
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import {
-  useQuery,
-  useOrganisation,
   TextEditor,
   FileUploaderProvider,
   MessageContext,
@@ -69,16 +67,17 @@ const MessageRendererFragment = ({
 
 export const ChatScreen = () => {
   const { channelId } = useParams();
-  const { organisation } = useOrganisation();
+  const { state } = useLocation();
+  console.log(state);
   const { user } = useUser();
   const { sendMessage, canSendMessage } = useContext(MessageContext);
-  const { data: channels = [] } = useQuery("listChannels", {
-    organisationId: organisation?.publicId!,
+
+  const { channel, user: receiver } = state;
+
+  const chatHistory = useChatHistory({
+    channelId: channel?.id,
+    receiverId: receiver?.publicId,
   });
-
-  const channel = channels.find(({ id }) => id === channelId);
-
-  const chatHistory = useChatHistory(channel);
 
   const virtuoso = useRef<VirtuosoHandle>(null);
   const container = useRef<HTMLDivElement>(null);

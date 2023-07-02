@@ -64,14 +64,21 @@ export const ChatHistory = (props: ChatHistoryProps) => {
   );
 };
 
-export const useChatHistory = (channel: Channel | undefined) => {
+interface UseChatHistoryProps {
+  channelId: string | null;
+  receiverId: string | null;
+}
+
+export const useChatHistory = (props: UseChatHistoryProps) => {
+  const { channelId, receiverId } = props;
   const { getMessageHistoryById } = useContext(MessageContext);
   const { data: history = [] } = useQuery("listMessages", {
-    channelId: channel?.id,
+    channelId,
+    receiverId,
   });
 
   return insertDateBetweenMessages([
     ...history,
-    ...getMessageHistoryById(channel?.id),
+    ...getMessageHistoryById(channelId),
   ]);
 };

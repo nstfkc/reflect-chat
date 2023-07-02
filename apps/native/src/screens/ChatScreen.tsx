@@ -180,8 +180,16 @@ const RenderMessage = React.memo(({ item }: { item: string | any[] }) => {
 RenderMessage.displayName = "RenderMessage";
 
 export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
+  const receiverId =
+    route.params.kind === "user" ? route.params.user.publicId : null;
+  const channelId =
+    route.params.kind === "channel" ? route.params.channel.id : null;
+
   const { sendMessage } = React.useContext(MessageContext);
-  const chatHistory = useChatHistory(route.params.channel);
+  const chatHistory = useChatHistory({
+    channelId,
+    receiverId,
+  });
   const virtualListRef = React.useRef<FlatList<any>>(null);
   const { user } = useUser();
 
@@ -201,7 +209,8 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
         onSend={(message) => {
           sendMessage(
             {
-              channelId: route.params.channel.id,
+              receiverId,
+              channelId,
               senderId: user?.publicId,
               text: message,
             },

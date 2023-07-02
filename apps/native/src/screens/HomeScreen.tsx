@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { ChannelList, Button, useSignOut, ProfileButton } from "shared";
 import { StackScreenProps } from "./types";
 
-export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
+export const HomeScreen = ({ navigation }: StackScreenProps<"Activities">) => {
   const { trigger: signOut } = useSignOut();
   return (
     <View
@@ -17,6 +17,7 @@ export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
       <ChannelList
         onChannelClick={(channel) =>
           navigation.navigate("Chat", {
+            kind: "channel",
             channel,
           })
         }

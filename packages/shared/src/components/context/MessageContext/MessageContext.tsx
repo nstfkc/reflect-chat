@@ -185,9 +185,9 @@ function useMessageHistory() {
 
   const handleUpdateMessageHistoryInternal = useCallback(
     (dm: MessageWithMedia) => {
-      if (dm.senderId === user.publicId) {
-        return;
-      }
+      /* if (dm.senderId === user.publicId) {
+       *   return;
+       * } */
       let key = "";
 
       if (dm.receiverId) {

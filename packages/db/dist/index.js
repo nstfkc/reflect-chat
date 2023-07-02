@@ -373,6 +373,7 @@ var queries_exports = {};
 __export(queries_exports, {
   getCurrentOrganisationId: () => getCurrentOrganisationId,
   listChannels: () => listChannels,
+  listDirectMessages: () => listDirectMessages,
   listMessages: () => listMessages,
   listUsers: () => listUsers,
   me: () => me
@@ -419,6 +420,28 @@ var listChannels = createPrecedure({
     }
   }
 });
+var listDirectMessages = createPrecedure({
+  schema: z2.object({ userId: z2.string() }),
+  handler: async (args) => {
+    try {
+      const directMessages = await prisma.message.findMany({
+        distinct: ["senderId", "receiverId"],
+        where: {
+          OR: [
+            { senderId: { equals: args.userId } },
+            { receiverId: { equals: args.userId } }
+          ]
+        }
+      });
+      return {
+        success: true,
+        data: directMessages
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  }
+});
 var getCurrentOrganisationId = createPrecedure({
   handler: async (_, ctx) => {
     const { currentOrganisationId } = ctx;
@@ -432,14 +455,30 @@ var getCurrentOrganisationId = createPrecedure({
   }
 });
 var listMessages = createPrecedure({
-  schema: z2.object({ channelId: z2.string() }),
+  schema: z2.object({
+    channelId: z2.string().optional(),
+    receiverId: z2.string().optional()
+  }),
   handler: async (args) => {
+    if (!args.channelId && !args.receiverId) {
+      return prismaError({ payload: { issues: [] }, statusCode: 400 });
+    }
+    let messages = [];
     try {
-      const messages = await prisma.message.findMany({
-        where: {
-          channelId: args.channelId
-        }
-      });
+      if (args.channelId) {
+        messages = await prisma.message.findMany({
+          where: {
+            channelId: args.channelId
+          }
+        });
+      }
+      if (args.receiverId) {
+        messages = await prisma.message.findMany({
+          where: {
+            receiverId: args.receiverId
+          }
+        });
+      }
       return {
         success: true,
         data: messages

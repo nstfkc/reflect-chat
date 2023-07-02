@@ -7,7 +7,7 @@ import { useQuery } from "../../../utils/useQuery";
 import { useOrganisation } from "../../../auth";
 
 interface UsersContextValue {
-  users: User[];
+  users: (User & { userProfile: UserProfile })[];
   getUserById: (id: string) => (User & { userProfile: UserProfile }) | null;
 }
 

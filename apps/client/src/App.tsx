@@ -13,6 +13,7 @@ import {
 } from "shared";
 
 import { HomeScreen } from "./screens/HomeScreen";
+import { PeopleScreen } from "./screens/PeopleScreen";
 import { ChatScreen } from "./screens/ChatScreen";
 import { getConfig } from "config";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -29,6 +30,7 @@ const router = createBrowserRouter(
           path: ":channelId",
           element: <ChatScreen />,
         },
+        { path: "/people", element: <PeopleScreen /> },
       ],
     },
   ],
