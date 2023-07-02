@@ -1,5 +1,5 @@
 import { Fragment, useContext } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 
 import format from "date-fns/format";
 import { UsersContext } from "../../context/UsersContext";
@@ -40,7 +40,11 @@ export const ChatMessage = (props: ChatMessageProps) => {
               borderRadius: 6,
             }}
           ></View>
-          <View>
+          <View
+            style={{
+              width: "90%",
+            }}
+          >
             <View
               style={{
                 flexDirection: "row",

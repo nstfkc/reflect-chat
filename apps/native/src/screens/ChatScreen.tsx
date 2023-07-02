@@ -7,6 +7,7 @@ import {
   TextStyle,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from "react-native";
 import { Svg, Circle, Rect } from "react-native-svg";
 
@@ -98,10 +99,7 @@ const MessageRendererFragment = ({
         switch (c.type) {
           case "paragraph":
             return (
-              <View
-                key={index}
-                style={{ flexDirection: "row", alignItems: "center" }}
-              >
+              <Text key={index}>
                 <Bullet level={listDepth - 1} />
                 <Text key={index}>
                   <MessageRendererFragment
@@ -110,7 +108,7 @@ const MessageRendererFragment = ({
                     content={c.content}
                   />
                 </Text>
-              </View>
+              </Text>
             );
           case "text":
             return (
@@ -138,6 +136,21 @@ const MessageRendererFragment = ({
                   listDepth={listDepth + 1}
                 />
               </View>
+            );
+          case "mention":
+            return (
+              <Pressable
+                key={index}
+                style={{
+                  backgroundColor: "rgba(0,0,0,0.15)",
+                  opacity: 0.7,
+                  paddingHorizontal: 3,
+                  borderRadius: 4,
+                  marginTop: -3,
+                }}
+              >
+                <Text>@{(c as any).attrs.label}</Text>
+              </Pressable>
             );
           default:
             return <Text key={index}>{JSON.stringify(c)}</Text>;
@@ -185,6 +198,7 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const channelId =
     route.params.kind === "channel" ? route.params.channel.id : null;
 
+  console.log({ channelId });
   const { sendMessage } = React.useContext(MessageContext);
   const chatHistory = useChatHistory({
     channelId,

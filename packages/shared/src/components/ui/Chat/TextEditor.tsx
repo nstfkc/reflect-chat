@@ -26,6 +26,7 @@ import { FileUploaderContext, RawMedia } from "./FileUploader";
 import { UploadQueue } from "./UploadQueue";
 import { TbIndentDecrease, TbIndentIncrease } from "react-icons/tb";
 import { User } from "db";
+import { UsersContext } from "../../context/UsersContext";
 
 let shiftEnter = false;
 
@@ -54,11 +55,12 @@ const HandleEnter = (handlePressEnter: (editor: EditorInstance) => void) =>
 interface TextEditorProps {
   placeholder: string;
   onSubmit: (text: string, media: RawMedia[]) => void;
-  usersCanBeMentioned: User[];
+  onMentionListUpdate: (user: User) => void;
 }
 
 export const TextEditor = (props: TextEditorProps) => {
-  const { placeholder, onSubmit, usersCanBeMentioned } = props;
+  const { placeholder, onSubmit } = props;
+  const { users } = useContext(UsersContext);
   const { uploadQueue, clearUplaodQueue } = useContext(FileUploaderContext);
 
   const medias = Array.from(uploadQueue);
@@ -102,12 +104,16 @@ export const TextEditor = (props: TextEditorProps) => {
           return `@${node.attrs.label}`;
         },
         suggestion: createMentionSuggestions({
-          users: usersCanBeMentioned,
+          users: users,
           onExit: () => {
             shiftEnter = false;
           },
-          onStart: () => {
+          onStart: (props) => {
+            console.log(props);
             shiftEnter = true;
+          },
+          onUpdate: (props) => {
+            console.log(props);
           },
         }),
       }),

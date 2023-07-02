@@ -1,13 +1,6 @@
 import { Channel, User } from "@prisma/client";
 
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  ReactNode,
-} from "react";
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { useLocation } from "react-router-dom";
 import {
@@ -34,7 +27,11 @@ const MessageRendererFragment = ({
       {content.map((c, index) => {
         switch (c.type) {
           case "paragraph":
-            return <MessageRendererFragment key={index} content={c.content} />;
+            return (
+              <p key={index}>
+                <MessageRendererFragment key={index} content={c.content} />
+              </p>
+            );
           case "text":
             return (
               <span
@@ -65,6 +62,16 @@ const MessageRendererFragment = ({
               <li key={index}>
                 <MessageRendererFragment key={index} content={c.content} />
               </li>
+            );
+          case "mention":
+            return (
+              <span
+                key={index}
+                className="mention w-fit"
+                data-publicid={c?.attrs?.id}
+              >
+                @{c?.attrs?.label}
+              </span>
             );
           default:
             return <pre key={index}>{JSON.stringify(c)}</pre>;
@@ -211,7 +218,6 @@ function getEditor(props: GetEditorProps) {
             props.sendMessage(message);
           }}
           placeholder={`Message #${props.channel.name}`}
-          usersCanBeMentioned={[]}
         />
       ));
     }
@@ -225,7 +231,6 @@ function getEditor(props: GetEditorProps) {
             props.sendMessage(message);
           }}
           placeholder={`Message ${props.user.name}`}
-          usersCanBeMentioned={[]}
         />
       ));
     }

@@ -1,6 +1,6 @@
 import { cx } from "class-variance-authority";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { User } from "../../../types/global";
+import { User } from "db";
 
 interface MentionListProps {
   items: User[];
@@ -13,7 +13,7 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
     const item = props.items[index];
 
     if (item) {
-      props.command({ id: item.id, label: item.username });
+      props.command({ id: item.publicId, label: item.name });
     }
   };
 
@@ -55,23 +55,29 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
   }));
 
   return (
-    <ul className="bg-white shadow-md rounded-lg">
+    <ul className="bg-red-50 shadow-md rounded-lg overflow-hidden">
       {props.items.length ? (
         props.items.map((item, index) => (
           <li key={index}>
             <button
               className={cx(
-                "px-4 py-2 w-full text-left",
-                index === selectedIndex ? "bg-gray-100" : ""
+                "px-4 py-2 w-full text-left flex items-center gap-3",
+                index === selectedIndex ? "bg-black/10" : ""
               )}
               onClick={() => selectItem(index)}
             >
-              {item.username}
+              <div
+                style={{
+                  backgroundColor: (item as any).userProfile?.profileColor,
+                }}
+                className="w-[16px] h-[16px] rounded-sm"
+              ></div>
+              <span>{item.name}</span>
             </button>
           </li>
         ))
       ) : (
-        <div className="item">No result</div>
+        <div className="item bg-red-50 p-4">No result</div>
       )}
     </ul>
   );

@@ -1,5 +1,62 @@
 import { Editor } from "@tiptap/core";
+import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
+
+const globalState = new Map<string, any>();
+
+function createMentionSuggestions(params: any) {
+  return {
+    items: ({ query }: { query: string }) => {
+      return globalState
+        .get("mentionList")
+        .filter((item: any) =>
+          item.name.toLowerCase().startsWith(query.toLowerCase())
+        )
+        .slice(0, 5);
+    },
+    render: () => {
+      return {
+        onExit: (props: any) => {
+          sendMessageFromWebView({
+            kind: "mentionListUpdated",
+            payload: { isActive: false, items: [] },
+          });
+
+          globalState.set("mentionHandler", null);
+        },
+        onStart: (props: any) => {
+          sendMessageFromWebView({
+            kind: "mentionListUpdated",
+            payload: {
+              isActive: true,
+              items: props.items,
+              label: "onStart",
+              props: Object.keys(props),
+            } as any,
+          });
+
+          globalState.set("mentionHandler", (data: any) => {
+            props.command(data);
+          });
+        },
+        onUpdate: (props: any) => {
+          sendMessageFromWebView({
+            kind: "mentionListUpdated",
+            payload: { isActive: true, items: props.items },
+          });
+        },
+        onEnd: (props: any) => {
+          sendMessageFromWebView({
+            kind: "mentionListUpdated",
+            payload: { isActive: false, items: [] },
+          });
+
+          globalState.set("mentionHandler", null);
+        },
+      };
+    },
+  };
+}
 
 export type EditorState = {
   content: string;
@@ -19,7 +76,12 @@ export type WebViewMessage =
       kind: "editorStateUpdate";
       payload: EditorState;
     }
-  | { kind: "editorInitialised" };
+  | { kind: "editorInitialised" }
+  | { kind: "debug"; payload: any }
+  | {
+      kind: "mentionListUpdated";
+      payload: { isActive: boolean; items: any[] };
+    };
 
 function sendMessageFromWebView(params: WebViewMessage) {
   (window as any).ReactNativeWebView?.postMessage(JSON.stringify(params));
@@ -42,7 +104,18 @@ function getEditorState(editor: Editor): EditorState {
 
 const editor = new Editor({
   element: document.getElementById("editor")!,
-  extensions: [StarterKit],
+  extensions: [
+    StarterKit,
+    Mention.configure({
+      HTMLAttributes: {
+        class: "mention",
+      },
+      renderLabel({ node }) {
+        return `@${node.attrs.label}`;
+      },
+      suggestion: createMentionSuggestions({}),
+    }),
+  ],
   onCreate: () => {
     sendMessageFromWebView({ kind: "editorInitialised" });
   },
@@ -80,7 +153,9 @@ const editorActions: Record<EditorAction, VoidFunction> = {
 export type NativeMessage =
   | { kind: "action"; payload: EditorAction }
   | { kind: "editor"; payload: "focus" | "blur" }
-  | { kind: "initialContent"; payload: string };
+  | { kind: "initialContent"; payload: string }
+  | { kind: "mentionListUpdate"; payload: any[] }
+  | { kind: "mentionSelected"; payload: any };
 
 window.addEventListener("message", (message: { data: string }) => {
   const nativeMessage: NativeMessage = JSON.parse(message.data);
@@ -90,6 +165,7 @@ window.addEventListener("message", (message: { data: string }) => {
   }
   if (nativeMessage.kind === "initialContent") {
     editor.commands.setContent(nativeMessage.payload);
+    sendMessageFromWebView({ kind: "debug", payload: nativeMessage.payload });
   }
   if (nativeMessage.kind === "editor") {
     if (nativeMessage.payload === "focus") {
@@ -97,6 +173,19 @@ window.addEventListener("message", (message: { data: string }) => {
     }
     if (nativeMessage.payload === "blur") {
       editor.commands.blur();
+    }
+  }
+  if (nativeMessage.kind === "mentionListUpdate") {
+    globalState.set("mentionList", nativeMessage.payload);
+    sendMessageFromWebView({ kind: "debug", payload: nativeMessage.payload });
+  }
+
+  if (nativeMessage.kind === "mentionSelected") {
+    const handler = (() => globalState.get("mentionHandler"))();
+    if (!handler) {
+      sendMessageFromWebView({ kind: "debug", payload: "Handler is null" });
+    } else {
+      handler(nativeMessage.payload);
     }
   }
 });

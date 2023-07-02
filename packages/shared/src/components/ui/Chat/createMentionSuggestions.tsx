@@ -2,10 +2,11 @@ import { ReactRenderer } from "@tiptap/react";
 import tippy from "tippy.js";
 
 import { MentionList } from "./MentionList";
-import { User } from "../../../types/global";
+import { User } from "db";
 
 interface CreateMentionSuggestionsProps {
-  onStart: VoidFunction;
+  onStart: (props: any) => void;
+  onUpdate: (props: any) => void;
   onExit: VoidFunction;
   users: User[];
 }
@@ -17,7 +18,7 @@ export const createMentionSuggestions = (
     items: ({ query }: { query: string }) => {
       return params.users
         .filter((item) =>
-          item.username.toLowerCase().startsWith(query.toLowerCase())
+          item.name.toLowerCase().startsWith(query.toLowerCase())
         )
         .slice(0, 5);
     },
@@ -28,7 +29,7 @@ export const createMentionSuggestions = (
 
       return {
         onStart: (props: any) => {
-          params.onStart();
+          params.onStart(props);
           component = new ReactRenderer(MentionList, {
             props,
             editor: props.editor,
@@ -45,11 +46,12 @@ export const createMentionSuggestions = (
             showOnCreate: true,
             interactive: true,
             trigger: "manual",
-            placement: "bottom-start",
+            placement: "top-start",
           });
         },
 
         onUpdate(props: any) {
+          params.onUpdate(props);
           component.updateProps(props);
 
           if (!props.clientRect) {

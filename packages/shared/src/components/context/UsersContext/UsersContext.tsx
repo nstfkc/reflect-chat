@@ -28,6 +28,10 @@ export const UsersProvider = (props: UserProviderProps) => {
     return users.find((user) => user.publicId === userId);
   };
 
+  if (!users || users.length === 0) {
+    return null;
+  }
+
   return (
     <UsersContext.Provider value={{ users, getUserById }}>
       {children}
