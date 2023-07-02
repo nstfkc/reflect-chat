@@ -82,7 +82,7 @@ export const TextEditor = (props: TextEditorProps) => {
   };
 
   const editor = useEditor({
-    autofocus: false,
+    autofocus: true,
     editorProps: {
       attributes: {
         class: cx("outline-none resize-none outline-none transition py-2"),

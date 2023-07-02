@@ -5,7 +5,6 @@ import { useRef, useState, useEffect } from "react";
 import {
   StyleSheet,
   Pressable,
-  Text,
   View,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -173,6 +172,8 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
             <WebView
               ref={webViewRef}
               style={styles.webview}
+              onLoadStart={() => console.log("load started")}
+              onLoadEnd={() => console.log("loaded")}
               originWhitelist={["*"]}
               scrollEnabled={false}
               onMessage={(event) => {

@@ -1,6 +1,15 @@
-import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Channel, User } from "@prisma/client";
+
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  ReactNode,
+} from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { useParams, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   TextEditor,
   FileUploaderProvider,
@@ -100,6 +109,32 @@ export const ChatScreen = () => {
     resizeObserver.observe(container?.current!);
   }, [resizeObserver]);
 
+  const Editor = channel
+    ? getEditor({
+        kind: "channel",
+        channel,
+        sendMessage: (message) =>
+          sendMessage(
+            { text: message, channelId: channel.id, senderId: user?.publicId },
+            []
+          ),
+      })
+    : user
+    ? getEditor({
+        kind: "user",
+        user: receiver,
+        sendMessage: (message) =>
+          sendMessage(
+            {
+              text: message,
+              receiverId: receiver.publicId,
+              senderId: user?.publicId,
+            },
+            []
+          ),
+      })
+    : () => <></>;
+
   return (
     <FileUploaderProvider pathPrefix={channel?.id ?? receiver?.publicId}>
       <div className="h-full flex flex-col justify-between">
@@ -145,24 +180,55 @@ export const ChatScreen = () => {
         <div className="p-3">
           <div className="w-full shadow-xl rounded-xl bg-white/30">
             <div>{canSendMessage ? "" : "Cant send message"}</div>
-            <TextEditor
-              onSubmit={(message) => {
-                sendMessage(
-                  {
-                    receiverId: receiver?.publicId,
-                    channelId: channel?.id,
-                    senderId: user?.publicId,
-                    text: message,
-                  },
-                  []
-                );
-              }}
-              placeholder={`Message #${channel?.name}`}
-              usersCanBeMentioned={[]}
-            />
+            {Editor ? <Editor /> : null}
           </div>
         </div>
       </div>
     </FileUploaderProvider>
   );
 };
+
+type GetEditorProps =
+  | {
+      kind: "channel";
+      channel: Channel;
+      sendMessage: (message: string) => void;
+    }
+  | {
+      kind: "user";
+      user: User;
+
+      sendMessage: (message: string) => void;
+    };
+
+function getEditor(props: GetEditorProps) {
+  const editors = new Map<string, () => JSX.Element>();
+  if (props.kind === "channel") {
+    if (!editors.has(props.channel.id)) {
+      editors.set(props.channel.id, () => (
+        <TextEditor
+          onSubmit={(message) => {
+            props.sendMessage(message);
+          }}
+          placeholder={`Message #${props.channel.name}`}
+          usersCanBeMentioned={[]}
+        />
+      ));
+    }
+    return editors.get(props.channel.id);
+  }
+  if (props.kind === "user") {
+    if (!editors.has(props.user.publicId)) {
+      editors.set(props.user.publicId, () => (
+        <TextEditor
+          onSubmit={(message) => {
+            props.sendMessage(message);
+          }}
+          placeholder={`Message ${props.user.name}`}
+          usersCanBeMentioned={[]}
+        />
+      ));
+    }
+    return editors.get(props.user.publicId);
+  }
+}

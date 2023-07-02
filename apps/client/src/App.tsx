@@ -97,6 +97,20 @@ function App() {
     <SWRConfig
       value={{
         provider: () => new Map(),
+        isOnline() {
+          /* Customize the network state detector */
+          return true;
+        },
+        isVisible() {
+          /* Customize the visibility state detector */
+          return true;
+        },
+        initFocus() {
+          /* Register the listener with your state provider */
+        },
+        initReconnect() {
+          /* Register the listener with your state provider */
+        },
       }}
     >
       <IconsProvider>
