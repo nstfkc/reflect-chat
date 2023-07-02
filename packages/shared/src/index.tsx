@@ -25,6 +25,7 @@ export { ChatMessage } from "./components/ui/Chat/ChatMessage";
 export { ProfileButton } from "./components/ui/ProfileButton";
 export { PeopleList } from "./components/ui/PeopleList";
 export { Organisation } from "./components/ui/Organisation";
+export { DMList } from "./components/ui/DMList";
 
 export { useQuery } from "./utils/useQuery";
 export { useMutation } from "./utils/useMutation";

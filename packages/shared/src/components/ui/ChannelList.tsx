@@ -19,12 +19,11 @@ export const ChannelList = (props: ChannelListProps) => {
   }
 
   return (
-    <View>
+    <View style={{ gap: 8 }}>
       <Text style={{ fontWeight: "600", fontSize: 16, opacity: 0.8 }}>
         Channels
       </Text>
       <FlatList
-        style={{ paddingVertical: 8 }}
         data={data}
         renderItem={({ item }) => {
           return (

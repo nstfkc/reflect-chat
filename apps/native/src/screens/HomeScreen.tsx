@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { ChannelList, Organisation } from "shared";
+import { ChannelList, DMList, Organisation } from "shared";
 import { StackScreenProps } from "./types";
 
 export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
@@ -22,6 +22,11 @@ export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
           })
         }
       ></ChannelList>
+      <DMList
+        onConversationPress={(user) => {
+          navigation.navigate("Chat", { kind: "user", user });
+        }}
+      />
     </View>
   );
 };

@@ -51,15 +51,32 @@ export const listChannels = createPrecedure({
 });
 
 export const listDirectMessages = createPrecedure({
-  schema: z.object({ userId: z.string() }),
-  handler: async (args) => {
+  handler: async (_, ctx) => {
     try {
       const directMessages = await prisma.message.findMany({
         distinct: ["senderId", "receiverId"],
         where: {
-          OR: [
-            { senderId: { equals: args.userId } },
-            { receiverId: { equals: args.userId } },
+          AND: [
+            {
+              NOT: {
+                AND: [
+                  { senderId: { equals: ctx.userId } },
+                  { receiverId: { equals: ctx.userId } },
+                ],
+              },
+            },
+            {
+              OR: [
+                {
+                  senderId: { equals: ctx.userId },
+                  channelId: { equals: null },
+                },
+                {
+                  receiverId: { equals: ctx.userId },
+                  channelId: { equals: null },
+                },
+              ],
+            },
           ],
         },
       });

@@ -1,4 +1,4 @@
-import { ChannelList, Organisation } from "shared";
+import { ChannelList, Organisation, DMList } from "shared";
 import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -19,6 +19,11 @@ export const HomeScreen = () => {
             onChannelClick={(channel) =>
               navigate(channel.id, { state: { channel } })
             }
+          />
+          <DMList
+            onConversationPress={(user) => {
+              navigate(user.publicId, { state: { user } });
+            }}
           />
         </div>
         <div className="flex-1">
