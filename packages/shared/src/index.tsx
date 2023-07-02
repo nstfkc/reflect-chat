@@ -3,6 +3,10 @@
 export * from "./components/context/ConfigContext";
 export { HttpContext, HttpProvider } from "./components/context/HttpContext";
 export type { HTTPHandler } from "./components/context/HttpContext";
+export {
+  createIconsProvider,
+  IconsContext,
+} from "./components/context/IconsContext";
 
 export { SignInForm } from "./components/forms";
 export { Button } from "./components/lib/Button";
@@ -20,6 +24,7 @@ export { ChatHistory, useChatHistory } from "./components/ui/Chat/ChatHistory";
 export { ChatMessage } from "./components/ui/Chat/ChatMessage";
 export { ProfileButton } from "./components/ui/ProfileButton";
 export { PeopleList } from "./components/ui/PeopleList";
+export { Organisation } from "./components/ui/Organisation";
 
 export { useQuery } from "./utils/useQuery";
 export { useMutation } from "./utils/useMutation";

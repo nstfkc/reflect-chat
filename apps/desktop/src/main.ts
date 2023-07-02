@@ -13,13 +13,14 @@ const localServer = "http://localhost:3000/client";
 async function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    width: 1200,
     height: 800,
+    titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       allowRunningInsecureContent: true,
       webSecurity: false,
     },
-    width: 1200,
   });
 
   if (!isProduction) {

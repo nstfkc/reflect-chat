@@ -10,15 +10,20 @@ import {
   SignedOut,
   SignInForm,
   SignedIn,
+  createIconsProvider,
 } from "shared";
 
 import { HomeScreen } from "./screens/HomeScreen";
 import { PeopleScreen } from "./screens/PeopleScreen";
 import { ChatScreen } from "./screens/ChatScreen";
 import { getConfig } from "config";
+import { TbUsers } from "react-icons/tb";
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const config = getConfig(import.meta.env.PROD);
+
+const IconsProvider = createIconsProvider({ Users: () => <TbUsers /> });
 
 const router = createBrowserRouter(
   [
@@ -94,26 +99,28 @@ function App() {
         provider: () => new Map(),
       }}
     >
-      <ConfigProvider baseUrl={config.baseUrl}>
-        <HttpProvider accessToken={token} http={http}>
-          <AuthProvider>
-            <SignedOut>
-              <div className="flex w-full h-screen justify-center items-center">
-                <SignInForm
-                  onSuccess={(token) => {
-                    updateToken(token);
-                  }}
-                />
-              </div>
-            </SignedOut>
-            <SignedIn>
-              <RootProvider>
-                <RouterProvider router={router} />
-              </RootProvider>
-            </SignedIn>
-          </AuthProvider>
-        </HttpProvider>
-      </ConfigProvider>
+      <IconsProvider>
+        <ConfigProvider baseUrl={config.baseUrl}>
+          <HttpProvider accessToken={token} http={http}>
+            <AuthProvider>
+              <SignedOut>
+                <div className="flex w-full h-screen justify-center items-center">
+                  <SignInForm
+                    onSuccess={(token) => {
+                      updateToken(token);
+                    }}
+                  />
+                </div>
+              </SignedOut>
+              <SignedIn>
+                <RootProvider>
+                  <RouterProvider router={router} />
+                </RootProvider>
+              </SignedIn>
+            </AuthProvider>
+          </HttpProvider>
+        </ConfigProvider>
+      </IconsProvider>
     </SWRConfig>
   );
 }

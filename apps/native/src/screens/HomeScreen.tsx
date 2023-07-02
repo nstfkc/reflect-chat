@@ -1,19 +1,19 @@
 import React from "react";
 import { View } from "react-native";
-import { ChannelList, Button, useSignOut, ProfileButton } from "shared";
+import { ChannelList, Organisation } from "shared";
 import { StackScreenProps } from "./types";
 
-export const HomeScreen = ({ navigation }: StackScreenProps<"Activities">) => {
-  const { trigger: signOut } = useSignOut();
+export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
   return (
     <View
       style={{
-        justifyContent: "space-between",
         flex: 1,
         padding: 8,
         backgroundColor: "#fef2f2",
+        gap: 16,
       }}
     >
+      <Organisation navigateToPeople={() => navigation.navigate("People")} />
       <ChannelList
         onChannelClick={(channel) =>
           navigation.navigate("Chat", {
@@ -22,18 +22,6 @@ export const HomeScreen = ({ navigation }: StackScreenProps<"Activities">) => {
           })
         }
       ></ChannelList>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <ProfileButton onPress={() => {}} />
-        <View style={{ flexDirection: "row" }}>
-          <Button onPress={() => signOut({})}>Sign Out</Button>
-        </View>
-      </View>
     </View>
   );
 };

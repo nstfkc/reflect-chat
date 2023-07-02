@@ -68,7 +68,6 @@ const MessageRendererFragment = ({
 export const ChatScreen = () => {
   const { channelId } = useParams();
   const { state } = useLocation();
-  console.log(state);
   const { user } = useUser();
   const { sendMessage, canSendMessage } = useContext(MessageContext);
 
@@ -145,7 +144,7 @@ export const ChatScreen = () => {
           </div>
         </div>
         <div className="p-3">
-          <div className="w-full shadow-xl rounded-xl bg-white/10">
+          <div className="w-full shadow-xl rounded-xl bg-white/30">
             <div>{canSendMessage ? "" : "Cant send message"}</div>
             <TextEditor
               onSubmit={(message) => {

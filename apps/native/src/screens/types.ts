@@ -2,7 +2,8 @@ import type { Channel, User } from "@prisma/client";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 export type RootStackParamList = {
-  Activities: undefined;
+  Home: undefined;
+  People: undefined;
   Chat: { kind: "channel"; channel: Channel } | { kind: "user"; user: User };
 };
 

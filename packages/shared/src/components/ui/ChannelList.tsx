@@ -20,7 +20,9 @@ export const ChannelList = (props: ChannelListProps) => {
 
   return (
     <View>
-      <Text style={{ fontWeight: "600", fontSize: 18 }}>Channels</Text>
+      <Text style={{ fontWeight: "600", fontSize: 16, opacity: 0.8 }}>
+        Channels
+      </Text>
       <FlatList
         style={{ paddingVertical: 8 }}
         data={data}
