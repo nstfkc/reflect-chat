@@ -9,7 +9,7 @@ export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
       style={{
         flex: 1,
         padding: 8,
-        backgroundColor: "#fef2f2",
+        backgroundColor: "#e8e0e0",
         gap: 16,
       }}
     >

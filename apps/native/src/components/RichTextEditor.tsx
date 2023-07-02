@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import editorHtml20 from "../editor/dist/index.html";
+import editorHtml21 from "../editor/dist/index.html";
 import type {
   EditorState,
   NativeMessage,
@@ -191,7 +191,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                   });
                 }
               }}
-              source={{ html: `${editorHtml20}` }}
+              source={{ html: `${editorHtml21}` }}
             />
           </TouchableWithoutFeedback>
         </View>
@@ -204,7 +204,7 @@ const styles = {
   ...StyleSheet.create({
     outer: { padding: 8, paddingBottom: 24 },
     container: {
-      backgroundColor: "#fef4f4",
+      backgroundColor: "#fff6f6",
       shadowColor: "black",
       shadowOpacity: 0.1,
       shadowOffset: {
@@ -228,7 +228,7 @@ const styles = {
     },
     webview: {
       flex: 1,
-      backgroundColor: "#fef4f4",
+      backgroundColor: "#fff6f6",
     },
     icon: {
       fontSize: 16,

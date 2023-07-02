@@ -31,7 +31,7 @@ export const RootScreen = () => {
         <Stack.Screen
           options={() => ({
             headerStyle: {
-              backgroundColor: "#e7dede",
+              backgroundColor: "#aaa3a4",
             },
           })}
           name="Home"
@@ -47,7 +47,7 @@ export const RootScreen = () => {
                   ? `# ${route.params.channel.name}`
                   : route.params.user.name,
               headerStyle: {
-                backgroundColor: "#e7dede",
+                backgroundColor: "#aaa3a4",
               },
               headerLeft: () => (
                 <Pressable onPress={() => navigation.navigate("Home")}>
@@ -63,7 +63,7 @@ export const RootScreen = () => {
           options={({ navigation }) => {
             return {
               headerStyle: {
-                backgroundColor: "#e7dede",
+                backgroundColor: "#aaa3a4",
               },
               headerLeft: () => (
                 <Pressable onPress={() => navigation.navigate("Home")}>
