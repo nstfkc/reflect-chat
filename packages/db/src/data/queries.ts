@@ -4,6 +4,7 @@ import { prisma } from "../db";
 import { prismaError, insufficientPermissionsError } from "./error";
 import { createPrecedure } from "./handlers";
 import { Message } from "@prisma/client";
+import { log } from "console";
 
 export const me = createPrecedure({
   handler: async (_, ctx) => {
@@ -91,15 +92,15 @@ export const listMessages = createPrecedure({
     channelId: z.string().optional(),
     receiverId: z.string().optional(),
   }),
-  handler: async (args) => {
-    if (!args.channelId && !args.receiverId) {
+  handler: async (args, ctx) => {
+    if (args.channelId === "undefined" && args.receiverId === "undefined") {
       return prismaError({ payload: { issues: [] }, statusCode: 400 });
     }
 
     let messages: Message[] = [];
 
     try {
-      if (args.channelId) {
+      if (args.channelId !== "undefined") {
         messages = await prisma.message.findMany({
           where: {
             channelId: args.channelId,
@@ -107,10 +108,13 @@ export const listMessages = createPrecedure({
         });
       }
 
-      if (args.receiverId) {
+      if (args.receiverId !== "undefined") {
         messages = await prisma.message.findMany({
           where: {
-            receiverId: args.receiverId,
+            OR: [
+              { receiverId: args.receiverId, senderId: ctx.userId },
+              { senderId: args.receiverId, receiverId: ctx.userId },
+            ],
           },
         });
       }

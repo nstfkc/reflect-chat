@@ -66,7 +66,6 @@ const MessageRendererFragment = ({
 };
 
 export const ChatScreen = () => {
-  const { channelId } = useParams();
   const { state } = useLocation();
   const { user } = useUser();
   const { sendMessage, canSendMessage } = useContext(MessageContext);
@@ -102,7 +101,7 @@ export const ChatScreen = () => {
   }, [resizeObserver]);
 
   return (
-    <FileUploaderProvider pathPrefix={channelId!}>
+    <FileUploaderProvider pathPrefix={channel?.id ?? receiver?.publicId}>
       <div className="h-full flex flex-col justify-between">
         <div className="relative h-full">
           <div
@@ -150,7 +149,8 @@ export const ChatScreen = () => {
               onSubmit={(message) => {
                 sendMessage(
                   {
-                    channelId: channelId,
+                    receiverId: receiver?.publicId,
+                    channelId: channel?.id,
                     senderId: user?.publicId,
                     text: message,
                   },

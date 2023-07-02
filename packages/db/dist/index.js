@@ -459,23 +459,26 @@ var listMessages = createPrecedure({
     channelId: z2.string().optional(),
     receiverId: z2.string().optional()
   }),
-  handler: async (args) => {
-    if (!args.channelId && !args.receiverId) {
+  handler: async (args, ctx) => {
+    if (args.channelId === "undefined" && args.receiverId === "undefined") {
       return prismaError({ payload: { issues: [] }, statusCode: 400 });
     }
     let messages = [];
     try {
-      if (args.channelId) {
+      if (args.channelId !== "undefined") {
         messages = await prisma.message.findMany({
           where: {
             channelId: args.channelId
           }
         });
       }
-      if (args.receiverId) {
+      if (args.receiverId !== "undefined") {
         messages = await prisma.message.findMany({
           where: {
-            receiverId: args.receiverId
+            OR: [
+              { receiverId: args.receiverId, senderId: ctx.userId },
+              { senderId: args.receiverId, receiverId: ctx.userId }
+            ]
           }
         });
       }
