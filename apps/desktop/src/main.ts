@@ -16,6 +16,7 @@ async function createWindow() {
     width: 1200,
     height: 800,
     titleBarStyle: "hidden",
+    trafficLightPosition: { x: 10, y: 15 },
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       allowRunningInsecureContent: true,

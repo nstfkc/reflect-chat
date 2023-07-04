@@ -6,6 +6,11 @@ body {
   background-color: theme(colors.red.50);
 }
 
+.titleBar {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
 .ProseMirror p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);

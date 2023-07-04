@@ -7,7 +7,7 @@ export const HomeScreen = () => {
 
   return (
     <div className="h-screen w-screen flex flex-col">
-      <div className="h-[48px] w-full bg-black/30"></div>
+      <div className="h-[48px] w-full bg-black/30 titleBar"></div>
       <div className="flex h-full">
         <div className="min-w-[280px] p-4 bg-black/10 flex flex-col gap-4">
           <Organisation
