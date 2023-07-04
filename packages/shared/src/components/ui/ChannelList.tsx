@@ -20,7 +20,7 @@ export const ChannelList = (props: ChannelListProps) => {
 
   return (
     <View style={{ gap: 8 }}>
-      <Text style={{ fontWeight: "600", fontSize: 16, opacity: 0.8 }}>
+      <Text style={{ fontWeight: "600", fontSize: 16, opacity: 0.7 }}>
         Channels
       </Text>
       <FlatList
@@ -28,11 +28,11 @@ export const ChannelList = (props: ChannelListProps) => {
         renderItem={({ item }) => {
           return (
             <Pressable
-              style={{ paddingVertical: 2 }}
+              style={{ paddingVertical: 3 }}
               onPress={() => onChannelClick(item)}
               key={item.id}
             >
-              <Text style={{ fontSize: 14 }}>
+              <Text style={{ fontSize: 16, opacity: 0.8 }}>
                 <Text style={{ fontWeight: "bold", opacity: 0.7 }}>#</Text>{" "}
                 {item.name}
               </Text>

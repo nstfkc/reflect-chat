@@ -99,9 +99,9 @@ const MessageRendererFragment = ({
         switch (c.type) {
           case "paragraph":
             return (
-              <Text key={index}>
+              <Text key={index} style={{ fontSize: 16 }}>
                 <Bullet level={listDepth - 1} />
-                <Text key={index}>
+                <Text key={index} style={{ opacity: 0.9 }}>
                   <MessageRendererFragment
                     listDepth={listDepth}
                     key={index}
@@ -112,7 +112,10 @@ const MessageRendererFragment = ({
             );
           case "text":
             return (
-              <Text key={index} style={convertMarks(c.marks)}>
+              <Text
+                key={index}
+                style={[convertMarks(c.marks), { fontSize: 16, opacity: 0.8 }]}
+              >
                 {c.text}
               </Text>
             );
@@ -149,7 +152,7 @@ const MessageRendererFragment = ({
                   marginTop: -3,
                 }}
               >
-                <Text>@{(c as any).attrs.label}</Text>
+                <Text style={{ fontSize: 16 }}>@{(c as any).attrs.label}</Text>
               </Pressable>
             );
           default:
@@ -198,12 +201,14 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const channelId =
     route.params.kind === "channel" ? route.params.channel.id : null;
 
-  console.log({ channelId });
   const { sendMessage } = React.useContext(MessageContext);
   const chatHistory = useChatHistory({
     channelId,
     receiverId,
   });
+
+  console.log({ channelId, receiverId });
+
   const virtualListRef = React.useRef<FlatList<any>>(null);
   const { user } = useUser();
 

@@ -55,7 +55,7 @@ const HandleEnter = (handlePressEnter: (editor: EditorInstance) => void) =>
 interface TextEditorProps {
   placeholder: string;
   onSubmit: (text: string, media: RawMedia[]) => void;
-  onMentionListUpdate: (user: User) => void;
+  onMentionListUpdate?: (user: User) => void;
 }
 
 export const TextEditor = (props: TextEditorProps) => {

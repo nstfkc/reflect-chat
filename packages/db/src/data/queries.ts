@@ -113,11 +113,14 @@ export const listMessages = createPrecedure({
     if (args.channelId === "undefined" && args.receiverId === "undefined") {
       return prismaError({ payload: { issues: [] }, statusCode: 400 });
     }
+    if (args.channelId === "null" && args.receiverId === "null") {
+      return prismaError({ payload: { issues: [] }, statusCode: 400 });
+    }
 
     let messages: Message[] = [];
 
     try {
-      if (args.channelId !== "undefined") {
+      if (args.channelId !== "undefined" && args.channelId !== "null") {
         messages = await prisma.message.findMany({
           where: {
             channelId: args.channelId,
@@ -127,7 +130,7 @@ export const listMessages = createPrecedure({
         });
       }
 
-      if (args.receiverId !== "undefined") {
+      if (args.receiverId !== "undefined" && args.receiverId !== "null") {
         messages = await prisma.message.findMany({
           where: {
             OR: [

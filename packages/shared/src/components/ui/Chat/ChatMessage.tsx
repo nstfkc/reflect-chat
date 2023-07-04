@@ -52,8 +52,10 @@ export const ChatMessage = (props: ChatMessageProps) => {
                 gap: 8,
               }}
             >
-              <Text style={{ fontWeight: "800" }}>{author?.name}</Text>
-              <Text style={{ fontSize: 12, opacity: 0.6, paddingBottom: 1 }}>
+              <Text style={{ fontWeight: "800", opacity: 0.6 }}>
+                {author?.name}
+              </Text>
+              <Text style={{ fontSize: 12, opacity: 0.5, paddingBottom: 1 }}>
                 {hour}
               </Text>
             </View>

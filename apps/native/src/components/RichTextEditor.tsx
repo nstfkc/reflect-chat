@@ -10,7 +10,7 @@ import {
   Text,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import editorHtml37 from "../editor/dist/index.html";
+import editorHtml38 from "../editor/dist/index.html";
 import type {
   EditorState,
   NativeMessage,
@@ -248,7 +248,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                     console.log("DEBIG", webViewMessage.payload);
                   }
                 }}
-                source={{ html: `${editorHtml37}` }}
+                source={{ html: `${editorHtml38}` }}
               />
             </TouchableWithoutFeedback>
           </View>
@@ -264,24 +264,11 @@ const styles = {
       borderRadius: 16,
       padding: 8,
       gap: 8,
-      backgroundColor: "#fff6f6",
-      shadowColor: "black",
-      shadowOpacity: 0.1,
-      shadowOffset: {
-        height: 2,
-        width: 0,
-      },
+      backgroundColor: "#fffafa",
     },
     outer: { padding: 8, paddingBottom: 24 },
     container: {
-      backgroundColor: "#fff6f6",
-      shadowColor: "black",
-      shadowOpacity: 0.1,
-      shadowOffset: {
-        height: 2,
-        width: 0,
-      },
-      shadowRadius: 2,
+      backgroundColor: "#fffafa",
       padding: 8,
       borderRadius: 16,
       height: 160,
@@ -298,7 +285,7 @@ const styles = {
     },
     webview: {
       flex: 1,
-      backgroundColor: "#fff6f6",
+      backgroundColor: "#fffafa",
     },
     icon: {
       fontSize: 16,

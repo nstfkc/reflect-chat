@@ -18,7 +18,14 @@ export const Organisation = (props: OrganisationProps) => {
   return (
     <View style={{ gap: 8 }}>
       <View>
-        <Text style={{ fontWeight: "600", fontSize: 18 }}>
+        <Text
+          style={{
+            fontWeight: "900",
+            fontSize: 18,
+            opacity: 0.6,
+            letterSpacing: 0.4,
+          }}
+        >
           {organisation.name}
         </Text>
       </View>
@@ -26,7 +33,14 @@ export const Organisation = (props: OrganisationProps) => {
         <Pressable onPress={() => navigateToPeople()}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <Users />
-            <Text style={{ fontWeight: "500", letterSpacing: 0.5 }}>
+            <Text
+              style={{
+                fontWeight: "500",
+                letterSpacing: 0.5,
+                fontSize: 16,
+                opacity: 0.7,
+              }}
+            >
               People
             </Text>
           </View>

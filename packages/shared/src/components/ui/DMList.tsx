@@ -42,7 +42,7 @@ export const DMList = (props: DMListProps) => {
                   borderRadius: 4,
                 }}
               ></View>
-              <Text>{user.name}</Text>
+              <Text style={{ fontSize: 16, opacity: 0.8 }}>{user.name}</Text>
             </View>
           </Pressable>
         );

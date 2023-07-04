@@ -12,7 +12,9 @@ export const PeopleList = (props: Props) => {
   const { users } = useContext(UsersContext);
   return (
     <View>
-      <Text style={{ fontWeight: "600", fontSize: 18 }}>People</Text>
+      <Text style={{ fontWeight: "600", fontSize: 18, opacity: 0.7 }}>
+        People
+      </Text>
       <FlatList
         style={{ paddingVertical: 8 }}
         keyExtractor={({ publicId }) => publicId}
@@ -36,7 +38,7 @@ export const PeopleList = (props: Props) => {
                   borderRadius: 5,
                 }}
               />
-              <Text style={{ fontSize: 14 }}>{item.name}</Text>
+              <Text style={{ fontSize: 14, opacity: 0.8 }}>{item.name}</Text>
             </Pressable>
             {index < users.length - 1 ? <View style={{ height: 8 }} /> : null}
           </>
