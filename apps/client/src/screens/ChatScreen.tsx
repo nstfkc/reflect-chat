@@ -84,7 +84,8 @@ const MessageRendererFragment = ({
 export const ChatScreen = () => {
   const { state } = useLocation();
   const { user } = useUser();
-  const { sendMessage, canSendMessage } = useContext(MessageContext);
+  const { sendMessage, canSendMessage, markMentionsAsRead } =
+    useContext(MessageContext);
 
   const { channel, user: receiver } = state;
 
@@ -171,6 +172,9 @@ export const ChatScreen = () => {
                 return (
                   <div className="ProseMirror" key={index}>
                     <ChatMessage
+                      onRender={markMentionsAsRead(
+                        channel?.id ?? receiver?.publicId
+                      )}
                       messages={messagesOrDate}
                       fragmentRenderer={(message) => (
                         <MessageRendererFragment
@@ -215,6 +219,7 @@ function getEditor(props: GetEditorProps) {
       editors.set(props.channel.id, () => (
         <TextEditor
           onSubmit={(message) => {
+            console.log({ message });
             props.sendMessage(message);
           }}
           placeholder={`Message #${props.channel.name}`}
@@ -228,6 +233,7 @@ function getEditor(props: GetEditorProps) {
       editors.set(props.user.publicId, () => (
         <TextEditor
           onSubmit={(message) => {
+            console.log({ message });
             props.sendMessage(message);
           }}
           placeholder={`Message ${props.user.name}`}

@@ -31,6 +31,7 @@
     "jsonwebtoken": "^9.0.0",
     "shared": "workspace:*",
     "socket.io": "^4.6.1",
+    "tree-visit": "^0.1.3",
     "ts-node": "^10.9.1",
     "uniqolor": "^1.1.0"
   }

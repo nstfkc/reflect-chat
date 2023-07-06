@@ -1,4 +1,4 @@
-import { Fragment, useContext } from "react";
+import { Fragment, useContext, useEffect, useRef } from "react";
 import { View, Text, Dimensions } from "react-native";
 
 import format from "date-fns/format";
@@ -7,12 +7,15 @@ import { Message } from "db";
 
 interface ChatMessageProps {
   messages: Message[];
+  onRender: (messageId: string) => void;
   fragmentRenderer: (message: Message) => JSX.Element;
 }
 
 export const ChatMessage = (props: ChatMessageProps) => {
-  const { fragmentRenderer, messages } = props;
+  const { fragmentRenderer, messages, onRender } = props;
   const { getUserById } = useContext(UsersContext);
+  const rendered = useRef(false);
+
   if (!messages[0]) {
     return null;
   }
@@ -22,6 +25,14 @@ export const ChatMessage = (props: ChatMessageProps) => {
   return (
     <>
       <View
+        ref={() => {
+          if (!rendered.current) {
+            rendered.current = true;
+            messages.forEach((message) => {
+              onRender(message.id);
+            });
+          }
+        }}
         key={messages[0].id}
         style={{
           width: "100%",

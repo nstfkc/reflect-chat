@@ -163,35 +163,44 @@ const MessageRendererFragment = ({
   );
 };
 
-const RenderMessage = React.memo(({ item }: { item: string | any[] }) => {
-  if (typeof item === "string") {
+const RenderMessage = React.memo(
+  ({
+    item,
+    onRender,
+  }: {
+    onRender: (messageId: string) => void;
+    item: string | any[];
+  }) => {
+    if (typeof item === "string") {
+      return (
+        <View style={{ paddingVertical: 16 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              letterSpacing: 1,
+            }}
+          >
+            {item}
+          </Text>
+        </View>
+      );
+    }
     return (
-      <View style={{ paddingVertical: 16 }}>
-        <Text
-          style={{
-            textAlign: "center",
-            fontWeight: "bold",
-            letterSpacing: 1,
-          }}
-        >
-          {item}
-        </Text>
-      </View>
+      <ChatMessage
+        messages={item}
+        onRender={onRender}
+        fragmentRenderer={(message) => {
+          return (
+            <View key={message.id}>
+              <MessageRendererFragment content={JSON.parse(message.text)} />
+            </View>
+          );
+        }}
+      />
     );
   }
-  return (
-    <ChatMessage
-      messages={item}
-      fragmentRenderer={(message) => {
-        return (
-          <View key={message.id}>
-            <MessageRendererFragment content={JSON.parse(message.text)} />
-          </View>
-        );
-      }}
-    />
-  );
-});
+);
 
 RenderMessage.displayName = "RenderMessage";
 
@@ -201,13 +210,11 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const channelId =
     route.params.kind === "channel" ? route.params.channel.id : null;
 
-  const { sendMessage } = React.useContext(MessageContext);
+  const { sendMessage, markMentionsAsRead } = React.useContext(MessageContext);
   const chatHistory = useChatHistory({
     channelId,
     receiverId,
   });
-
-  console.log({ channelId, receiverId });
 
   const virtualListRef = React.useRef<FlatList<any>>(null);
   const { user } = useUser();
@@ -222,7 +229,12 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
         ref={virtualListRef}
         data={chatHistory.reverse()}
         inverted={true}
-        renderItem={({ item }) => <RenderMessage item={item} />}
+        renderItem={({ item }) => (
+          <RenderMessage
+            onRender={markMentionsAsRead(String(channelId ?? receiverId))}
+            item={item}
+          />
+        )}
       ></FlatList>
       <RichTextEditor
         onSend={(message) => {

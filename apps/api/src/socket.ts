@@ -1,5 +1,7 @@
 import { prisma } from "db";
 import { Server } from "socket.io";
+import { findAll } from "tree-visit";
+
 import Redis from "ioredis";
 
 const userIdSocketMap = new Map();
@@ -8,21 +10,27 @@ const userIdSocketMap = new Map();
 //   "redis://default:530f03c0f1194bb4855c090d902a6c24@eu2-sterling-cheetah-31030.upstash.io:31030"
 // );
 
-function parseMentions(htmlString: string) {
-  const mentionRegex = /<span[^>]+class="mention"[^>]+data-id="([^"]+)"/g;
-  const mentionMatches = htmlString.matchAll(mentionRegex);
-  const mentionIds = [];
-  for (const match of mentionMatches) {
-    mentionIds.push(match[1]);
+function parseMentions(content: string) {
+  try {
+    const nodes = findAll(JSON.parse(content), {
+      getChildren: (node: any) => {
+        if (node.content) {
+          return node.content;
+        }
+        return node;
+      },
+      predicate: (node: any) => node.type === "mention",
+    });
+
+    return nodes.map((node: any) => node.attrs.id);
+  } catch (err) {
+    console.log(err);
+    return [];
   }
-  return mentionIds;
 }
 
 export function sockets(io: Server) {
   io.on("connection", (socket) => {
-    setInterval(() => {
-      io.emit("ping");
-    }, 1000);
     if (userIdSocketMap.has(socket.handshake.query.userId)) {
       userIdSocketMap.get(socket.handshake.query.userId).push(socket);
     } else {
@@ -68,7 +76,11 @@ export function sockets(io: Server) {
           .then((message) => {
             const mentions = parseMentions(message.text);
             for (let mentionIds of mentions) {
-              userIdSocketMap.get(mentionIds)?.emit("new-mention", { message });
+              if (userIdSocketMap.has(mentionIds)) {
+                userIdSocketMap.get(mentionIds).forEach((socket) => {
+                  socket?.emit("new-mention", { message });
+                });
+              }
             }
             io.emit("message:created", message);
           });
