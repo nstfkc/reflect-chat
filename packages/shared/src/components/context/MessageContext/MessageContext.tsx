@@ -18,17 +18,17 @@ import { MessageWithMedia } from "../../../types/global";
 import { RawMedia } from "../../ui/Chat/FileUploader";
 import { useUser } from "../../../auth";
 
-function useMappedState() {
-  const store = useRef(new Map());
+function useMappedState<T>() {
+  const store = useRef(new Map<string, Set<T>>());
 
-  const [state, setState] = useState<Record<string, Set<string>>>(
+  const [state, setState] = useState<Record<string, Set<T>>>(
     Object.fromEntries(store.current)
   );
 
-  const addItem = (key: string, item: string) => {
+  const addItem = (key: string, item: T) => {
     setState(() => {
       if (!store.current.has(key)) {
-        store.current.set(key, new Set<string>());
+        store.current.set(key, new Set<T>());
       }
       const currentItems = store.current.get(key);
 
@@ -37,11 +37,17 @@ function useMappedState() {
     });
   };
 
-  const removeItem = (key: string, item: string) => {
+  const removeItem = (key: string, predicate: (t: T) => boolean) => {
     setState((state) => {
       const currentItems = store.current.get(key);
       if (typeof currentItems?.delete === "function") {
-        currentItems?.delete(item);
+        let itemToRemove: T | null = null;
+        for (const item of currentItems) {
+          if (predicate(item)) {
+            itemToRemove = item;
+          }
+        }
+        currentItems.delete(itemToRemove);
         return Object.fromEntries(store.current);
       }
       return state;
@@ -56,13 +62,13 @@ function useMappedState() {
 }
 
 function useUnreadMessages() {
-  const { addItem, removeItem, state } = useMappedState();
+  const { addItem, removeItem, state } = useMappedState<Message>();
 
   const { socket } = useSocket();
 
   const markMessageAsRead = useCallback(
     (channelId: string) => (messageId: string) => {
-      removeItem(channelId, messageId);
+      removeItem(channelId, (message) => message.id === messageId);
     },
     [removeItem]
   );
@@ -70,9 +76,9 @@ function useUnreadMessages() {
   const handler = useCallback(
     (message: Message) => {
       if (message.channelId) {
-        addItem(message.channelId, message.id);
+        addItem(message.channelId, message);
       } else {
-        addItem(message.senderId, message.id);
+        addItem(message.senderId, message);
       }
     },
     [addItem]
@@ -92,13 +98,13 @@ function useUnreadMessages() {
 }
 
 function useChannelMentions() {
-  const { addItem, removeItem, state } = useMappedState();
+  const { addItem, removeItem, state } = useMappedState<string>();
 
   const { socket } = useSocket();
 
   const markMentionsAsRead = useCallback(
     (channelId: string) => (messageId: string) => {
-      removeItem(channelId, messageId);
+      removeItem(channelId, (item) => item === messageId);
     },
     [removeItem]
   );
@@ -230,7 +236,7 @@ function useMessageHistory() {
 interface MessageContextValue {
   sendMessage: (cm: Partial<Message>, media: RawMedia[]) => void;
 
-  unreadMessages: Record<string, Set<string>>;
+  unreadMessages: Record<string, Set<Message>>;
   markMessageAsRead: (channelId: string) => (messageId: string) => void;
 
   unreadMentions: Record<string, Set<string>>;

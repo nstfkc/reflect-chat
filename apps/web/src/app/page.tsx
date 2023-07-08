@@ -1,3 +1,10 @@
+import { AIPoweredSearch } from "./components/features/AIPoweredSearch";
+import { Automations } from "./components/features/Automations";
+import { KnowledgeBase } from "./components/features/KnowledgeBase";
+import { PeerToPeerCalls } from "./components/features/PeerToPeerCalls";
+import { PersonalAIAssistant } from "./components/features/PersonalAIAssistant";
+import { RealTimeChat } from "./components/features/RealTimeChat";
+
 export default function Home() {
   return (
     <main className="">
@@ -32,72 +39,12 @@ export default function Home() {
           <div className="h-4"></div>
           <div className="max-w-lg">
             <div className="flex flex-col gap-8 leading-relaxed">
-              <div>
-                <h3 className="font-black text-xl tracking-wider">
-                  Real-time chat
-                </h3>
-                <p>
-                  You can communicate with your peers and team mates via direct
-                  messages and public or private channels.
-                </p>
-                <p>
-                  <strong>reflect</strong> aims to provide the best user
-                  experience to make your daily activities as efficient and
-                  enjoyable as possible.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-black text-xl tracking-wider">
-                  Peer-to-Peer Audio and video calls
-                </h3>
-                <p>
-                  Sometimes it is just better to hop into a call, reflect allows
-                  you to make peer-to-peer audio and video calls with close to 0
-                  latency.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-black text-xl tracking-wider">
-                  Knowledge base
-                </h3>
-                <p>
-                  You don&apos;t need to switch between tabs and windows, you
-                  have your own knowledge base right where you need it the most.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-black text-xl tracking-wider">
-                  AI powered search
-                </h3>
-                <p>
-                  You can ask questions about your organisation and AI will find
-                  answers through conversations and shared files available to
-                  you.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-black text-xl tracking-wider">
-                  Personal AI assistant
-                </h3>
-                <p>
-                  You can use AI assistant to compose crystal clear messages.
-                </p>
-                <p>
-                  And your trivial tasks like setting reminders, action items,
-                  setting appointments etc. will be handled for you through the
-                  messages you receive.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-black text-xl tracking-wider">
-                  Automations
-                </h3>
-                <p>
-                  Reflect allows you to hook into every event and create
-                  automations with ease for your workflows regardless of their
-                  complexity.
-                </p>
-              </div>
+              <RealTimeChat />
+              <PeerToPeerCalls />
+              <KnowledgeBase />
+              <AIPoweredSearch />
+              <PersonalAIAssistant />
+              <Automations />
               <div>
                 <h3 className="font-black text-xl tracking-wider">
                   3rd party integrations

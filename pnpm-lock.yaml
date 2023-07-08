@@ -396,6 +396,9 @@ importers:
       eslint-config-next:
         specifier: 13.3.0
         version: 13.3.0(eslint@8.38.0)(typescript@5.0.4)
+      framer-motion:
+        specifier: ^10.12.18
+        version: 10.12.18(react-dom@18.2.0)(react@18.2.0)
       next:
         specifier: ^13.4.1
         version: 13.4.1(@babel/core@7.20.2)(react-dom@18.2.0)(react@18.2.0)
@@ -2548,6 +2551,19 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@emotion/is-prop-valid@0.8.8:
+    resolution: {integrity: sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA==}
+    requiresBuild: true
+    dependencies:
+      '@emotion/memoize': 0.7.4
+    dev: false
+    optional: true
+
+  /@emotion/memoize@0.7.4:
+    resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    dev: false
+    optional: true
 
   /@esbuild-plugins/node-globals-polyfill@0.1.1(esbuild@0.16.3):
     resolution: {integrity: sha512-MR0oAA+mlnJWrt1RQVQ+4VYuRJW/P2YmRTv1AsplObyvuBMnPHiizUF95HHYiSsMGLhyGtWufaq2XQg6+iurBg==}
@@ -9135,6 +9151,24 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       map-cache: 0.2.2
+    dev: false
+
+  /framer-motion@10.12.18(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-cfhiUpPbj+0eEWKjuD+5cz5cMqH71xOtMxGiS/cSGfHn2OlHIEAqFnFyzEMENw5PxWR9bMVhatzzpD6lexmHZQ==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      tslib: 2.5.3
+    optionalDependencies:
+      '@emotion/is-prop-valid': 0.8.8
     dev: false
 
   /freeport-async@2.0.0:

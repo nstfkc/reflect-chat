@@ -6,11 +6,12 @@ import { useContext } from "react";
 import { MessageContext } from "../context/MessageContext";
 
 interface ChannelListProps {
+  activeChannelId: string | undefined;
   onChannelClick: (channel: Channel) => void;
 }
 
 export const ChannelList = (props: ChannelListProps) => {
-  const { onChannelClick } = props;
+  const { onChannelClick, activeChannelId } = props;
   const { organisation } = useOrganisation();
   const { unreadMentions } = useContext(MessageContext);
   const { data, isLoading } = useQuery("listChannels", {
@@ -29,11 +30,17 @@ export const ChannelList = (props: ChannelListProps) => {
       <FlatList
         data={data}
         renderItem={({ item }) => {
+          const isActive = activeChannelId === item.id;
+          console.log({ isActive, activeChannelId, item });
           const undreadChannelMentions = (unreadMentions[item.id] ?? new Set())
             .size;
           return (
             <Pressable
-              style={{ paddingVertical: 3 }}
+              style={{
+                padding: 3,
+                borderRadius: 6,
+                backgroundColor: isActive ? "rgba(0,0,0,0.2)" : "transparent",
+              }}
               onPress={() => onChannelClick(item)}
               key={item.id}
             >

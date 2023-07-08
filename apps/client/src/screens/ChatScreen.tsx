@@ -84,7 +84,7 @@ const MessageRendererFragment = ({
 export const ChatScreen = () => {
   const { state } = useLocation();
   const { user } = useUser();
-  const { sendMessage, canSendMessage, markMentionsAsRead } =
+  const { sendMessage, canSendMessage, markMentionsAsRead, markMessageAsRead } =
     useContext(MessageContext);
 
   const { channel, user: receiver } = state;
@@ -172,9 +172,14 @@ export const ChatScreen = () => {
                 return (
                   <div className="ProseMirror" key={index}>
                     <ChatMessage
-                      onRender={markMentionsAsRead(
-                        channel?.id ?? receiver?.publicId
-                      )}
+                      onRender={(messageId) => {
+                        markMentionsAsRead(channel?.id ?? receiver?.publicId)(
+                          messageId
+                        );
+                        markMessageAsRead(channel?.id ?? receiver?.publicId)(
+                          messageId
+                        );
+                      }}
                       messages={messagesOrDate}
                       fragmentRenderer={(message) => (
                         <MessageRendererFragment

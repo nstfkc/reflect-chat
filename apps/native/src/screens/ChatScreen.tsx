@@ -210,7 +210,8 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
   const channelId =
     route.params.kind === "channel" ? route.params.channel.id : null;
 
-  const { sendMessage, markMentionsAsRead } = React.useContext(MessageContext);
+  const { sendMessage, markMentionsAsRead, markMessageAsRead } =
+    React.useContext(MessageContext);
   const chatHistory = useChatHistory({
     channelId,
     receiverId,
@@ -231,7 +232,10 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
         inverted={true}
         renderItem={({ item }) => (
           <RenderMessage
-            onRender={markMentionsAsRead(String(channelId ?? receiverId))}
+            onRender={(messageId) => {
+              markMentionsAsRead(String(channelId ?? receiverId))(messageId);
+              markMessageAsRead(String(channelId ?? receiverId))(messageId);
+            }}
             item={item}
           />
         )}

@@ -1,10 +1,12 @@
 import { ChannelList, Organisation, DMList } from "shared";
 import { Outlet } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const HomeScreen = () => {
   const navigate = useNavigate();
+  const params = useParams();
 
+  const { channelId } = params;
   return (
     <div className="h-screen w-screen flex flex-col">
       <div className="h-[48px] w-full bg-black/30 titleBar"></div>
@@ -16,6 +18,7 @@ export const HomeScreen = () => {
             }}
           />
           <ChannelList
+            activeChannelId={channelId}
             onChannelClick={(channel) =>
               navigate(channel.id, { state: { channel } })
             }
