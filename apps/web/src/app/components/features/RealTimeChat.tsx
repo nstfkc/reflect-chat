@@ -22,9 +22,8 @@ const MessageRenderer = (props: MessageProps) => {
   return (
     <motion.div
       key={props.id}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
     >
       <div className="flex gap-2">
         <div
@@ -71,6 +70,12 @@ export const RealTimeChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([
+        createMessage(["bg-red-600", "bg-green-600"]),
+        createMessage(["bg-red-600", "bg-green-600"]),
+      ]);
+    }
     const timer = setTimeout(() => {
       clearTimeout(timer);
       setMessages((messages) => {
@@ -96,7 +101,7 @@ export const RealTimeChat = () => {
       <div className="h-8"></div>
       <div className="border-2 border-gray-700 p-4 rounded-lg">
         <div className="h-48 max-h-48 overflow-hidden relative">
-          <div className="absolute bottom-0 w-full">
+          <div className="absolute w-full bottom-0">
             {messages.map((message, index) => {
               return (
                 <div key={index}>
