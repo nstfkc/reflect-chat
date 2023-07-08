@@ -76,7 +76,7 @@ export const RealTimeChat = () => {
       setMessages((messages) => {
         return [...messages, createMessage(["bg-red-600", "bg-green-600"])];
       });
-    }, Math.max(1000, Math.random() * 4000));
+    }, Math.max(2000, Math.random() * 4000));
   }, [messages]);
 
   return (
@@ -99,12 +99,11 @@ export const RealTimeChat = () => {
           <div className="absolute bottom-0 w-full">
             {messages.map((message, index) => {
               return (
-                <div>
+                <div key={index}>
                   <MessageRenderer
                     render={index > messages.length - 6}
                     id={index}
                     message={message}
-                    key={index}
                   />
                   <div className="h-3"></div>
                 </div>
