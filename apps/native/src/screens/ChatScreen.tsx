@@ -190,6 +190,15 @@ const RenderMessage = React.memo(
       <ChatMessage
         messages={item}
         onRender={onRender}
+        messageWrapper={() => {
+          return function Wrapper({ children }) {
+            return (
+              <View style={{ paddingHorizontal: 2, paddingVertical: 4 }}>
+                {children}
+              </View>
+            );
+          };
+        }}
         fragmentRenderer={(message) => {
           return (
             <View key={message.id}>

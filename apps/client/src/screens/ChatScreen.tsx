@@ -170,7 +170,7 @@ export const ChatScreen = () => {
                   );
                 }
                 return (
-                  <div className="ProseMirror" key={index}>
+                  <div className="ProseMirror px-1" key={index}>
                     <ChatMessage
                       onRender={(messageId) => {
                         markMentionsAsRead(channel?.id ?? receiver?.publicId)(
@@ -181,6 +181,26 @@ export const ChatScreen = () => {
                         );
                       }}
                       messages={messagesOrDate}
+                      messageWrapper={(message) => {
+                        return function MessageWrapper({
+                          children,
+                          isFirstMessage,
+                        }) {
+                          return (
+                            <div
+                              className={[
+                                "group hover:bg-gray-400/10 rounded-md relative px-1",
+                                isFirstMessage ? "pt-1" : "",
+                              ].join(" ")}
+                            >
+                              {children}
+                              <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 h-full">
+                                {message.id}
+                              </div>
+                            </div>
+                          );
+                        };
+                      }}
                       fragmentRenderer={(message) => (
                         <MessageRendererFragment
                           content={JSON.parse(message.text)}
