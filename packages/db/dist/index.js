@@ -32,7 +32,8 @@ var src_exports = {};
 __export(src_exports, {
   mutations: () => mutations,
   prisma: () => prisma,
-  queries: () => queries
+  queries: () => queries,
+  seed: () => seed
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -544,10 +545,93 @@ var listUsers = createPrecedure({
 // src/data/endpoints.ts
 var mutations = mutations_exports;
 var queries = queries_exports;
+
+// src/seed.ts
+var import_crypto = require("crypto");
+var people = [
+  {
+    name: "Alina Lambert",
+    email: "alina@reflect.rocks",
+    avatarUrl: "alina.png",
+    password: "reflectrocks"
+  },
+  {
+    name: "Ayla Gregowski",
+    email: "ayla@reflect.rocks",
+    avatarUrl: "ayla.png",
+    password: "reflectrocks"
+  },
+  {
+    name: "Celine Parr",
+    email: "cleline@reflect.rocks",
+    avatarUrl: "celine.png",
+    password: "reflectrocks"
+  },
+  {
+    name: "Dave Schneider",
+    email: "dave@reflect.rocks",
+    avatarUrl: "dave.png",
+    password: "reflectrocks"
+  },
+  {
+    name: "Jakob Frater",
+    email: "jakob@reflect.rocks",
+    avatarUrl: "jakob.png",
+    password: "reflectrocks"
+  },
+  {
+    name: "Michael Selkis",
+    email: "michael@reflect.rocks",
+    avatarUrl: "michael.png",
+    password: "reflectrocks"
+  },
+  {
+    name: "Norah Scott",
+    email: "norah@reflect.rocks",
+    avatarUrl: "norah.png",
+    password: "reflectrocks"
+  }
+];
+async function hashPassword(password) {
+  return new Promise((resolve, reject) => {
+    const salt = (0, import_crypto.randomBytes)(16).toString("hex");
+    (0, import_crypto.scrypt)(password, salt, 64, (err, derivedKey) => {
+      if (err)
+        reject(err);
+      resolve(salt + ":" + derivedKey.toString("hex"));
+    });
+  });
+}
+async function seed() {
+  for (const person of people) {
+    await prisma.user.create({
+      data: {
+        email: person.email,
+        name: person.name,
+        role: "CUSTOMER",
+        password: await hashPassword(person.password),
+        userProfile: {
+          create: {
+            username: person.name,
+            profileColor: "",
+            profilePictureUrl: person.avatarUrl
+          }
+        },
+        memberships: {
+          create: {
+            organisationId: 1,
+            role: "USER"
+          }
+        }
+      }
+    });
+  }
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   mutations,
   prisma,
   queries,
+  seed,
   ...require("@prisma/client")
 });

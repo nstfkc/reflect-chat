@@ -10,3 +10,5 @@ export type {
   InferPrecedureData,
 } from "./data/handlers";
 export type { GenericError, ValidationIssue } from "./data/error";
+
+export { seed } from "./seed";

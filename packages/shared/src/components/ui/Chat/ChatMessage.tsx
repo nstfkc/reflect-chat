@@ -1,9 +1,10 @@
-import { Fragment, useContext, useEffect, useRef } from "react";
-import { View, Text, Dimensions } from "react-native";
+import { Fragment, useContext, useRef } from "react";
+import { View, Text, Image } from "react-native";
 
 import format from "date-fns/format";
 import { UsersContext } from "../../context/UsersContext";
 import { Message } from "db";
+import { ConfigContext } from "../../context/ConfigContext";
 
 interface ChatMessageProps {
   messages: Message[];
@@ -13,6 +14,7 @@ interface ChatMessageProps {
 
 export const ChatMessage = (props: ChatMessageProps) => {
   const { fragmentRenderer, messages, onRender } = props;
+  const { assetsServiceUrl } = useContext(ConfigContext);
   const { getUserById } = useContext(UsersContext);
   const rendered = useRef(false);
 
@@ -50,7 +52,21 @@ export const ChatMessage = (props: ChatMessageProps) => {
               backgroundColor: author?.userProfile?.profileColor ?? "#32abc2",
               borderRadius: 6,
             }}
-          ></View>
+          >
+            {author.userProfile.profilePictureUrl && (
+              <Image
+                style={{ borderRadius: 4 }}
+                source={{
+                  width: 24,
+                  height: 24,
+                  uri: [
+                    assetsServiceUrl,
+                    author.userProfile.profilePictureUrl,
+                  ].join("/"),
+                }}
+              />
+            )}
+          </View>
           <View
             style={{
               width: "90%",

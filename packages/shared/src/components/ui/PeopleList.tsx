@@ -1,8 +1,9 @@
 import { useContext } from "react";
-import { View, Text, FlatList, Pressable } from "react-native";
+import { View, Text, FlatList, Pressable, Image } from "react-native";
 
 import { UsersContext } from "../context/UsersContext";
 import { User } from "db";
+import { ConfigContext } from "../context/ConfigContext";
 
 interface Props {
   onUserPress: (user: User) => void;
@@ -10,6 +11,8 @@ interface Props {
 
 export const PeopleList = (props: Props) => {
   const { users } = useContext(UsersContext);
+  const { assetsServiceUrl } = useContext(ConfigContext);
+
   return (
     <View>
       <Text style={{ fontWeight: "600", fontSize: 18, opacity: 0.7 }}>
@@ -37,7 +40,21 @@ export const PeopleList = (props: Props) => {
                   backgroundColor: item.userProfile.profileColor,
                   borderRadius: 5,
                 }}
-              />
+              >
+                {item.userProfile.profilePictureUrl && (
+                  <Image
+                    style={{ borderRadius: 4 }}
+                    source={{
+                      width: 20,
+                      height: 20,
+                      uri: [
+                        assetsServiceUrl,
+                        item.userProfile.profilePictureUrl,
+                      ].join("/"),
+                    }}
+                  />
+                )}
+              </View>
               <Text style={{ fontSize: 14, opacity: 0.8 }}>{item.name}</Text>
             </Pressable>
             {index < users.length - 1 ? <View style={{ height: 8 }} /> : null}

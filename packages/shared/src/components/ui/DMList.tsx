@@ -1,9 +1,10 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import { useQuery } from "../../utils/useQuery";
 import { useContext } from "react";
 import { UsersContext } from "../context/UsersContext";
 import { useUser } from "../../auth";
 import { MessageContext } from "../context/MessageContext";
+import { ConfigContext } from "../context/ConfigContext";
 
 interface DMListProps {
   onConversationPress: (user) => void;
@@ -14,6 +15,7 @@ export const DMList = (props: DMListProps) => {
   const { user } = useUser();
   const { data = [] } = useQuery("listDirectMessages");
   const { unreadMessages } = useContext(MessageContext);
+  const { assetsServiceUrl } = useContext(ConfigContext);
 
   const newDMUserIds = Object.entries(unreadMessages)
     .map(([, messages]) =>
@@ -45,12 +47,26 @@ export const DMList = (props: DMListProps) => {
         <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
           <View
             style={{
-              width: 16,
-              height: 16,
+              width: 20,
+              height: 20,
               backgroundColor: user.userProfile.profileColor,
               borderRadius: 4,
             }}
-          ></View>
+          >
+            {user.userProfile.profilePictureUrl && (
+              <Image
+                style={{ borderRadius: 4 }}
+                source={{
+                  width: 20,
+                  height: 20,
+                  uri: [
+                    assetsServiceUrl,
+                    user.userProfile.profilePictureUrl,
+                  ].join("/"),
+                }}
+              />
+            )}
+          </View>
           <Text style={{ fontSize: 16, opacity: 0.8 }}>{user.name} (You)</Text>
         </View>
       </Pressable>
@@ -80,12 +96,26 @@ export const DMList = (props: DMListProps) => {
               >
                 <View
                   style={{
-                    width: 16,
-                    height: 16,
+                    width: 20,
+                    height: 20,
                     backgroundColor: user.userProfile.profileColor,
                     borderRadius: 4,
                   }}
-                ></View>
+                >
+                  {user.userProfile.profilePictureUrl && (
+                    <Image
+                      style={{ borderRadius: 4 }}
+                      source={{
+                        width: 20,
+                        height: 20,
+                        uri: [
+                          assetsServiceUrl,
+                          user.userProfile.profilePictureUrl,
+                        ].join("/"),
+                      }}
+                    />
+                  )}
+                </View>
                 <Text style={{ fontSize: 16, opacity: 0.8 }}>{user.name}</Text>
               </View>
               {unreadMessageCount > 0 ? (
