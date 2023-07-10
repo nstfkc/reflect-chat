@@ -31,7 +31,6 @@ export const ChannelList = (props: ChannelListProps) => {
         data={data}
         renderItem={({ item }) => {
           const isActive = activeChannelId === item.id;
-          console.log({ isActive, activeChannelId, item });
           const undreadChannelMentions = (unreadMentions[item.id] ?? new Set())
             .size;
           return (

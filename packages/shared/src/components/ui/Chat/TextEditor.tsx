@@ -56,10 +56,11 @@ interface TextEditorProps {
   placeholder: string;
   onSubmit: (text: string, media: RawMedia[]) => void;
   onMentionListUpdate?: (user: User) => void;
+  onUpdate: VoidFunction;
 }
 
 export const TextEditor = (props: TextEditorProps) => {
-  const { placeholder, onSubmit } = props;
+  const { placeholder, onSubmit, onUpdate } = props;
   const { users } = useContext(UsersContext);
   const { uploadQueue, clearUplaodQueue } = useContext(FileUploaderContext);
 
@@ -85,6 +86,9 @@ export const TextEditor = (props: TextEditorProps) => {
 
   const editor = useEditor({
     autofocus: true,
+    onUpdate: () => {
+      onUpdate();
+    },
     editorProps: {
       attributes: {
         class: cx("outline-none resize-none outline-none transition py-2"),

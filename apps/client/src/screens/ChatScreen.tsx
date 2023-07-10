@@ -1,7 +1,15 @@
-import { Channel, User } from "@prisma/client";
-import { TbActivity } from "react-icons/tb";
+import { Channel, User, Message } from "@prisma/client";
+import { TbBulb } from "react-icons/tb";
 
-import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  PropsWithChildren,
+  memo,
+} from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { useLocation } from "react-router-dom";
 import {
@@ -12,7 +20,65 @@ import {
   JSONContent,
   ChatMessage,
   useChatHistory,
+  UsersContext,
+  UsersTypingContext,
+  TypingUsersList,
 } from "shared";
+
+function MessageWrapper({ children }: PropsWithChildren<{ message: Message }>) {
+  return (
+    <div className={"group hover:bg-gray-400/10 rounded-md relative p-1"}>
+      {children}
+      <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 p-1 h-full">
+        <button>
+          <TbBulb className="text-yellow-600 stroke-2 text-xl" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface MessageProps {
+  messagesOrDate: string | Message[];
+  channelOrUserId: string;
+  markMentionsAsRead: (id: string) => (id: string) => void;
+  markMessageAsRead: (id: string) => (id: string) => void;
+}
+
+const MessageRender = memo((props: MessageProps) => {
+  const {
+    markMentionsAsRead,
+    markMessageAsRead,
+    messagesOrDate,
+    channelOrUserId,
+  } = props;
+  if (typeof messagesOrDate === "string") {
+    return (
+      <div className="py-8 text-center font-semibold text-sm">
+        {messagesOrDate}
+      </div>
+    );
+  }
+  return (
+    <div className="ProseMirror px-1">
+      <ChatMessage
+        onRender={(messageId) => {
+          markMentionsAsRead(channelOrUserId)(messageId);
+          markMessageAsRead(channelOrUserId)(messageId);
+        }}
+        messages={messagesOrDate}
+        messageWrapper={(message) =>
+          ({ children }) =>
+            <MessageWrapper message={message}>{children}</MessageWrapper>}
+        fragmentRenderer={(message) => (
+          <MessageRendererFragment
+            content={JSON.parse(message.text)}
+          ></MessageRendererFragment>
+        )}
+      />
+    </div>
+  );
+});
 
 const MessageRendererFragment = ({
   content,
@@ -82,13 +148,14 @@ const MessageRendererFragment = ({
   );
 };
 
-export const ChatScreen = () => {
+const ChatHistory = memo(() => {
+  console.log("render");
+  const { markMentionsAsRead, markMessageAsRead } = useContext(MessageContext);
   const { state } = useLocation();
-  const { user } = useUser();
-  const { sendMessage, canSendMessage, markMentionsAsRead, markMessageAsRead } =
-    useContext(MessageContext);
 
   const { channel, user: receiver } = state;
+
+  const channelOrUserId = channel ? channel.id : receiver.publicId;
 
   const chatHistory = useChatHistory({
     channelId: channel?.id,
@@ -118,103 +185,112 @@ export const ChatScreen = () => {
     resizeObserver.observe(container?.current!);
   }, [resizeObserver]);
 
-  const Editor = channel
-    ? getEditor({
-        kind: "channel",
-        channel,
-        sendMessage: (message) =>
-          sendMessage(
-            { text: message, channelId: channel.id, senderId: user?.publicId },
-            []
-          ),
-      })
-    : user
-    ? getEditor({
-        kind: "user",
-        user: receiver,
-        sendMessage: (message) =>
-          sendMessage(
-            {
-              text: message,
-              receiverId: receiver.publicId,
-              senderId: user?.publicId,
-            },
-            []
-          ),
-      })
-    : () => <></>;
+  return (
+    <div
+      ref={container}
+      className="gap-8 overflow-scroll"
+      style={{ height: "100%" }}
+    >
+      <Virtuoso
+        ref={virtuoso}
+        data={chatHistory}
+        style={{ height: "100%" }}
+        alignToBottom={true}
+        followOutput={true}
+        itemContent={(index, messagesOrDate) => {
+          return (
+            <MessageRender
+              key={index}
+              channelOrUserId={channelOrUserId}
+              markMentionsAsRead={markMentionsAsRead}
+              markMessageAsRead={markMessageAsRead}
+              messagesOrDate={messagesOrDate}
+            />
+          );
+        }}
+      />
+    </div>
+  );
+});
+
+ChatHistory.displayName = "ChatHistory";
+
+export const ChatScreen = () => {
+  const { setUserTyping } = useContext(UsersTypingContext);
+
+  const { sendMessage, canSendMessage } = useContext(MessageContext);
+  const { state } = useLocation();
+  const { user } = useUser();
+
+  const { channel, user: receiver } = state;
+
+  const channelOrUserId = channel ? channel.id : receiver.publicId;
+
+  const onUpdate = () => {
+    if (channel) {
+      setUserTyping({
+        channelOrUserId,
+        userId: user?.publicId!,
+      });
+    } else {
+      setUserTyping({
+        channelOrUserId: user?.publicId!,
+        userId: user?.publicId!,
+      });
+    }
+  };
+
+  const Editor = useMemo(
+    () =>
+      channel
+        ? getEditor({
+            kind: "channel",
+            channel,
+            onUpdate,
+            sendMessage: (message) =>
+              sendMessage(
+                {
+                  text: message,
+                  channelId: channel.id,
+                  senderId: user?.publicId,
+                },
+                []
+              ),
+          })
+        : user
+        ? getEditor({
+            kind: "user",
+            user: receiver,
+            onUpdate,
+            sendMessage: (message) =>
+              sendMessage(
+                {
+                  text: message,
+                  receiverId: receiver.publicId,
+                  senderId: user?.publicId,
+                },
+                []
+              ),
+          })
+        : () => <></>,
+    []
+  );
 
   return (
     <FileUploaderProvider pathPrefix={channel?.id ?? receiver?.publicId}>
       <div className="h-full flex flex-col justify-between">
         <div className="relative h-full">
-          <div
-            ref={container}
-            className="gap-8 overflow-scroll"
-            style={{ height: "100%" }}
-          >
-            <Virtuoso
-              ref={virtuoso}
-              data={chatHistory}
-              style={{ height: "100%" }}
-              alignToBottom={true}
-              followOutput={true}
-              itemContent={(index, messagesOrDate) => {
-                if (typeof messagesOrDate === "string") {
-                  return (
-                    <div
-                      className="py-8 text-center font-semibold text-sm"
-                      key={index}
-                    >
-                      {messagesOrDate}
-                    </div>
-                  );
-                }
-                return (
-                  <div className="ProseMirror px-1" key={index}>
-                    <ChatMessage
-                      onRender={(messageId) => {
-                        markMentionsAsRead(channel?.id ?? receiver?.publicId)(
-                          messageId
-                        );
-                        markMessageAsRead(channel?.id ?? receiver?.publicId)(
-                          messageId
-                        );
-                      }}
-                      messages={messagesOrDate}
-                      messageWrapper={() => {
-                        return function MessageWrapper({ children }) {
-                          return (
-                            <div
-                              className={
-                                "group hover:bg-gray-400/10 rounded-md relative p-1"
-                              }
-                            >
-                              {children}
-                              <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 h-full">
-                                <TbActivity />
-                              </div>
-                            </div>
-                          );
-                        };
-                      }}
-                      fragmentRenderer={(message) => (
-                        <MessageRendererFragment
-                          content={JSON.parse(message.text)}
-                        ></MessageRendererFragment>
-                      )}
-                    />
-                  </div>
-                );
-              }}
-            />
-          </div>
+          <ChatHistory />
         </div>
-        <div className="p-3">
+
+        <div className="px-4">
           <div className="w-full rounded-xl bg-white/60">
             <div>{canSendMessage ? "" : "Cant send message"}</div>
             {Editor ? <Editor /> : null}
           </div>
+        </div>
+        <div className="px-6">
+          <TypingUsersList channelOrUserId={channelOrUserId} />
         </div>
       </div>
     </FileUploaderProvider>
@@ -225,12 +301,13 @@ type GetEditorProps =
   | {
       kind: "channel";
       channel: Channel;
+      onUpdate: VoidFunction;
       sendMessage: (message: string) => void;
     }
   | {
       kind: "user";
       user: User;
-
+      onUpdate: VoidFunction;
       sendMessage: (message: string) => void;
     };
 
@@ -240,6 +317,7 @@ function getEditor(props: GetEditorProps) {
     if (!editors.has(props.channel.id)) {
       editors.set(props.channel.id, () => (
         <TextEditor
+          onUpdate={props.onUpdate}
           onSubmit={(message) => {
             console.log({ message });
             props.sendMessage(message);
@@ -254,6 +332,7 @@ function getEditor(props: GetEditorProps) {
     if (!editors.has(props.user.publicId)) {
       editors.set(props.user.publicId, () => (
         <TextEditor
+          onUpdate={props.onUpdate}
           onSubmit={(message) => {
             console.log({ message });
             props.sendMessage(message);

@@ -18,6 +18,10 @@ export { FileUploaderProvider } from "./components/ui/Chat/FileUploader";
 export * from "./components/context/SocketContext";
 export * from "./components/context/MessageContext";
 export * from "./components/context/UsersContext";
+export {
+  UsersTypingContext,
+  UsersTypingProvider,
+} from "./components/context/UsersTypingContext";
 export { RootProvider } from "./components/context/RootProvider";
 
 export { useChatHistory } from "./components/ui/Chat/ChatHistory";
@@ -26,6 +30,7 @@ export { ProfileButton } from "./components/ui/ProfileButton";
 export { PeopleList } from "./components/ui/PeopleList";
 export { Organisation } from "./components/ui/Organisation";
 export { DMList } from "./components/ui/DMList";
+export { TypingUsersList } from "./components/ui/Chat/TypingUsersList";
 
 export { useQuery } from "./utils/useQuery";
 export { useMutation } from "./utils/useMutation";

@@ -1,7 +1,6 @@
 "use client";
 
-import { ReactNode, createContext, useCallback, useMemo } from "react";
-import { useSocket } from "../SocketContext/useSocket";
+import { ReactNode, createContext } from "react";
 import { User, UserProfile } from "db";
 import { useQuery } from "../../../utils/useQuery";
 import { useOrganisation } from "../../../auth";

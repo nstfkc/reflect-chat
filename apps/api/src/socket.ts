@@ -58,6 +58,13 @@ export function sockets(io: Server) {
       }
     });
 
+    socket.on(
+      "user-typing",
+      (payload: { channelOrUserId: string; userId: string }) => {
+        io.emit("user-typing", payload);
+      }
+    );
+
     socket.on("message:create", (message, medias) => {
       console.log(message);
       if (message.channelId) {

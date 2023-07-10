@@ -23,6 +23,7 @@ type EmitEvents = {
   "last-seen-message": (params: { userId: string; message: Message }) => void;
   /*  */
   "message:create": (message: Partial<Message>, medias: MessageMedia[]) => void;
+  "user-typing": (payload: { userId: string; channelOrUserId: string }) => void;
 };
 
 export type ListenEvents = {
@@ -31,6 +32,7 @@ export type ListenEvents = {
   "new-mention": (props: { message: Message }) => void;
   /*  */
   "message:created": (message: MessageWithMedia) => void;
+  "user-typing": (payload: { userId: string; channelOrUserId: string }) => void;
 };
 
 export type InternalSocket = Socket<ListenEvents, EmitEvents>;
