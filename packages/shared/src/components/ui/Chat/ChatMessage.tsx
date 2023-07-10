@@ -54,8 +54,8 @@ export const ChatMessage = (props: ChatMessageProps) => {
           >
             <View
               style={{
-                width: 24,
-                height: 24,
+                width: 32,
+                height: 32,
                 backgroundColor: author?.userProfile?.profileColor ?? "#32abc2",
                 borderRadius: 6,
               }}
@@ -64,8 +64,8 @@ export const ChatMessage = (props: ChatMessageProps) => {
                 <Image
                   style={{ borderRadius: 4 }}
                   source={{
-                    width: 24,
-                    height: 24,
+                    width: 32,
+                    height: 32,
                     uri: [
                       assetsServiceUrl,
                       author.userProfile.profilePictureUrl,
@@ -106,7 +106,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
             const MessageWrapper = messageWrapper(message);
             return (
               <MessageWrapper key={message.id}>
-                <View style={{ paddingLeft: 30 }}>
+                <View style={{ paddingLeft: 38 }}>
                   {fragmentRenderer(message, index)}
                 </View>
               </MessageWrapper>

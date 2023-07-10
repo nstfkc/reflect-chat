@@ -1,4 +1,5 @@
 import { Channel, User } from "@prisma/client";
+import { TbActivity } from "react-icons/tb";
 
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
@@ -181,21 +182,17 @@ export const ChatScreen = () => {
                         );
                       }}
                       messages={messagesOrDate}
-                      messageWrapper={(message) => {
-                        return function MessageWrapper({
-                          children,
-                          isFirstMessage,
-                        }) {
+                      messageWrapper={() => {
+                        return function MessageWrapper({ children }) {
                           return (
                             <div
-                              className={[
-                                "group hover:bg-gray-400/10 rounded-md relative px-1",
-                                isFirstMessage ? "pt-1" : "",
-                              ].join(" ")}
+                              className={
+                                "group hover:bg-gray-400/10 rounded-md relative p-1"
+                              }
                             >
                               {children}
                               <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 h-full">
-                                {message.id}
+                                <TbActivity />
                               </div>
                             </div>
                           );

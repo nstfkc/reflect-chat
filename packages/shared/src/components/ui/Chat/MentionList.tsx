@@ -1,12 +1,20 @@
 import { cx } from "class-variance-authority";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { User } from "db";
+import { ConfigContext } from "../../context/ConfigContext";
 
 interface MentionListProps {
   items: User[];
   command: ({ id }: any) => void;
 }
 export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
+  const { assetsServiceUrl } = useContext(ConfigContext);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const selectItem = (index: number) => {
@@ -70,8 +78,16 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
                 style={{
                   backgroundColor: (item as any).userProfile?.profileColor,
                 }}
-                className="w-[16px] h-[16px] rounded-sm"
-              ></div>
+                className="w-[24px] h-[24px] rounded-md overflow-hidden"
+              >
+                <img
+                  src={[
+                    assetsServiceUrl,
+                    (item as any).userProfile.profilePictureUrl,
+                  ].join("/")}
+                  alt=""
+                />
+              </div>
               <span>{item.name}</span>
             </button>
           </li>
