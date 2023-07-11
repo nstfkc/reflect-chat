@@ -283,7 +283,7 @@ export const ChatScreen = () => {
           <ChatHistory />
         </div>
 
-        <div className="px-4">
+        <div className="px-4 pt-4">
           <div className="w-full rounded-xl bg-white/60">
             <div>{canSendMessage ? "" : "Cant send message"}</div>
             {Editor ? <Editor /> : null}

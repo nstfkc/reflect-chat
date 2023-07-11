@@ -55,7 +55,7 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
       key,
       setTimeout(() => {
         removeUserFromTyping({ channelOrUserId, userId });
-      }, 5000)
+      }, 25000)
     );
   });
 
