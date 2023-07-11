@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  Text,
   View,
   FlatList,
   StyleProp,
@@ -18,6 +17,8 @@ import {
   MessageContext,
   useChatHistory,
   useUser,
+  Text,
+  useTheme,
 } from "shared";
 import { RichTextEditor } from "../components/RichTextEditor";
 
@@ -114,7 +115,7 @@ const MessageRendererFragment = ({
             return (
               <Text
                 key={index}
-                style={[convertMarks(c.marks), { fontSize: 16, opacity: 0.8 }]}
+                style={[convertMarks(c.marks), { fontSize: 16 }]}
               >
                 {c.text}
               </Text>
@@ -228,12 +229,13 @@ export const ChatScreen = ({ route }: StackScreenProps<"Chat">) => {
 
   const virtualListRef = React.useRef<FlatList<any>>(null);
   const { user } = useUser();
+  const theme = useTheme();
 
   return (
     <KeyboardAvoidingView
       keyboardVerticalOffset={80}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1, backgroundColor: "#fef2f2" }}
+      style={{ flex: 1, backgroundColor: theme.colors.primary }}
     >
       <FlatList
         ref={virtualListRef}

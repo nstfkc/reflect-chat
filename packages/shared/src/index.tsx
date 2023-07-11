@@ -10,6 +10,8 @@ export {
 
 export { SignInForm } from "./components/forms";
 export { Button } from "./components/lib/Button";
+export { Text } from "./components/lib/Text";
+
 export { Box } from "./components/lib/layout";
 export { ChannelList } from "./components/ui/ChannelList";
 export { TextEditor } from "./components/ui/Chat/TextEditor";
@@ -31,6 +33,13 @@ export { PeopleList } from "./components/ui/PeopleList";
 export { Organisation } from "./components/ui/Organisation";
 export { DMList } from "./components/ui/DMList";
 export { TypingUsersList } from "./components/ui/Chat/TypingUsersList";
+
+export {
+  theme,
+  ThemeProvider,
+  ThemeContext,
+  useTheme,
+} from "./components/context/ThemeContext";
 
 export { useQuery } from "./utils/useQuery";
 export { useMutation } from "./utils/useMutation";

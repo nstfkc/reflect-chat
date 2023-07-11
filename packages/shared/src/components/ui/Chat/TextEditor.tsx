@@ -128,7 +128,7 @@ export const TextEditor = (props: TextEditorProps) => {
     ],
   });
 
-  const buttonClass = "p-1 rounded-md text-lg text-gray-600";
+  const buttonClass = "p-1 rounded-md text-lg text-secondary";
 
   return (
     <div className="w-full flex flex-col gap-4">

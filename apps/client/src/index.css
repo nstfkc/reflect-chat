@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: theme(colors.red.50);
-}
 
 .titleBar {
   -webkit-user-select: none;

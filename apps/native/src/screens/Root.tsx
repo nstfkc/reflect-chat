@@ -8,7 +8,7 @@ import { ChatScreen } from "./ChatScreen";
 
 import { RootStackParamList } from "./types";
 import { Pressable, View, Text } from "react-native";
-import { PeopleList } from "shared";
+import { PeopleList, useTheme } from "shared";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -25,13 +25,17 @@ const PeopleScreen = ({ navigation }: any) => {
 };
 
 export const RootScreen = () => {
+  const theme = useTheme();
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           options={() => ({
             headerStyle: {
-              backgroundColor: "#aaa3a4",
+              backgroundColor: theme.colors.secondary,
+            },
+            headerTitleStyle: {
+              color: theme.colors.primary,
             },
           })}
           name="Home"
@@ -47,11 +51,14 @@ export const RootScreen = () => {
                   ? `# ${route.params.channel.name}`
                   : route.params.user.name,
               headerStyle: {
-                backgroundColor: "#aaa3a4",
+                backgroundColor: theme.colors.secondary,
+              },
+              headerTitleStyle: {
+                color: theme.colors.primary,
               },
               headerLeft: () => (
                 <Pressable onPress={() => navigation.navigate("Home")}>
-                  <Text>Home</Text>
+                  <Text style={{ color: theme.colors.alt2 }}>Home</Text>
                 </Pressable>
               ),
             };
@@ -63,11 +70,14 @@ export const RootScreen = () => {
           options={({ navigation }) => {
             return {
               headerStyle: {
-                backgroundColor: "#aaa3a4",
+                backgroundColor: theme.colors.secondary,
+              },
+              headerTitleStyle: {
+                color: theme.colors.primary,
               },
               headerLeft: () => (
                 <Pressable onPress={() => navigation.navigate("Home")}>
-                  <Text>Home</Text>
+                  <Text style={{ color: theme.colors.alt2 }}>Home</Text>
                 </Pressable>
               ),
             };

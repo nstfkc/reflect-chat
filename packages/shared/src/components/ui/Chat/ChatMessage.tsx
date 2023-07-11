@@ -1,5 +1,6 @@
-import { Fragment, PropsWithChildren, useContext, useRef } from "react";
-import { View, Text, Image } from "react-native";
+import { PropsWithChildren, useContext, useRef } from "react";
+import { View, Image } from "react-native";
+import { Text } from "../../lib/Text";
 
 import format from "date-fns/format";
 import { UsersContext } from "../../context/UsersContext";
@@ -50,7 +51,12 @@ export const ChatMessage = (props: ChatMessageProps) => {
       >
         <FirstMessageWrapper isFirstMessage={true}>
           <View
-            style={{ flexDirection: "row", alignItems: "flex-start", gap: 4 }}
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+              gap: 4,
+              paddingTop: 12,
+            }}
           >
             <View
               style={{
@@ -88,10 +94,14 @@ export const ChatMessage = (props: ChatMessageProps) => {
                   paddingHorizontal: 3,
                 }}
               >
-                <Text style={{ fontWeight: "800", opacity: 0.6 }}>
-                  {author?.name}
-                </Text>
-                <Text style={{ fontSize: 12, opacity: 0.5, paddingBottom: 1 }}>
+                <Text style={{ fontWeight: "800" }}>{author?.name}</Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    opacity: 0.5,
+                    paddingBottom: 1,
+                  }}
+                >
                   {hour}
                 </Text>
               </View>

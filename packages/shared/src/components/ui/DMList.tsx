@@ -1,4 +1,5 @@
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Pressable, Image } from "react-native";
+import { Text } from "../lib/Text";
 import { useQuery } from "../../utils/useQuery";
 import { useContext } from "react";
 import { UsersContext } from "../context/UsersContext";
@@ -40,7 +41,12 @@ export const DMList = (props: DMListProps) => {
 
   return (
     <View style={{ gap: 8 }}>
-      <Text style={{ fontWeight: "600", fontSize: 16, opacity: 0.8 }}>
+      <Text
+        style={{
+          fontWeight: "600",
+          fontSize: 16,
+        }}
+      >
         Direct Messages
       </Text>
       <Pressable key={user.publicId} onPress={() => onConversationPress(user)}>
@@ -67,7 +73,7 @@ export const DMList = (props: DMListProps) => {
               />
             )}
           </View>
-          <Text style={{ fontSize: 16, opacity: 0.8 }}>{user.name} (You)</Text>
+          <Text style={{ fontSize: 16 }}>{user.name} (You)</Text>
         </View>
       </Pressable>
 
@@ -116,7 +122,7 @@ export const DMList = (props: DMListProps) => {
                     />
                   )}
                 </View>
-                <Text style={{ fontSize: 16, opacity: 0.8 }}>{user.name}</Text>
+                <Text style={{ fontSize: 16 }}>{user.name}</Text>
               </View>
               {unreadMessageCount > 0 ? (
                 <View

@@ -1,20 +1,22 @@
 import React from "react";
 import { View } from "react-native";
-import { ChannelList, DMList, Organisation } from "shared";
+import { ChannelList, DMList, Organisation, useTheme } from "shared";
 import { StackScreenProps } from "./types";
 
 export const HomeScreen = ({ navigation }: StackScreenProps<"Home">) => {
+  const theme = useTheme();
   return (
     <View
       style={{
         flex: 1,
         padding: 8,
-        backgroundColor: "#e8e0e0",
+        backgroundColor: theme.colors.alt2,
         gap: 16,
       }}
     >
       <Organisation navigateToPeople={() => navigation.navigate("People")} />
       <ChannelList
+        activeChannelId={"null"}
         onChannelClick={(channel) =>
           navigation.navigate("Chat", {
             kind: "channel",

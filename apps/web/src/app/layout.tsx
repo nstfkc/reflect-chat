@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-red-50 text-gray-700">
+      <body className="bg-primary text-secondary">
         <header>
           <nav>
             <div className="container mx-auto max-w-4xl px-4 md:px-0">
@@ -52,7 +52,7 @@ export default function RootLayout({
         </header>
         {children}
         <div className="h-16"></div>
-        <footer className="bg-gray-700 text-red-50">
+        <footer className="bg-secondary text-primary">
           <div className="container mx-auto max-w-4xl px-4 md:px-0 py-8">
             <div className="flex justify-between">
               <div>

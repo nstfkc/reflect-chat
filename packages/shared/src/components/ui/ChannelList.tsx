@@ -1,7 +1,8 @@
 import { Channel } from "db";
 import { useQuery } from "../../utils/useQuery";
 import { useOrganisation } from "../../auth";
-import { View, Text, FlatList, Pressable } from "react-native";
+import { View, FlatList, Pressable } from "react-native";
+import { Text } from "../lib/Text";
 import { useContext } from "react";
 import { MessageContext } from "../context/MessageContext";
 
@@ -24,9 +25,7 @@ export const ChannelList = (props: ChannelListProps) => {
 
   return (
     <View style={{ gap: 8 }}>
-      <Text style={{ fontWeight: "600", fontSize: 16, opacity: 0.7 }}>
-        Channels
-      </Text>
+      <Text style={{ fontWeight: "600", fontSize: 16 }}>Channels</Text>
       <FlatList
         data={data}
         renderItem={({ item }) => {
@@ -49,9 +48,8 @@ export const ChannelList = (props: ChannelListProps) => {
                   justifyContent: "space-between",
                 }}
               >
-                <Text style={{ fontSize: 16, opacity: 0.8 }}>
-                  <Text style={{ fontWeight: "bold", opacity: 0.7 }}>#</Text>{" "}
-                  {item.name}
+                <Text style={{ fontSize: 16 }}>
+                  <Text style={{ fontWeight: "bold" }}>#</Text> {item.name}
                 </Text>
                 {undreadChannelMentions > 0 ? (
                   <View

@@ -9,9 +9,9 @@ export const HomeScreen = () => {
   const { channelId } = params;
   return (
     <div className="h-screen w-screen flex flex-col">
-      <div className="h-[48px] w-full bg-black/30 titleBar"></div>
+      <div className="h-[48px] w-full bg-secondary titleBar"></div>
       <div className="flex h-full">
-        <div className="min-w-[280px] p-4 bg-black/10 flex flex-col gap-4">
+        <div className="min-w-[280px] p-4 bg-alt2 flex flex-col gap-4">
           <Organisation
             navigateToPeople={() => {
               navigate("/people");

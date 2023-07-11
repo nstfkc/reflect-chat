@@ -95,7 +95,7 @@ const MessageRendererFragment = ({
         switch (c.type) {
           case "paragraph":
             return (
-              <p key={index} className="opacity-[70%]">
+              <p key={index}>
                 <MessageRendererFragment key={index} content={c.content} />
               </p>
             );
@@ -284,7 +284,7 @@ export const ChatScreen = () => {
         </div>
 
         <div className="px-4 pt-4">
-          <div className="w-full rounded-xl bg-white/60">
+          <div className="w-full rounded-xl bg-white/40">
             <div>{canSendMessage ? "" : "Cant send message"}</div>
             {Editor ? <Editor /> : null}
           </div>

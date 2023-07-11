@@ -23,7 +23,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const config = getConfig(import.meta.env.PROD);
 
-const IconsProvider = createIconsProvider({ Users: () => <TbUsers /> });
+const IconsProvider = createIconsProvider({
+  Users: () => <TbUsers className="text-secondary" />,
+});
 
 const router = createBrowserRouter(
   [
@@ -128,7 +130,9 @@ function App() {
               </SignedOut>
               <SignedIn>
                 <RootProvider>
-                  <RouterProvider router={router} />
+                  <main className="bg-primary text-secondary">
+                    <RouterProvider router={router} />
+                  </main>
                 </RootProvider>
               </SignedIn>
             </AuthProvider>
