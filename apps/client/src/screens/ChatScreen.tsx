@@ -21,8 +21,10 @@ import {
   JSONContent,
   ChatMessage,
   useChatHistory,
-  UsersTypingContext,
   TypingUsersList,
+  useSocket,
+  useTheme,
+  UserWithProfilePicture,
 } from "shared";
 
 function MessageWrapper({ children }: PropsWithChildren<{ message: Message }>) {
@@ -157,7 +159,7 @@ const MessageRendererFragment = ({
 const ChatHistory = memo(() => {
   const { markMentionsAsRead, markMessageAsRead } = useContext(MessageContext);
   const { state } = useLocation();
-
+  const initialRender = useRef(false);
   const { channel, user: receiver } = state;
 
   const channelOrUserId = channel ? channel.id : receiver.publicId;
@@ -179,11 +181,15 @@ const ChatHistory = memo(() => {
   );
 
   useLayoutEffect(() => {
-    virtuoso?.current?.scrollToIndex({
-      index: chatHistory.length - 1,
-      align: "end",
-      behavior: "auto",
-    });
+    if (!initialRender.current) {
+      console.log("effect");
+      initialRender.current = true;
+      virtuoso?.current?.scrollToIndex({
+        index: chatHistory.length - 1,
+        align: "end",
+        behavior: "auto",
+      });
+    }
   });
 
   useEffect(() => {
@@ -221,8 +227,8 @@ const ChatHistory = memo(() => {
 ChatHistory.displayName = "ChatHistory";
 
 export const ChatScreen = () => {
-  const { setUserTyping } = useContext(UsersTypingContext);
-
+  const { socket } = useSocket();
+  const theme = useTheme();
   const { sendMessage, canSendMessage } = useContext(MessageContext);
   const { state } = useLocation();
   const { user } = useUser();
@@ -233,17 +239,14 @@ export const ChatScreen = () => {
 
   const onUpdate = useCallback(() => {
     if (channel) {
-      setUserTyping({
-        channelOrUserId,
-        userId: user?.publicId!,
-      });
+      socket?.emit("user-typing", { channelOrUserId, userId: user?.publicId! });
     } else {
-      setUserTyping({
+      socket?.emit("user-typing", {
         channelOrUserId: user?.publicId!,
         userId: user?.publicId!,
       });
     }
-  }, [channel, channelOrUserId, setUserTyping, user]);
+  }, [channel, channelOrUserId, socket, user?.publicId]);
 
   const Editor = useMemo(
     () =>
@@ -284,6 +287,20 @@ export const ChatScreen = () => {
   return (
     <FileUploaderProvider pathPrefix={channel?.id ?? receiver?.publicId}>
       <div className="h-full flex flex-col justify-between">
+        <div
+          className="px-4 py-2 font-bold"
+          style={{ backgroundColor: theme.colors.alt1 }}
+        >
+          {channel ? (
+            <div>{`# ${channel.name}`}</div>
+          ) : (
+            <UserWithProfilePicture
+              size={24}
+              textStyle={{ fontWeight: "bold" }}
+              userId={receiver.publicId}
+            />
+          )}
+        </div>
         <div className="relative h-full">
           <ChatHistory />
         </div>

@@ -1,19 +1,12 @@
 import { PropsWithChildren, createContext, useState, useRef } from "react";
 import { useSocket } from "./SocketContext";
 
-type SetUserTyping = (payload: {
-  channelOrUserId: string;
-  userId: string;
-}) => void;
-
 interface UsersTypingContextValue {
   typingUsersByChannelId: Map<string, Set<string>>;
-  setUserTyping: SetUserTyping;
 }
 
 export const UsersTypingContext = createContext({
   typingUsersByChannelId: new Map<string, Set<string>>(),
-  setUserTyping: () => {},
 } as UsersTypingContextValue);
 
 export const UsersTypingProvider = (props: PropsWithChildren) => {
@@ -68,14 +61,8 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
     }
   });
 
-  const setUserTyping: SetUserTyping = ({ channelOrUserId, userId }) => {
-    socket.emit("user-typing", { channelOrUserId, userId });
-  };
-
   return (
-    <UsersTypingContext.Provider
-      value={{ typingUsersByChannelId, setUserTyping }}
-    >
+    <UsersTypingContext.Provider value={{ typingUsersByChannelId }}>
       {props.children}
     </UsersTypingContext.Provider>
   );
