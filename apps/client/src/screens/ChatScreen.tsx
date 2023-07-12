@@ -3,6 +3,7 @@ import { TbBulb } from "react-icons/tb";
 
 import {
   useContext,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -20,7 +21,6 @@ import {
   JSONContent,
   ChatMessage,
   useChatHistory,
-  UsersContext,
   UsersTypingContext,
   TypingUsersList,
 } from "shared";
@@ -36,6 +36,13 @@ function MessageWrapper({ children }: PropsWithChildren<{ message: Message }>) {
       </div>
     </div>
   );
+}
+
+function renderMessageWrapper(message: Message) {
+  const C = (props: PropsWithChildren) => (
+    <MessageWrapper message={message}>{props.children}</MessageWrapper>
+  );
+  return C;
 }
 
 interface MessageProps {
@@ -67,9 +74,7 @@ const MessageRender = memo((props: MessageProps) => {
           markMessageAsRead(channelOrUserId)(messageId);
         }}
         messages={messagesOrDate}
-        messageWrapper={(message) =>
-          ({ children }) =>
-            <MessageWrapper message={message}>{children}</MessageWrapper>}
+        messageWrapper={renderMessageWrapper}
         fragmentRenderer={(message) => (
           <MessageRendererFragment
             content={JSON.parse(message.text)}
@@ -79,6 +84,7 @@ const MessageRender = memo((props: MessageProps) => {
     </div>
   );
 });
+MessageRender.displayName = "MessageRender";
 
 const MessageRendererFragment = ({
   content,
@@ -149,7 +155,6 @@ const MessageRendererFragment = ({
 };
 
 const ChatHistory = memo(() => {
-  console.log("render");
   const { markMentionsAsRead, markMessageAsRead } = useContext(MessageContext);
   const { state } = useLocation();
 
@@ -226,7 +231,7 @@ export const ChatScreen = () => {
 
   const channelOrUserId = channel ? channel.id : receiver.publicId;
 
-  const onUpdate = () => {
+  const onUpdate = useCallback(() => {
     if (channel) {
       setUserTyping({
         channelOrUserId,
@@ -238,7 +243,7 @@ export const ChatScreen = () => {
         userId: user?.publicId!,
       });
     }
-  };
+  }, [channel, channelOrUserId, setUserTyping, user]);
 
   const Editor = useMemo(
     () =>
@@ -273,7 +278,7 @@ export const ChatScreen = () => {
               ),
           })
         : () => <></>,
-    []
+    [channel, onUpdate, receiver, sendMessage, user]
   );
 
   return (
@@ -319,7 +324,6 @@ function getEditor(props: GetEditorProps) {
         <TextEditor
           onUpdate={props.onUpdate}
           onSubmit={(message) => {
-            console.log({ message });
             props.sendMessage(message);
           }}
           placeholder={`Message #${props.channel.name}`}
@@ -334,7 +338,6 @@ function getEditor(props: GetEditorProps) {
         <TextEditor
           onUpdate={props.onUpdate}
           onSubmit={(message) => {
-            console.log({ message });
             props.sendMessage(message);
           }}
           placeholder={`Message ${props.user.name}`}
