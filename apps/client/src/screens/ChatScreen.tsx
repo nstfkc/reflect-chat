@@ -69,7 +69,7 @@ const MessageRender = memo((props: MessageProps) => {
     );
   }
   return (
-    <div className="ProseMirror px-1">
+    <div className="ProseMirror">
       <ChatMessage
         onRender={(messageId) => {
           markMentionsAsRead(channelOrUserId)(messageId);
@@ -305,14 +305,14 @@ export const ChatScreen = () => {
           <ChatHistory />
         </div>
 
-        <div className="px-4 pt-4">
+        <div className="p-2">
+          <div className="px-6">
+            <TypingUsersList channelOrUserId={channelOrUserId} />
+          </div>
           <div className="w-full rounded-xl bg-white/40">
             <div>{canSendMessage ? "" : "Cant send message"}</div>
             {Editor ? <Editor /> : null}
           </div>
-        </div>
-        <div className="px-6">
-          <TypingUsersList channelOrUserId={channelOrUserId} />
         </div>
       </div>
     </FileUploaderProvider>
