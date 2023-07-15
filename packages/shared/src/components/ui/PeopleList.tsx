@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { View, Text, FlatList, Pressable, Image } from "react-native";
+import { User } from "db";
+import { View, Text, FlatList, Pressable } from "react-native";
 
 import { UsersContext } from "../context/UsersContext";
-import { User } from "db";
-import { ConfigContext } from "../context/ConfigContext";
+import { UserProfilePicture } from "./UserProfilePicture";
 
 interface Props {
   onUserPress: (user: User) => void;
@@ -11,7 +11,6 @@ interface Props {
 
 export const PeopleList = (props: Props) => {
   const { users } = useContext(UsersContext);
-  const { assetsServiceUrl } = useContext(ConfigContext);
 
   return (
     <View>
@@ -33,29 +32,7 @@ export const PeopleList = (props: Props) => {
                 gap: 8,
               }}
             >
-              <View
-                style={{
-                  width: 18,
-                  height: 18,
-                  backgroundColor: item.userProfile.profileColor,
-                  borderRadius: 5,
-                }}
-              >
-                {item.userProfile.profilePictureUrl && (
-                  <Image
-                    style={{ borderRadius: 4 }}
-                    source={{
-                      width: 20,
-                      height: 20,
-                      uri: [
-                        assetsServiceUrl,
-                        item.userProfile.profilePictureUrl,
-                      ].join("/"),
-                    }}
-                  />
-                )}
-              </View>
-              <Text style={{ fontSize: 14, opacity: 0.8 }}>{item.name}</Text>
+              <UserProfilePicture userId={item.publicId} size={24} />
             </Pressable>
             {index < users.length - 1 ? <View style={{ height: 8 }} /> : null}
           </>

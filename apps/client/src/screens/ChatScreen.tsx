@@ -24,7 +24,7 @@ import {
   TypingUsersList,
   useSocket,
   useTheme,
-  UserWithProfilePicture,
+  UserProfilePicture,
 } from "shared";
 
 function MessageWrapper({ children }: PropsWithChildren<{ message: Message }>) {
@@ -294,7 +294,7 @@ export const ChatScreen = () => {
           {channel ? (
             <div>{`# ${channel.name}`}</div>
           ) : (
-            <UserWithProfilePicture
+            <UserProfilePicture
               size={24}
               textStyle={{ fontWeight: "bold" }}
               userId={receiver.publicId}

@@ -33,7 +33,7 @@ export { PeopleList } from "./components/ui/PeopleList";
 export { Organisation } from "./components/ui/Organisation";
 export { DMList } from "./components/ui/DMList";
 export { TypingUsersList } from "./components/ui/Chat/TypingUsersList";
-export { UserWithProfilePicture } from "./components/ui/UserWithProfilePicture";
+export { UserProfilePicture } from "./components/ui/UserProfilePicture";
 
 export {
   theme,

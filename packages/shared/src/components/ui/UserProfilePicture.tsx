@@ -8,12 +8,13 @@ interface UserWithProfilePictureProps {
   userId: string;
   textStyle?: TextStyle;
   size?: number;
+  showUserName?: boolean;
 }
 
-export const UserWithProfilePicture = (props: UserWithProfilePictureProps) => {
+export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
   const { assetsServiceUrl } = useContext(ConfigContext);
   const { getUserById } = useContext(UsersContext);
-  const { userId, size = 16, textStyle } = props;
+  const { userId, size = 16, showUserName = true, textStyle } = props;
 
   const user = getUserById(userId);
   return (
@@ -45,7 +46,7 @@ export const UserWithProfilePicture = (props: UserWithProfilePictureProps) => {
           />
         )}
       </View>
-      <Text style={{ ...textStyle }}>{user.name}</Text>
+      {showUserName ? <Text style={{ ...textStyle }}>{user.name}</Text> : null}
     </View>
   );
 };

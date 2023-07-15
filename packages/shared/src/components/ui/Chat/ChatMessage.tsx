@@ -6,6 +6,7 @@ import format from "date-fns/format";
 import { UsersContext } from "../../context/UsersContext";
 import { Message } from "db";
 import { ConfigContext } from "../../context/ConfigContext";
+import { UserProfilePicture } from "../UserProfilePicture";
 
 interface ChatMessageProps {
   messages: Message[];
@@ -58,28 +59,12 @@ export const ChatMessage = (props: ChatMessageProps) => {
               paddingTop: 12,
             }}
           >
-            <View
-              style={{
-                width: 32,
-                height: 32,
-                backgroundColor: author?.userProfile?.profileColor ?? "#32abc2",
-                borderRadius: 6,
-              }}
-            >
-              {author.userProfile.profilePictureUrl && (
-                <Image
-                  style={{ borderRadius: 4 }}
-                  source={{
-                    width: 32,
-                    height: 32,
-                    uri: [
-                      assetsServiceUrl,
-                      author.userProfile.profilePictureUrl,
-                    ].join("/"),
-                  }}
-                />
-              )}
-            </View>
+            <UserProfilePicture
+              size={32}
+              showUserName={false}
+              userId={author.publicId}
+            />
+
             <View
               style={{
                 flex: 1,
