@@ -32,7 +32,10 @@ export const UsersProvider = (props: UserProviderProps) => {
   const { socket } = useSocket(
     "update-user-status",
     ({ userId, userStatus }) => {
-      setUserStatusById(userId, userStatus);
+      setUserStatuses((currentUserStatuses) => {
+        currentUserStatuses.set(userId, userStatus);
+        return new Map(currentUserStatuses);
+      });
     }
   );
 

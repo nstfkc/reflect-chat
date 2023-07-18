@@ -66,9 +66,9 @@ export function sockets(io: Server) {
     );
 
     socket.on(
-      "user-update-status",
+      "update-user-status",
       (payload: { userId: string; userStatus: string }) => {
-        io.emit("user-update-status", payload);
+        io.emit("update-user-status", payload);
       }
     );
 
