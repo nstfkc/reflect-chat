@@ -4,6 +4,7 @@ import { View, Text, FlatList, Pressable } from "react-native";
 
 import { UsersContext } from "../context/UsersContext";
 import { UserProfilePicture } from "./UserProfilePicture";
+import { useTheme } from "../context/ThemeContext";
 
 interface Props {
   onUserPress: (user: User) => void;
@@ -11,6 +12,7 @@ interface Props {
 
 export const PeopleList = (props: Props) => {
   const { users } = useContext(UsersContext);
+  const theme = useTheme();
 
   return (
     <View>
@@ -32,7 +34,11 @@ export const PeopleList = (props: Props) => {
                 gap: 8,
               }}
             >
-              <UserProfilePicture userId={item.publicId} size={24} />
+              <UserProfilePicture
+                userId={item.publicId}
+                size={24}
+                statusIndicatorBorderColor={theme.colors.primary}
+              />
             </Pressable>
             {index < users.length - 1 ? <View style={{ height: 8 }} /> : null}
           </>

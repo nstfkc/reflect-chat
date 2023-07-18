@@ -7,6 +7,7 @@ import { useUser } from "../../auth";
 import { MessageContext } from "../context/MessageContext";
 import { ConfigContext } from "../context/ConfigContext";
 import { UserProfilePicture } from "./UserProfilePicture";
+import { theme } from "../context/ThemeContext";
 
 interface DMListProps {
   onConversationPress: (user) => void;
@@ -52,7 +53,11 @@ export const DMList = (props: DMListProps) => {
       </Text>
       <Pressable key={user.publicId} onPress={() => onConversationPress(user)}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-          <UserProfilePicture size={20} userId={user.publicId} />
+          <UserProfilePicture
+            size={20}
+            userId={user.publicId}
+            statusIndicatorBorderColor={theme.colors.alt2}
+          />
           <Text style={{ fontSize: 12 }}>(You)</Text>
         </View>
       </Pressable>
@@ -73,7 +78,11 @@ export const DMList = (props: DMListProps) => {
                 justifyContent: "space-between",
               }}
             >
-              <UserProfilePicture size={20} userId={user.publicId} />
+              <UserProfilePicture
+                size={20}
+                userId={user.publicId}
+                statusIndicatorBorderColor={theme.colors.alt2}
+              />
 
               {unreadMessageCount > 0 ? (
                 <View

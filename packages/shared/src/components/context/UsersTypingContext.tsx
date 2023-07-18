@@ -29,7 +29,7 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
     });
   };
 
-  const { socket } = useSocket("user-typing", ({ channelOrUserId, userId }) => {
+  useSocket("user-typing", ({ channelOrUserId, userId }) => {
     const key = `${channelOrUserId}-${userId}`;
 
     if (timerRefs.current.get(key)) {

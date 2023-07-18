@@ -1,18 +1,20 @@
 "use client";
 
-import { MessageMedia, MessageWithMedia } from "../../../types/global";
+import {
+  MessageMedia,
+  MessageWithMedia,
+  UserStatus,
+} from "../../../types/global";
 import type { Channel, Message, User } from "db";
 import {
   ReactNode,
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
-import { UserContext } from "../UserContext/UserContext";
 import { ConfigContext } from "../ConfigContext/ConfigContext";
 import { useUser } from "../../../auth";
 
@@ -24,6 +26,10 @@ type EmitEvents = {
   /*  */
   "message:create": (message: Partial<Message>, medias: MessageMedia[]) => void;
   "user-typing": (payload: { userId: string; channelOrUserId: string }) => void;
+  "update-user-status": (payload: {
+    userId: string;
+    userStatus: UserStatus;
+  }) => void;
 };
 
 export type ListenEvents = {
@@ -33,6 +39,10 @@ export type ListenEvents = {
   /*  */
   "message:created": (message: MessageWithMedia) => void;
   "user-typing": (payload: { userId: string; channelOrUserId: string }) => void;
+  "update-user-status": (payload: {
+    userId: string;
+    userStatus: UserStatus;
+  }) => void;
 };
 
 export type InternalSocket = Socket<ListenEvents, EmitEvents>;

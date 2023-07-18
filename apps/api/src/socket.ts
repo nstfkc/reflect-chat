@@ -65,6 +65,13 @@ export function sockets(io: Server) {
       }
     );
 
+    socket.on(
+      "user-update-status",
+      (payload: { userId: string; userStatus: string }) => {
+        io.emit("user-update-status", payload);
+      }
+    );
+
     socket.on("message:create", (message, medias) => {
       console.log(message);
       if (message.channelId) {

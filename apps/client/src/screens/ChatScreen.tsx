@@ -297,6 +297,7 @@ export const ChatScreen = () => {
             <UserProfilePicture
               size={24}
               textStyle={{ fontWeight: "bold" }}
+              statusIndicatorBorderColor={theme.colors.alt1}
               userId={receiver.publicId}
             />
           )}
@@ -304,7 +305,6 @@ export const ChatScreen = () => {
         <div className="relative h-full">
           <ChatHistory />
         </div>
-
         <div className="p-2">
           <div className="px-6">
             <TypingUsersList channelOrUserId={channelOrUserId} />

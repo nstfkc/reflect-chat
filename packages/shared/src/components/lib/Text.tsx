@@ -11,7 +11,7 @@ export const Text = (props: PropsWithChildren<TextProps>) => {
   const theme = useTheme();
 
   return (
-    <TextBase style={[style, { color: theme.colors.secondary }]}>
+    <TextBase style={[{ color: theme.colors.secondary, fontSize: 16 }, style]}>
       {children}
     </TextBase>
   );

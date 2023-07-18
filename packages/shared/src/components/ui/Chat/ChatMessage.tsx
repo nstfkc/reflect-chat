@@ -7,6 +7,7 @@ import { UsersContext } from "../../context/UsersContext";
 import { Message } from "db";
 import { ConfigContext } from "../../context/ConfigContext";
 import { UserProfilePicture } from "../UserProfilePicture";
+import { useTheme } from "../../context/ThemeContext";
 
 interface ChatMessageProps {
   messages: Message[];
@@ -19,7 +20,7 @@ interface ChatMessageProps {
 
 export const ChatMessage = (props: ChatMessageProps) => {
   const { fragmentRenderer, messages, onRender, messageWrapper } = props;
-  const { assetsServiceUrl } = useContext(ConfigContext);
+  const theme = useTheme();
   const { getUserById } = useContext(UsersContext);
   const rendered = useRef(false);
 
@@ -62,6 +63,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
             <UserProfilePicture
               size={32}
               showUserName={false}
+              statusIndicatorBorderColor={theme.colors.primary}
               userId={author.publicId}
             />
 
