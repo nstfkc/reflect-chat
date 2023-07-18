@@ -517,14 +517,12 @@ var listMessages = createPrecedure({
   handler: async (args, ctx) => {
     const channelId = Number(args.channelId);
     const receiverId = Number(args.receiverId);
-    console.log({ channelId, receiverId });
     if (isNaN(channelId) && isNaN(receiverId)) {
       return prismaError({ payload: { issues: [] }, statusCode: 400 });
     }
     let messages = [];
     try {
       if (isNaN(receiverId)) {
-        console.log("here");
         messages = await prisma.message.findMany({
           where: {
             channelId
@@ -533,7 +531,6 @@ var listMessages = createPrecedure({
         });
       }
       if (isNaN(channelId)) {
-        console.log("isNaN(channelId)");
         messages = await prisma.message.findMany({
           where: {
             OR: [

@@ -1,10 +1,10 @@
 import { prisma } from "db";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { findAll } from "tree-visit";
 
 import Redis from "ioredis";
 
-const userIdSocketMap = new Map();
+const userIdSocketMap = new Map<number, Set<Socket>>();
 
 // let redis = new Redis(
 //   "redis://default:530f03c0f1194bb4855c090d902a6c24@eu2-sterling-cheetah-31030.upstash.io:31030"
@@ -31,11 +31,12 @@ function parseMentions(content: string) {
 
 export function sockets(io: Server) {
   io.on("connection", (socket) => {
-    if (userIdSocketMap.has(socket.handshake.query.userId)) {
-      userIdSocketMap.get(socket.handshake.query.userId).push(socket);
-    } else {
-      userIdSocketMap.set(socket.handshake.query.userId, [socket]);
+    const handshakeId = Number(socket.handshake.query.userId);
+    if (!userIdSocketMap.has(handshakeId)) {
+      userIdSocketMap.set(handshakeId, new Set());
     }
+
+    userIdSocketMap.get(handshakeId).add(socket);
 
     // Emit new user joined
     // Update the user list
@@ -90,7 +91,7 @@ export function sockets(io: Server) {
             const mentions = parseMentions(message.text);
             for (let mentionIds of mentions) {
               if (userIdSocketMap.has(mentionIds)) {
-                userIdSocketMap.get(mentionIds).forEach((socket) => {
+                userIdSocketMap.get(mentionIds)?.forEach((socket) => {
                   socket?.emit("new-mention", { message });
                 });
               }
@@ -114,23 +115,12 @@ export function sockets(io: Server) {
             },
           })
           .then((dm) => {
-            // userIdSocketMap.get(dm.senderId)?.emit("message:created", dm);
-            for (const socket of userIdSocketMap.get(dm.receiverId)) {
+            userIdSocketMap.get(message.receiverId).forEach((socket) => {
               socket?.emit("message:created", dm);
-            }
+            });
           })
           .catch((error) => console.log(error));
-        //
-        // Emit new message to the sockets have this private channel access
-        // 1. args.channelId
-        // Check memory if private channel has user list
-        // Then fetch from the db
-        //
       }
-
-      // io.in(args.channelId).emit("message", args);
     });
-
-    // ...
   });
 }

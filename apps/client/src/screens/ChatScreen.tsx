@@ -297,7 +297,7 @@ export const ChatScreen = () => {
               size={24}
               textStyle={{ fontWeight: "bold" }}
               statusIndicatorBorderColor={theme.colors.alt1}
-              userId={receiver.publicId}
+              userId={receiver.id}
             />
           )}
         </div>
@@ -333,7 +333,7 @@ type GetEditorProps =
     };
 
 function getEditor(props: GetEditorProps) {
-  const editors = new Map<string, () => JSX.Element>();
+  const editors = new Map<number, () => JSX.Element>();
   if (props.kind === "channel") {
     if (!editors.has(props.channel.id)) {
       editors.set(props.channel.id, () => (
@@ -349,8 +349,8 @@ function getEditor(props: GetEditorProps) {
     return editors.get(props.channel.id);
   }
   if (props.kind === "user") {
-    if (!editors.has(props.user.publicId)) {
-      editors.set(props.user.publicId, () => (
+    if (!editors.has(props.user.id)) {
+      editors.set(props.user.id, () => (
         <TextEditor
           onUpdate={props.onUpdate}
           onSubmit={(message) => {
@@ -360,6 +360,6 @@ function getEditor(props: GetEditorProps) {
         />
       ));
     }
-    return editors.get(props.user.publicId);
+    return editors.get(props.user.id);
   }
 }

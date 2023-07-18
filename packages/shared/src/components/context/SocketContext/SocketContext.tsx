@@ -54,7 +54,7 @@ interface SocketContextValue {
 
 export const SocketContext = createContext({} as SocketContextValue);
 
-function useSocket(userId: string) {
+function useSocket(userId: number) {
   const { socketUrl } = useContext(ConfigContext);
   const [socket, setSocket] = useState<InternalSocket | null>(null);
   useEffect(() => {
@@ -106,7 +106,7 @@ interface SocketProviderProps {
 export const SocketProvider = (props: SocketProviderProps) => {
   const { children } = props;
   const { user } = useUser();
-  const { socket, connected } = useSocket(user?.publicId);
+  const { socket, connected } = useSocket(user?.id);
 
   return (
     <SocketContext.Provider value={{ socket, connected }}>
