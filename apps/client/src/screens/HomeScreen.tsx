@@ -32,7 +32,7 @@ export const HomeScreen = () => {
             <UserProfilePicture
               size={32}
               showUserName={false}
-              userId={user?.publicId!}
+              userId={user?.id!}
             />
           </button>
         </div>
@@ -47,7 +47,7 @@ export const HomeScreen = () => {
           <ChannelList
             activeChannelId={channelId}
             onChannelClick={(channel) =>
-              navigate(channel.id, { state: { channel } })
+              navigate(channel.publicId, { state: { channel } })
             }
           />
           <DMList

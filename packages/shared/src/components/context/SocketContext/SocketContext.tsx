@@ -22,12 +22,12 @@ type EmitEvents = {
   "user-connected": ({ user }: { user: User }) => void;
 
   "channel-created": (channel: Channel) => void;
-  "last-seen-message": (params: { userId: string; message: Message }) => void;
+  "last-seen-message": (params: { userId: number; message: Message }) => void;
   /*  */
   "message:create": (message: Partial<Message>, medias: MessageMedia[]) => void;
-  "user-typing": (payload: { userId: string; channelOrUserId: string }) => void;
+  "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
-    userId: string;
+    userId: number;
     userStatus: UserStatus;
   }) => void;
 };
@@ -38,9 +38,9 @@ export type ListenEvents = {
   "new-mention": (props: { message: Message }) => void;
   /*  */
   "message:created": (message: MessageWithMedia) => void;
-  "user-typing": (payload: { userId: string; channelOrUserId: string }) => void;
+  "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
-    userId: string;
+    userId: number;
     userStatus: UserStatus;
   }) => void;
 };

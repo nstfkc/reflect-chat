@@ -36,7 +36,7 @@ export const listChannels = createPrecedure({
       const channels = await prisma.channel.findMany({
         where: {
           kind: "PUBLIC",
-          organisationId: args.organisationId,
+          organisationId: Number(args.organisationId),
         },
       });
 
@@ -52,6 +52,39 @@ export const listChannels = createPrecedure({
 
 export const listDirectMessages = createPrecedure({
   handler: async (_, ctx) => {
+    console.log(
+      JSON.stringify(
+        {
+          distinct: ["senderId", "receiverId"],
+          where: {
+            AND: [
+              {
+                NOT: {
+                  AND: [
+                    { senderId: { equals: ctx.id } },
+                    { receiverId: { equals: ctx.id } },
+                  ],
+                },
+              },
+              {
+                OR: [
+                  {
+                    senderId: { equals: ctx.id },
+                    channelId: { equals: null },
+                  },
+                  {
+                    receiverId: { equals: ctx.id },
+                    channelId: { equals: null },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        null,
+        2
+      )
+    );
     try {
       const directMessages = await prisma.message.findMany({
         distinct: ["senderId", "receiverId"],
@@ -60,19 +93,19 @@ export const listDirectMessages = createPrecedure({
             {
               NOT: {
                 AND: [
-                  { senderId: { equals: ctx.userId } },
-                  { receiverId: { equals: ctx.userId } },
+                  { senderId: { equals: ctx.id } },
+                  { receiverId: { equals: ctx.id } },
                 ],
               },
             },
             {
               OR: [
                 {
-                  senderId: { equals: ctx.userId },
+                  senderId: { equals: ctx.id },
                   channelId: { equals: null },
                 },
                 {
-                  receiverId: { equals: ctx.userId },
+                  receiverId: { equals: ctx.id },
                   channelId: { equals: null },
                 },
               ],
@@ -86,6 +119,7 @@ export const listDirectMessages = createPrecedure({
         data: directMessages,
       };
     } catch (error) {
+      console.log(error);
       return prismaError({ payload: error, statusCode: 400 });
     }
   },
@@ -105,37 +139,42 @@ export const getCurrentOrganisationId = createPrecedure({
 });
 
 export const listMessages = createPrecedure({
+  doNotValidate: true,
   schema: z.object({
-    channelId: z.string().optional(),
-    receiverId: z.string().optional(),
+    channelId: z.number().optional(),
+    receiverId: z.number().optional(),
   }),
   handler: async (args, ctx) => {
-    if (args.channelId === "undefined" && args.receiverId === "undefined") {
-      return prismaError({ payload: { issues: [] }, statusCode: 400 });
-    }
-    if (args.channelId === "null" && args.receiverId === "null") {
+    const channelId = Number(args.channelId);
+    const receiverId = Number(args.receiverId);
+
+    console.log({ channelId, receiverId });
+
+    if (isNaN(channelId) && isNaN(receiverId)) {
       return prismaError({ payload: { issues: [] }, statusCode: 400 });
     }
 
     let messages: Message[] = [];
 
     try {
-      if (args.channelId !== "undefined" && args.channelId !== "null") {
+      if (isNaN(receiverId)) {
+        console.log("here");
         messages = await prisma.message.findMany({
           where: {
-            channelId: args.channelId,
+            channelId,
           },
 
           orderBy: { createdAt: "asc" },
         });
       }
 
-      if (args.receiverId !== "undefined" && args.receiverId !== "null") {
+      if (isNaN(channelId)) {
+        console.log("isNaN(channelId)");
         messages = await prisma.message.findMany({
           where: {
             OR: [
-              { receiverId: args.receiverId, senderId: ctx.userId },
-              { senderId: args.receiverId, receiverId: ctx.userId },
+              { receiverId: receiverId, senderId: ctx.id },
+              { senderId: receiverId, receiverId: ctx.id },
             ],
           },
           orderBy: { createdAt: "asc" },

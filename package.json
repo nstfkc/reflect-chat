@@ -8,6 +8,7 @@
     "db:generate": "dotenv -- turbo run db:generate",
     "db:push": "dotenv -- turbo run db:push",
     "db:studio": "dotenv -- turbo run db:studio",
+    "db:seed": "dotenv -- turbo run db:seed",
     "static": "dotenv -- turbo run static",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "preview": "dotenv -- turbo run preview",

@@ -10,9 +10,9 @@ import { UserStatus } from "../../../types/global";
 interface UsersContextValue {
   users: (User & { userProfile: UserProfile })[];
   getUserById: (
-    id: string
+    id: number
   ) => (User & { userProfile: UserProfile } & { status: UserStatus }) | null;
-  setUserStatusById: (userId: string, userStatus: UserStatus) => void;
+  setUserStatusById: (userId: number, userStatus: UserStatus) => void;
 }
 
 export const UsersContext = createContext({ users: [] } as UsersContextValue);
@@ -26,7 +26,7 @@ export const UsersProvider = (props: UserProviderProps) => {
   const { organisation } = useOrganisation();
 
   const [userStatuses, setUserStatuses] = useState(
-    new Map<string, UserStatus>()
+    new Map<number, UserStatus>()
   );
 
   const { socket } = useSocket(
@@ -43,11 +43,11 @@ export const UsersProvider = (props: UserProviderProps) => {
     organisationId: organisation.publicId,
   });
 
-  const getUserStatusById = (userId: string) => {
+  const getUserStatusById = (userId: number) => {
     return userStatuses.get(userId) ?? "offline";
   };
 
-  const setUserStatusById = (userId: string, userStatus: UserStatus) => {
+  const setUserStatusById = (userId: number, userStatus: UserStatus) => {
     socket.emit("update-user-status", { userId, userStatus });
     setUserStatuses((currentUserStatuses) => {
       currentUserStatuses.set(userId, userStatus);
@@ -55,8 +55,8 @@ export const UsersProvider = (props: UserProviderProps) => {
     });
   };
 
-  const getUserById = (userId: string) => {
-    const user = users.find((user) => user.publicId === userId);
+  const getUserById = (userId: number) => {
+    const user = users.find((user) => user.id === userId);
     return {
       ...user,
       status: getUserStatusById(userId),

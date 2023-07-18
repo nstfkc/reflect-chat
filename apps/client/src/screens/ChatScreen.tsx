@@ -166,7 +166,7 @@ const ChatHistory = memo(() => {
 
   const chatHistory = useChatHistory({
     channelId: channel?.id,
-    receiverId: receiver?.publicId,
+    receiverId: receiver?.id,
   });
 
   const virtuoso = useRef<VirtuosoHandle>(null);
@@ -182,7 +182,6 @@ const ChatHistory = memo(() => {
 
   useLayoutEffect(() => {
     if (!initialRender.current) {
-      console.log("effect");
       initialRender.current = true;
       virtuoso?.current?.scrollToIndex({
         index: chatHistory.length - 1,
@@ -235,15 +234,15 @@ export const ChatScreen = () => {
 
   const { channel, user: receiver } = state;
 
-  const channelOrUserId = channel ? channel.id : receiver.publicId;
+  const channelOrUserId = channel ? channel.id : receiver.id;
 
   const onUpdate = useCallback(() => {
     if (channel) {
-      socket?.emit("user-typing", { channelOrUserId, userId: user?.publicId! });
+      socket?.emit("user-typing", { channelOrUserId, userId: user?.id! });
     } else {
       socket?.emit("user-typing", {
-        channelOrUserId: user?.publicId!,
-        userId: user?.publicId!,
+        channelOrUserId: user?.id!,
+        userId: user?.id!,
       });
     }
   }, [channel, channelOrUserId, socket, user?.publicId]);
@@ -260,7 +259,7 @@ export const ChatScreen = () => {
                 {
                   text: message,
                   channelId: channel.id,
-                  senderId: user?.publicId,
+                  senderId: user?.id!,
                 },
                 []
               ),
@@ -274,8 +273,8 @@ export const ChatScreen = () => {
               sendMessage(
                 {
                   text: message,
-                  receiverId: receiver.publicId,
-                  senderId: user?.publicId,
+                  receiverId: receiver.id,
+                  senderId: user?.id!,
                 },
                 []
               ),

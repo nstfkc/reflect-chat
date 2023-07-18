@@ -35,7 +35,7 @@ export const PeopleList = (props: Props) => {
               }}
             >
               <UserProfilePicture
-                userId={item.publicId}
+                userId={item.id}
                 size={24}
                 statusIndicatorBorderColor={theme.colors.primary}
               />

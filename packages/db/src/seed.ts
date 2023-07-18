@@ -66,6 +66,59 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 export async function seed() {
+  const org = await prisma.organisation.create({
+    data: {
+      name: "Reflect",
+    },
+  });
+
+  const admin = await prisma.user.create({
+    data: {
+      name: "Enes Tufekci",
+      email: "enes@reflect.rocks",
+      password: await hashPassword("reflectrocks"),
+      role: "SUPERADMIN",
+      userProfile: {
+        create: {
+          username: "Enes Tufekci",
+          profilePictureUrl: "enes.png",
+          profileColor: "#00000",
+        },
+      },
+      userStatus: {
+        create: {
+          status: "ONLINE",
+        },
+      },
+      memberships: {
+        create: {
+          role: "OWNER",
+          organisationId: org.id,
+        },
+      },
+    },
+  });
+
+  await prisma.channel.createMany({
+    data: [
+      {
+        createdById: admin.id,
+        name: "General",
+        organisationId: org.id,
+      },
+      {
+        createdById: admin.id,
+        name: "Marketing",
+        organisationId: org.id,
+      },
+      {
+        createdById: admin.id,
+        name: "Sales",
+        organisationId: org.id,
+      },
+    ],
+  });
+
   for (const person of people) {
     await prisma.user.create({
       data: {
@@ -80,9 +133,14 @@ export async function seed() {
             profilePictureUrl: person.avatarUrl,
           },
         },
+        userStatus: {
+          create: {
+            status: "ONLINE",
+          },
+        },
         memberships: {
           create: {
-            organisationId: 1,
+            organisationId: org.id,
             role: "USER",
           },
         },

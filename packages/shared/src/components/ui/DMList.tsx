@@ -55,7 +55,7 @@ export const DMList = (props: DMListProps) => {
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
           <UserProfilePicture
             size={20}
-            userId={user.publicId}
+            userId={user.id}
             statusIndicatorBorderColor={theme.colors.alt2}
           />
           <Text style={{ fontSize: 12 }}>(You)</Text>
@@ -80,7 +80,7 @@ export const DMList = (props: DMListProps) => {
             >
               <UserProfilePicture
                 size={20}
-                userId={user.publicId}
+                userId={user.id}
                 statusIndicatorBorderColor={theme.colors.alt2}
               />
 

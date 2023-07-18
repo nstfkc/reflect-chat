@@ -16,7 +16,7 @@ export const ChannelList = (props: ChannelListProps) => {
   const { organisation } = useOrganisation();
   const { unreadMentions } = useContext(MessageContext);
   const { data, isLoading } = useQuery("listChannels", {
-    organisationId: organisation.publicId,
+    organisationId: organisation.id,
   });
 
   if (isLoading && !data) {

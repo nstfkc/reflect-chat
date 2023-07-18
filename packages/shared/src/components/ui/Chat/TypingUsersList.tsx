@@ -5,16 +5,16 @@ import { UsersTypingContext } from "../../context/UsersTypingContext";
 import { useUser } from "../../../auth";
 
 interface TypingUsersListProps {
-  channelOrUserId: string;
+  channelOrUserId: number;
 }
 
-export function useTypingUsers(channelOrUserId: string) {
+export function useTypingUsers(channelOrUserId: number) {
   const { user } = useUser();
   const { getUserById } = useContext(UsersContext);
   const { typingUsersByChannelId } = useContext(UsersTypingContext);
 
   return Array.from(typingUsersByChannelId.get(channelOrUserId) ?? [])
-    .filter((userId) => userId !== user.publicId)
+    .filter((userId) => userId !== user.id)
     .map((userId) => getUserById(userId));
 }
 
@@ -30,7 +30,7 @@ export const TypingUsersList = (props: TypingUsersListProps) => {
         </View>
       ) : (
         users.map((user, index, arr) => (
-          <View key={user?.publicId}>
+          <View key={user?.id}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text style={{ fontSize: 12, opacity: 0.8, fontWeight: "bold" }}>
                 {user.name}{" "}

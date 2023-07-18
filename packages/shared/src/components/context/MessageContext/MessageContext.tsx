@@ -141,14 +141,14 @@ function useLastSeenMessage() {
   function updateLastSeenMessage(message: Message) {
     if (!lastSeenMessage) {
       setLastSeenMessage(message);
-      socket?.emit("last-seen-message", { userId: user.publicId, message });
+      socket?.emit("last-seen-message", { userId: user.id, message });
     } else {
       const currentMessageTime = new Date(lastSeenMessage.createdAt);
       const nextMessageTime = new Date(message.createdAt);
 
       if (nextMessageTime.getTime() > currentMessageTime.getTime()) {
         setLastSeenMessage(message);
-        socket?.emit("last-seen-message", { userId: user.publicId, message });
+        socket?.emit("last-seen-message", { userId: user.id, message });
       }
     }
   }
@@ -171,7 +171,7 @@ function useMessageHistory() {
       let key = "";
 
       if (dm.receiverId) {
-        key = dm.senderId === user?.publicId ? dm.receiverId : dm.senderId;
+        key = dm.senderId === user?.id ? dm.receiverId : dm.senderId;
       }
 
       if (dm.channelId) {
@@ -186,18 +186,18 @@ function useMessageHistory() {
       current.push(dm);
       setDmHistory(new Map(dmHistoryMapRef.current));
     },
-    [user?.publicId]
+    [user?.id]
   );
 
   const handleUpdateMessageHistoryInternal = useCallback(
     (dm: MessageWithMedia) => {
-      if (dm.senderId === user.publicId) {
+      if (dm.senderId === user.id) {
         return;
       }
       let key = "";
 
       if (dm.receiverId) {
-        key = dm.senderId === user?.publicId ? dm.receiverId : dm.senderId;
+        key = dm.senderId === user?.id ? dm.receiverId : dm.senderId;
       }
 
       if (dm.channelId) {
@@ -212,7 +212,7 @@ function useMessageHistory() {
       current.push(dm);
       setDmHistory(new Map(dmHistoryMapRef.current));
     },
-    [user?.publicId]
+    [user?.id]
   );
 
   useEffect(() => {

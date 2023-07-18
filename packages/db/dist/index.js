@@ -79,11 +79,11 @@ function toInteger(dirtyNumber) {
   if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
     return NaN;
   }
-  var number = Number(dirtyNumber);
-  if (isNaN(number)) {
-    return number;
+  var number2 = Number(dirtyNumber);
+  if (isNaN(number2)) {
+    return number2;
   }
-  return number < 0 ? Math.ceil(number) : Math.floor(number);
+  return number2 < 0 ? Math.ceil(number2) : Math.floor(number2);
 }
 
 // ../../node_modules/date-fns/esm/_lib/requiredArgs/index.js
@@ -164,7 +164,8 @@ function createPrecedure(args) {
     schema,
     globalRoles,
     membershipRoles,
-    isPublic = false
+    isPublic = false,
+    doNotValidate = false
   } = args;
   return {
     isPublic,
@@ -178,7 +179,7 @@ function createPrecedure(args) {
       if (globalRoles && !globalRoles.includes(ctx.globalRole)) {
         error = insufficientPermissionsError({ statusCode: 403 });
       }
-      if (schema) {
+      if (schema && !doNotValidate) {
         const { success, ...rest } = schema.safeParse(args2);
         if (!success) {
           error = validationError({
@@ -307,6 +308,7 @@ var signIn = createPrecedure({
         );
         if (passwordMatches) {
           const token = helpers.jwtSign({
+            id: user.id,
             userId: user.publicId,
             globalRole: user.role,
             membershipRoles: Object.fromEntries(
@@ -409,7 +411,7 @@ var listChannels = createPrecedure({
       const channels = await prisma.channel.findMany({
         where: {
           kind: "PUBLIC",
-          organisationId: args.organisationId
+          organisationId: Number(args.organisationId)
         }
       });
       return {
@@ -423,6 +425,39 @@ var listChannels = createPrecedure({
 });
 var listDirectMessages = createPrecedure({
   handler: async (_, ctx) => {
+    console.log(
+      JSON.stringify(
+        {
+          distinct: ["senderId", "receiverId"],
+          where: {
+            AND: [
+              {
+                NOT: {
+                  AND: [
+                    { senderId: { equals: ctx.id } },
+                    { receiverId: { equals: ctx.id } }
+                  ]
+                }
+              },
+              {
+                OR: [
+                  {
+                    senderId: { equals: ctx.id },
+                    channelId: { equals: null }
+                  },
+                  {
+                    receiverId: { equals: ctx.id },
+                    channelId: { equals: null }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        null,
+        2
+      )
+    );
     try {
       const directMessages = await prisma.message.findMany({
         distinct: ["senderId", "receiverId"],
@@ -431,19 +466,19 @@ var listDirectMessages = createPrecedure({
             {
               NOT: {
                 AND: [
-                  { senderId: { equals: ctx.userId } },
-                  { receiverId: { equals: ctx.userId } }
+                  { senderId: { equals: ctx.id } },
+                  { receiverId: { equals: ctx.id } }
                 ]
               }
             },
             {
               OR: [
                 {
-                  senderId: { equals: ctx.userId },
+                  senderId: { equals: ctx.id },
                   channelId: { equals: null }
                 },
                 {
-                  receiverId: { equals: ctx.userId },
+                  receiverId: { equals: ctx.id },
                   channelId: { equals: null }
                 }
               ]
@@ -456,6 +491,7 @@ var listDirectMessages = createPrecedure({
         data: directMessages
       };
     } catch (error) {
+      console.log(error);
       return prismaError({ payload: error, statusCode: 400 });
     }
   }
@@ -473,33 +509,36 @@ var getCurrentOrganisationId = createPrecedure({
   }
 });
 var listMessages = createPrecedure({
+  doNotValidate: true,
   schema: z2.object({
-    channelId: z2.string().optional(),
-    receiverId: z2.string().optional()
+    channelId: z2.number().optional(),
+    receiverId: z2.number().optional()
   }),
   handler: async (args, ctx) => {
-    if (args.channelId === "undefined" && args.receiverId === "undefined") {
-      return prismaError({ payload: { issues: [] }, statusCode: 400 });
-    }
-    if (args.channelId === "null" && args.receiverId === "null") {
+    const channelId = Number(args.channelId);
+    const receiverId = Number(args.receiverId);
+    console.log({ channelId, receiverId });
+    if (isNaN(channelId) && isNaN(receiverId)) {
       return prismaError({ payload: { issues: [] }, statusCode: 400 });
     }
     let messages = [];
     try {
-      if (args.channelId !== "undefined" && args.channelId !== "null") {
+      if (isNaN(receiverId)) {
+        console.log("here");
         messages = await prisma.message.findMany({
           where: {
-            channelId: args.channelId
+            channelId
           },
           orderBy: { createdAt: "asc" }
         });
       }
-      if (args.receiverId !== "undefined" && args.receiverId !== "null") {
+      if (isNaN(channelId)) {
+        console.log("isNaN(channelId)");
         messages = await prisma.message.findMany({
           where: {
             OR: [
-              { receiverId: args.receiverId, senderId: ctx.userId },
-              { senderId: args.receiverId, receiverId: ctx.userId }
+              { receiverId, senderId: ctx.id },
+              { senderId: receiverId, receiverId: ctx.id }
             ]
           },
           orderBy: { createdAt: "asc" }
@@ -603,6 +642,56 @@ async function hashPassword(password) {
   });
 }
 async function seed() {
+  const org = await prisma.organisation.create({
+    data: {
+      name: "Reflect"
+    }
+  });
+  const admin = await prisma.user.create({
+    data: {
+      name: "Enes Tufekci",
+      email: "enes@reflect.rocks",
+      password: await hashPassword("reflectrocks"),
+      role: "SUPERADMIN",
+      userProfile: {
+        create: {
+          username: "Enes Tufekci",
+          profilePictureUrl: "enes.png",
+          profileColor: "#00000"
+        }
+      },
+      userStatus: {
+        create: {
+          status: "ONLINE"
+        }
+      },
+      memberships: {
+        create: {
+          role: "OWNER",
+          organisationId: org.id
+        }
+      }
+    }
+  });
+  await prisma.channel.createMany({
+    data: [
+      {
+        createdById: admin.id,
+        name: "General",
+        organisationId: org.id
+      },
+      {
+        createdById: admin.id,
+        name: "Marketing",
+        organisationId: org.id
+      },
+      {
+        createdById: admin.id,
+        name: "Sales",
+        organisationId: org.id
+      }
+    ]
+  });
   for (const person of people) {
     await prisma.user.create({
       data: {
@@ -617,9 +706,14 @@ async function seed() {
             profilePictureUrl: person.avatarUrl
           }
         },
+        userStatus: {
+          create: {
+            status: "ONLINE"
+          }
+        },
         memberships: {
           create: {
-            organisationId: 1,
+            organisationId: org.id,
             role: "USER"
           }
         }

@@ -7,7 +7,7 @@ import { useTheme } from "../context/ThemeContext";
 import { userStatuses } from "../../constants/userStatus";
 
 interface UserWithProfilePictureProps {
-  userId: string;
+  userId: number;
   textStyle?: TextStyle;
   size?: number;
   showUserName?: boolean;
@@ -45,17 +45,17 @@ export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
         style={{
           width: size,
           height: size,
-          backgroundColor: user.userProfile.profileColor,
+          backgroundColor: user.userProfile?.profileColor,
           borderRadius: size / 4,
         }}
       >
-        {user.userProfile.profilePictureUrl && (
+        {user.userProfile?.profilePictureUrl && (
           <Image
             style={{ borderRadius: size / 4 }}
             source={{
               width: size,
               height: size,
-              uri: [assetsServiceUrl, user.userProfile.profilePictureUrl].join(
+              uri: [assetsServiceUrl, user.userProfile?.profilePictureUrl].join(
                 "/"
               ),
             }}

@@ -38,6 +38,7 @@ export function useQuery<T extends keyof Queries>(
       return _data.data;
     }
   };
+
   const queryParams = new URLSearchParams({ ...args } as any);
   const queryString = queryParams.toString();
   const keyWithQueryString = queryString.length ? `${key}?${queryString}` : key;

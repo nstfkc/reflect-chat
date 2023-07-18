@@ -2,23 +2,23 @@ import { PropsWithChildren, createContext, useState, useRef } from "react";
 import { useSocket } from "./SocketContext";
 
 interface UsersTypingContextValue {
-  typingUsersByChannelId: Map<string, Set<string>>;
+  typingUsersByChannelId: Map<number, Set<number>>;
 }
 
 export const UsersTypingContext = createContext({
-  typingUsersByChannelId: new Map<string, Set<string>>(),
+  typingUsersByChannelId: new Map<number, Set<number>>(),
 } as UsersTypingContextValue);
 
 export const UsersTypingProvider = (props: PropsWithChildren) => {
   const [typingUsersByChannelId, setTypingUsersByChannelId] = useState(
-    new Map<string, Set<string>>()
+    new Map<number, Set<number>>()
   );
 
   const timerRefs = useRef(new Map<string, NodeJS.Timer>());
 
   const removeUserFromTyping = (payload: {
-    channelOrUserId: string;
-    userId: string;
+    channelOrUserId: number;
+    userId: number;
   }) => {
     setTypingUsersByChannelId((current) => {
       if (current.has(payload.channelOrUserId)) {
@@ -38,7 +38,7 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
 
     setTypingUsersByChannelId((current) => {
       if (!current.get(channelOrUserId)) {
-        current.set(channelOrUserId, new Set<string>());
+        current.set(channelOrUserId, new Set<number>());
       }
       current.get(channelOrUserId).add(userId);
       return new Map(current);
@@ -48,7 +48,7 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
       key,
       setTimeout(() => {
         removeUserFromTyping({ channelOrUserId, userId });
-      }, 25000)
+      }, 5000)
     );
   });
 

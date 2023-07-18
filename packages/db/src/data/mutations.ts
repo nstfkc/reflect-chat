@@ -127,6 +127,7 @@ export const signIn = createPrecedure({
 
         if (passwordMatches) {
           const token = helpers.jwtSign({
+            id: user.id,
             userId: user.publicId,
             globalRole: user.role,
             membershipRoles: Object.fromEntries(

@@ -19,10 +19,10 @@ export const UserActions = (props: UserActionsProps) => {
   const theme = useTheme();
   const { organisation } = useOrganisation();
 
-  const userStatus = getUserById(user.publicId).status;
+  const userStatus = getUserById(user.id).status;
 
   const handleUserStatusSelect = (userStatus: UserStatus) => {
-    setUserStatusById(user.publicId, userStatus);
+    setUserStatusById(user.id, userStatus);
     onStatusSelect(userStatus);
   };
 
@@ -31,7 +31,7 @@ export const UserActions = (props: UserActionsProps) => {
       <View>
         <UserProfilePicture
           size={32}
-          userId={user.publicId}
+          userId={user.id}
           statusIndicatorBorderColor={theme.colors.alt2}
           textStyle={{ fontWeight: "500" }}
         />

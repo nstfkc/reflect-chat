@@ -64,7 +64,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
               size={32}
               showUserName={false}
               statusIndicatorBorderColor={theme.colors.primary}
-              userId={author.publicId}
+              userId={author.id}
             />
 
             <View

@@ -80,13 +80,34 @@ model User {
   password  String
   role      GlobalRole
 
-  userProfile UserProfile? @relation(fields: [userProfileId], references: [id])
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
+  userStatus  UserStatus  @relation(fields: [userStatusId], references: [id])
 
   memberships            Membership[]
   OrganisationInvitation OrganisationInvitation[]
+  messagesSent           Message[]                @relation("Sender")
+  messagesReceived       Message[]                @relation("Receiver")
   userProfileId          Int
+  userStatusId           Int
+  Channel                Channel[]
 
   @@index([userProfileId])
+  @@index([userStatusId])
+}
+
+enum UserStatusKind {
+  ONLINE
+  BUSY
+  OFFLINE
+}
+
+model UserStatus {
+  id Int @id @default(autoincrement())
+
+  status     UserStatusKind @default(ONLINE)
+  lastSeenAt DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  User       User[]
 }
 
 model UserProfile {
@@ -108,18 +129,23 @@ enum ChannelKind {
 }
 
 model Channel {
-  id          String      @id @default(cuid())
+  id          Int         @id @default(autoincrement())
+  publicId    String      @unique @default(cuid())
   kind        ChannelKind @default(PUBLIC)
-  createdBy   String // user id
+  createdBy   User        @relation(fields: [createdById], references: [id])
   name        String?
   description String?
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  Organisation   Organisation? @relation(fields: [organisationId], references: [publicId])
-  organisationId String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Organisation Organisation @relation(fields: [organisationId], references: [id])
+
+  organisationId Int
+  createdById    Int
+  Message        Message[]
 
   @@index([organisationId])
+  @@index([createdById])
 }
 
 model Media {
@@ -144,16 +170,19 @@ model Message {
   text  String  @db.Text
   media Media[]
 
-  senderId   String
-  receiverId String?
-  channelId  String?
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+  receiver   User?    @relation("Receiver", fields: [receiverId], references: [id])
+  channel    Channel? @relation(fields: [channelId], references: [id])
+  receiverId Int?
+  channelId  Int?
+  senderId   Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([channelId])
   @@index([senderId])
   @@index([receiverId])
+  @@index([channelId])
 }
 
 model UserNotifications {

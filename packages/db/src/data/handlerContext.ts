@@ -1,6 +1,7 @@
 import { MembershipRole, GlobalRole } from "@prisma/client";
 
 export type HandlerContext = {
+  id: number;
   userId: string;
   membershipRoles: Record<string, MembershipRole>;
   globalRole: GlobalRole;

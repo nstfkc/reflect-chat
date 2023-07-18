@@ -73,7 +73,6 @@ export function sockets(io: Server) {
     );
 
     socket.on("message:create", (message, medias) => {
-      console.log(message);
       if (message.channelId) {
         prisma.message
           .create({

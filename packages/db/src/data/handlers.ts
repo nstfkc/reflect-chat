@@ -38,6 +38,7 @@ export function createPrecedure<U, T extends ZodRawShape>(args: {
   membershipRoles?: MembershipRole[];
   globalRoles?: GlobalRole[];
   isPublic?: boolean;
+  doNotValidate?: boolean;
 }): Precedure<U, T> {
   const {
     handler,
@@ -45,6 +46,7 @@ export function createPrecedure<U, T extends ZodRawShape>(args: {
     globalRoles,
     membershipRoles,
     isPublic = false,
+    doNotValidate = false,
   } = args;
   return {
     isPublic,
@@ -60,7 +62,7 @@ export function createPrecedure<U, T extends ZodRawShape>(args: {
       if (globalRoles && !globalRoles.includes(ctx.globalRole)) {
         error = insufficientPermissionsError({ statusCode: 403 });
       }
-      if (schema) {
+      if (schema && !doNotValidate) {
         const { success, ...rest } = schema.safeParse(args);
         if (!success) {
           error = validationError({
