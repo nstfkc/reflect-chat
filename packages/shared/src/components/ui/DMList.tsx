@@ -1,7 +1,7 @@
 import { View, Pressable, Image } from "react-native";
 import { Text } from "../lib/Text";
 import { useQuery } from "../../utils/useQuery";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UsersContext } from "../context/UsersContext";
 import { useUser } from "../../auth";
 import { MessageContext } from "../context/MessageContext";
@@ -26,12 +26,28 @@ export const DMList = (props: DMListProps) => {
     )
     .flat();
 
-  const userIds = Array.from(
-    new Set([
-      ...data.map((message) => [message.receiverId, message.senderId]).flat(),
-      ...newDMUserIds,
-    ])
+  const [userIds, setUserIds] = useState(
+    Array.from(
+      new Set([
+        ...data.map((message) => [message.receiverId, message.senderId]).flat(),
+        ...newDMUserIds,
+      ])
+    )
   );
+
+  useEffect(() => {
+    setUserIds((ids) => {
+      return Array.from(
+        new Set([
+          ...data
+            .map((message) => [message.receiverId, message.senderId])
+            .flat(),
+          ...newDMUserIds,
+          ...ids,
+        ])
+      );
+    });
+  }, [data, newDMUserIds]);
 
   const { users: allUsers } = useContext(UsersContext);
 
