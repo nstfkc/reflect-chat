@@ -21,7 +21,7 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
     const item = props.items[index];
 
     if (item) {
-      props.command({ id: item.publicId, label: item.name });
+      props.command({ id: item.id, label: item.name });
     }
   };
 

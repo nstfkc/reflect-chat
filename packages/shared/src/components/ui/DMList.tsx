@@ -5,7 +5,6 @@ import { useContext } from "react";
 import { UsersContext } from "../context/UsersContext";
 import { useUser } from "../../auth";
 import { MessageContext } from "../context/MessageContext";
-import { ConfigContext } from "../context/ConfigContext";
 import { UserProfilePicture } from "./UserProfilePicture";
 import { theme } from "../context/ThemeContext";
 
@@ -18,12 +17,11 @@ export const DMList = (props: DMListProps) => {
   const { user } = useUser();
   const { data = [] } = useQuery("listDirectMessages");
   const { unreadMessages } = useContext(MessageContext);
-  const { assetsServiceUrl } = useContext(ConfigContext);
 
   const newDMUserIds = Object.entries(unreadMessages)
     .map(([, messages]) =>
       Array.from(messages)
-        .filter((message) => message.receiverId === user.publicId)
+        .filter((message) => message.receiverId === user.id)
         .map((message) => message.senderId)
     )
     .flat();
@@ -38,7 +36,7 @@ export const DMList = (props: DMListProps) => {
   const { users: allUsers } = useContext(UsersContext);
 
   const users = allUsers.filter(
-    (u) => userIds.includes(u.publicId) && u.publicId !== user.publicId
+    (u) => userIds.includes(u.id) && u.id !== user.id
   );
 
   return (
@@ -63,8 +61,9 @@ export const DMList = (props: DMListProps) => {
       </Pressable>
 
       {users.map((user) => {
-        const unreadMessageCount = (unreadMessages[user.publicId] ?? new Set())
-          .size;
+        const unreadMessageCount = (
+          unreadMessages[`key-${user.id}`] ?? new Set()
+        ).size;
         return (
           <Pressable
             key={user.publicId}

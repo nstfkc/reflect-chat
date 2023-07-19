@@ -68,7 +68,7 @@ function useUnreadMessages() {
 
   const markMessageAsRead = useCallback(
     (channelId: string) => (messageId: string) => {
-      removeItem(channelId, (message) => message.id === messageId);
+      removeItem(`key-${channelId}`, (message) => message.id === messageId);
     },
     [removeItem]
   );
@@ -76,9 +76,9 @@ function useUnreadMessages() {
   const handler = useCallback(
     (message: Message) => {
       if (message.channelId) {
-        addItem(message.channelId, message);
+        addItem(`key-${message.channelId}`, message);
       } else {
-        addItem(message.senderId, message);
+        addItem(`key-${message.senderId}`, message);
       }
     },
     [addItem]
@@ -98,13 +98,13 @@ function useUnreadMessages() {
 }
 
 function useChannelMentions() {
-  const { addItem, removeItem, state } = useMappedState<string>();
+  const { addItem, removeItem, state } = useMappedState();
 
   const { socket } = useSocket();
 
   const markMentionsAsRead = useCallback(
-    (channelId: string) => (messageId: string) => {
-      removeItem(channelId, (item) => item === messageId);
+    (channelId: number) => (messageId: number) => {
+      removeItem(`key-${channelId}`, (item) => item === messageId);
     },
     [removeItem]
   );
@@ -113,7 +113,7 @@ function useChannelMentions() {
     (params: { message: Message }) => {
       const { message } = params;
       if (message.channelId) {
-        addItem(message.channelId, message.id);
+        addItem(`key-${message.channelId}`, message.id);
       }
     },
     [addItem]
@@ -160,7 +160,7 @@ function useLastSeenMessage() {
 }
 
 function useMessageHistory() {
-  const dmHistoryMapRef = useRef(new Map<string, MessageWithMedia[]>());
+  const dmHistoryMapRef = useRef(new Map<number, MessageWithMedia[]>());
   const { user } = useUser();
   const { socket } = useSocket();
 
@@ -168,7 +168,7 @@ function useMessageHistory() {
 
   const handleUpdateMessageHistory = useCallback(
     (dm: MessageWithMedia) => {
-      let key = "";
+      let key: number;
 
       if (dm.receiverId) {
         key = dm.senderId === user?.id ? dm.receiverId : dm.senderId;
@@ -194,7 +194,7 @@ function useMessageHistory() {
       if (dm.senderId === user.id) {
         return;
       }
-      let key = "";
+      let key: number;
 
       if (dm.receiverId) {
         key = dm.senderId === user?.id ? dm.receiverId : dm.senderId;
@@ -222,7 +222,7 @@ function useMessageHistory() {
     };
   }, [socket, handleUpdateMessageHistoryInternal]);
 
-  const getMessageHistoryById = (id: string) => {
+  const getMessageHistoryById = (id: number) => {
     return dmHistory.get(id) ?? [];
   };
 
@@ -311,6 +311,8 @@ export const MessageProvider = (props: MessageProviderProps) => {
   };
 
   return (
-    <MessageContext.Provider value={value}>{children}</MessageContext.Provider>
+    <MessageContext.Provider value={value as any}>
+      {children}
+    </MessageContext.Provider>
   );
 };

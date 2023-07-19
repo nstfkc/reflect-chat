@@ -162,7 +162,7 @@ const ChatHistory = memo(() => {
   const initialRender = useRef(false);
   const { channel, user: receiver } = state;
 
-  const channelOrUserId = channel ? channel.id : receiver.publicId;
+  const channelOrUserId = channel ? channel.id : receiver.id;
 
   const chatHistory = useChatHistory({
     channelId: channel?.id,

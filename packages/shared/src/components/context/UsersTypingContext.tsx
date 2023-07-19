@@ -55,10 +55,8 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
   useSocket("message:created", (message) => {
     const { channelId, senderId } = message;
     if (channelId) {
-      console.log("a");
       removeUserFromTyping({ channelOrUserId: channelId, userId: senderId });
     } else {
-      console.log("b");
       removeUserFromTyping({ channelOrUserId: senderId, userId: senderId });
     }
   });

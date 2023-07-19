@@ -16,7 +16,7 @@ export const ChannelList = (props: ChannelListProps) => {
   const { organisation } = useOrganisation();
   const { unreadMentions } = useContext(MessageContext);
   const { data, isLoading } = useQuery("listChannels", {
-    organisationId: organisation.id,
+    organisationId: organisation.id as any,
   });
 
   if (isLoading && !data) {
@@ -29,9 +29,10 @@ export const ChannelList = (props: ChannelListProps) => {
       <FlatList
         data={data}
         renderItem={({ item }) => {
-          const isActive = activeChannelId === item.id;
-          const undreadChannelMentions = (unreadMentions[item.id] ?? new Set())
-            .size;
+          const isActive = activeChannelId === item.publicId;
+          const undreadChannelMentions = (
+            unreadMentions[`key-${item.id}`] ?? new Set()
+          ).size;
           return (
             <Pressable
               style={{
