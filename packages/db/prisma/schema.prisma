@@ -80,19 +80,14 @@ model User {
   password  String
   role      GlobalRole
 
-  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
-  userStatus  UserStatus  @relation(fields: [userStatusId], references: [id])
+  userProfile UserProfile?
+  userStatus  UserStatus?
 
   memberships            Membership[]
   OrganisationInvitation OrganisationInvitation[]
   messagesSent           Message[]                @relation("Sender")
   messagesReceived       Message[]                @relation("Receiver")
-  userProfileId          Int
-  userStatusId           Int
   Channel                Channel[]
-
-  @@index([userProfileId])
-  @@index([userStatusId])
 }
 
 enum UserStatusKind {
@@ -107,7 +102,10 @@ model UserStatus {
   status     UserStatusKind @default(ONLINE)
   lastSeenAt DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
-  User       User[]
+  user       User           @relation(fields: [userId], references: [id])
+  userId     Int            @unique
+
+  @@index([userId])
 }
 
 model UserProfile {
@@ -120,7 +118,8 @@ model UserProfile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User[]
+  User      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
 }
 
 enum ChannelKind {

@@ -391,6 +391,7 @@ var me = createPrecedure({
       where: { publicId: ctx.userId },
       include: {
         userProfile: true,
+        userStatus: true,
         memberships: {
           include: {
             organisation: true
@@ -425,39 +426,6 @@ var listChannels = createPrecedure({
 });
 var listDirectMessages = createPrecedure({
   handler: async (_, ctx) => {
-    console.log(
-      JSON.stringify(
-        {
-          distinct: ["senderId", "receiverId"],
-          where: {
-            AND: [
-              {
-                NOT: {
-                  AND: [
-                    { senderId: { equals: ctx.id } },
-                    { receiverId: { equals: ctx.id } }
-                  ]
-                }
-              },
-              {
-                OR: [
-                  {
-                    senderId: { equals: ctx.id },
-                    channelId: { equals: null }
-                  },
-                  {
-                    receiverId: { equals: ctx.id },
-                    channelId: { equals: null }
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        null,
-        2
-      )
-    );
     try {
       const directMessages = await prisma.message.findMany({
         distinct: ["senderId", "receiverId"],
@@ -499,7 +467,6 @@ var listDirectMessages = createPrecedure({
 var getCurrentOrganisationId = createPrecedure({
   handler: async (_, ctx) => {
     const { currentOrganisationId } = ctx;
-    console.log("currentOrganisationId SERVER", { currentOrganisationId });
     return {
       success: true,
       data: {
@@ -565,7 +532,8 @@ var listUsers = createPrecedure({
           }
         },
         include: {
-          userProfile: true
+          userProfile: true,
+          userStatus: true
         }
       });
       return {

@@ -5,7 +5,7 @@ import {
   MessageWithMedia,
   UserStatus,
 } from "../../../types/global";
-import type { Channel, Message, User } from "db";
+import type { Channel, Message, User, UserStatusKind } from "db";
 import {
   ReactNode,
   createContext,
@@ -27,8 +27,8 @@ type EmitEvents = {
   "message:create": (message: Partial<Message>, medias: MessageMedia[]) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
-    userId: number;
-    userStatus: UserStatus;
+    userStatusId: number;
+    userStatus: UserStatusKind;
   }) => void;
 };
 
@@ -40,8 +40,8 @@ export type ListenEvents = {
   "message:created": (message: MessageWithMedia) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
-    userId: number;
-    userStatus: UserStatus;
+    userStatusId: number;
+    userStatus: UserStatusKind;
   }) => void;
 };
 

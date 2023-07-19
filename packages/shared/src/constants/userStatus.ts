@@ -1,19 +1,19 @@
-import { UserStatus } from "../types/global";
+import { UserStatusKind } from "db";
 
 export const userStatuses = [
   {
     label: "Online",
     color: "green",
-    kind: "online" as UserStatus,
+    kind: "ONLINE" as UserStatusKind,
   },
   {
     label: "Busy",
     color: "red",
-    kind: "busy" as UserStatus,
+    kind: "BUSY" as UserStatusKind,
   },
   {
     label: "Offline",
     color: "gray",
-    kind: "offline" as UserStatus,
+    kind: "OFFLINE" as UserStatusKind,
   },
 ];

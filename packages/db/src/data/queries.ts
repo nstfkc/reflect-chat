@@ -4,7 +4,6 @@ import { prisma } from "../db";
 import { prismaError, insufficientPermissionsError } from "./error";
 import { createPrecedure } from "./handlers";
 import { Message } from "@prisma/client";
-import { log } from "console";
 
 export const me = createPrecedure({
   handler: async (_, ctx) => {
@@ -15,6 +14,7 @@ export const me = createPrecedure({
       where: { publicId: ctx.userId },
       include: {
         userProfile: true,
+        userStatus: true,
         memberships: {
           include: {
             organisation: true,
@@ -52,39 +52,6 @@ export const listChannels = createPrecedure({
 
 export const listDirectMessages = createPrecedure({
   handler: async (_, ctx) => {
-    console.log(
-      JSON.stringify(
-        {
-          distinct: ["senderId", "receiverId"],
-          where: {
-            AND: [
-              {
-                NOT: {
-                  AND: [
-                    { senderId: { equals: ctx.id } },
-                    { receiverId: { equals: ctx.id } },
-                  ],
-                },
-              },
-              {
-                OR: [
-                  {
-                    senderId: { equals: ctx.id },
-                    channelId: { equals: null },
-                  },
-                  {
-                    receiverId: { equals: ctx.id },
-                    channelId: { equals: null },
-                  },
-                ],
-              },
-            ],
-          },
-        },
-        null,
-        2
-      )
-    );
     try {
       const directMessages = await prisma.message.findMany({
         distinct: ["senderId", "receiverId"],
@@ -128,7 +95,6 @@ export const listDirectMessages = createPrecedure({
 export const getCurrentOrganisationId = createPrecedure({
   handler: async (_, ctx) => {
     const { currentOrganisationId } = ctx;
-    console.log("currentOrganisationId SERVER", { currentOrganisationId });
     return {
       success: true,
       data: {
@@ -203,6 +169,7 @@ export const listUsers = createPrecedure({
         },
         include: {
           userProfile: true,
+          userStatus: true,
         },
       });
 

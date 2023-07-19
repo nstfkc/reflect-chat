@@ -1,4 +1,4 @@
-import { prisma } from "db";
+import { UserStatusKind, prisma } from "db";
 import { Server, Socket } from "socket.io";
 import { findAll } from "tree-visit";
 
@@ -68,7 +68,11 @@ export function sockets(io: Server) {
 
     socket.on(
       "update-user-status",
-      (payload: { userId: string; userStatus: string }) => {
+      async (payload: { userStatusId: number; userStatus: UserStatusKind }) => {
+        await prisma.userStatus.update({
+          data: { status: payload.userStatus },
+          where: { id: payload.userStatusId },
+        });
         io.emit("update-user-status", payload);
       }
     );

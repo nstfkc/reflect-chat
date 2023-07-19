@@ -6,10 +6,10 @@ import { Text } from "../lib/Text";
 import { useContext } from "react";
 import { UsersContext } from "../context/UsersContext";
 import { userStatuses } from "../../constants/userStatus";
-import { UserStatus } from "../../types/global";
+import { UserStatusKind } from "db";
 
 interface UserActionsProps {
-  onStatusSelect: (userStatus: UserStatus) => void;
+  onStatusSelect: (userStatus: UserStatusKind) => void;
 }
 
 export const UserActions = (props: UserActionsProps) => {
@@ -19,10 +19,10 @@ export const UserActions = (props: UserActionsProps) => {
   const theme = useTheme();
   const { organisation } = useOrganisation();
 
-  const userStatus = getUserById(user.id).status;
+  const userStatus = getUserById(user.id).userStatus.status;
 
-  const handleUserStatusSelect = (userStatus: UserStatus) => {
-    setUserStatusById(user.id, userStatus);
+  const handleUserStatusSelect = (userStatus: UserStatusKind) => {
+    setUserStatusById(user.userStatus.id, userStatus);
     onStatusSelect(userStatus);
   };
 

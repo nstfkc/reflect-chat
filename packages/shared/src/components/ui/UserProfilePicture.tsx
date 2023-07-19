@@ -30,7 +30,7 @@ export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
 
   const user = getUserById(userId);
   const userStatus = userStatuses.find((status) => {
-    return status.kind == user.status;
+    return status.kind == user.userStatus.status;
   });
 
   return (
@@ -72,7 +72,7 @@ export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
               bottom: (-1 * size) / 6,
               borderColor: statusIndicatorBorderColor,
               borderWidth: size / 10,
-              backgroundColor: userStatus.color ?? "green",
+              backgroundColor: userStatus?.color ?? "green",
             }}
           />
         ) : null}

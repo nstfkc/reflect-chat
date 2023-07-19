@@ -1,18 +1,19 @@
 "use client";
 
-import { ReactNode, createContext, useState } from "react";
-import { User, UserProfile } from "db";
+import { ReactNode, createContext } from "react";
+import { User, UserProfile, UserStatusKind, UserStatus } from "db";
 import { useQuery } from "../../../utils/useQuery";
 import { useOrganisation } from "../../../auth";
 import { useSocket } from "../SocketContext";
-import { UserStatus } from "../../../types/global";
 
 interface UsersContextValue {
   users: (User & { userProfile: UserProfile })[];
   getUserById: (
     id: number
-  ) => (User & { userProfile: UserProfile } & { status: UserStatus }) | null;
-  setUserStatusById: (userId: number, userStatus: UserStatus) => void;
+  ) =>
+    | (User & { userProfile: UserProfile } & { userStatus: UserStatus })
+    | null;
+  setUserStatusById: (userId: number, userStatus: UserStatusKind) => void;
 }
 
 export const UsersContext = createContext({ users: [] } as UsersContextValue);
@@ -24,43 +25,63 @@ interface UserProviderProps {
 export const UsersProvider = (props: UserProviderProps) => {
   const { children } = props;
   const { organisation } = useOrganisation();
-
-  const [userStatuses, setUserStatuses] = useState(
-    new Map<number, UserStatus>()
-  );
+  const { data: users = [], mutate } = useQuery("listUsers", {
+    organisationId: organisation.publicId,
+  });
 
   const { socket } = useSocket(
     "update-user-status",
-    ({ userId, userStatus }) => {
-      setUserStatuses((currentUserStatuses) => {
-        currentUserStatuses.set(userId, userStatus);
-        return new Map(currentUserStatuses);
+    ({ userStatusId, userStatus }) => {
+      mutate((users) => {
+        return [
+          ...users.map((user) => {
+            if (user.userStatusId === userStatusId) {
+              return {
+                ...user,
+                userStatus: {
+                  ...user.userStatus,
+                  status: userStatus,
+                },
+              };
+            }
+            return user;
+          }),
+        ];
       });
     }
   );
 
-  const { data: users = [] } = useQuery("listUsers", {
-    organisationId: organisation.publicId,
+  const initialStatuses = new Map<number, UserStatusKind>();
+  users.forEach((user) => {
+    initialStatuses.set(user.userStatus.id, user.userStatus.status);
   });
 
-  const getUserStatusById = (userId: number) => {
-    return userStatuses.get(userId) ?? "offline";
-  };
+  const setUserStatusById = (
+    userStatusId: number,
+    userStatus: UserStatusKind
+  ) => {
+    socket.emit("update-user-status", { userStatusId, userStatus });
 
-  const setUserStatusById = (userId: number, userStatus: UserStatus) => {
-    socket.emit("update-user-status", { userId, userStatus });
-    setUserStatuses((currentUserStatuses) => {
-      currentUserStatuses.set(userId, userStatus);
-      return new Map(currentUserStatuses);
+    mutate((users) => {
+      return [
+        ...users.map((user) => {
+          if (user.userStatusId === userStatusId) {
+            return {
+              ...user,
+              userStatus: {
+                ...user.userStatus,
+                status: userStatus,
+              },
+            };
+          }
+          return user;
+        }),
+      ];
     });
   };
 
   const getUserById = (userId: number) => {
-    const user = users.find((user) => user.id === userId);
-    return {
-      ...user,
-      status: getUserStatusById(userId),
-    };
+    return users.find((user) => user.id === userId);
   };
 
   if (!users || users.length === 0) {
