@@ -12,7 +12,7 @@ import {
   memo,
 } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import {
   TextEditor,
   FileUploaderProvider,
@@ -20,16 +20,23 @@ import {
   useUser,
   JSONContent,
   ChatMessage,
-  useChatHistory,
+  useChannelChatHistory,
+  useDMChatHistory,
   TypingUsersList,
   useSocket,
   useTheme,
   UserProfilePicture,
+  UsersContext,
+  useQuery,
 } from "shared";
 
 function MessageWrapper({ children }: PropsWithChildren<{ message: Message }>) {
+  const navigate = useNavigate();
   return (
-    <div className={"group hover:bg-gray-400/10 rounded-md relative p-1"}>
+    <div
+      onClick={() => navigate("/")}
+      className={"group hover:bg-gray-400/10 rounded-md relative p-1"}
+    >
       {children}
       <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 p-1 h-full">
         <button>
@@ -49,18 +56,14 @@ function renderMessageWrapper(message: Message) {
 
 interface MessageProps {
   messagesOrDate: string | Message[];
-  channelOrUserId: string;
-  markMentionsAsRead: (id: string) => (id: string) => void;
-  markMessageAsRead: (id: string) => (id: string) => void;
+  parentId: number;
+  markMentionsAsRead: (id: number) => (id: number) => void;
+  markMessageAsRead: (id: number) => (id: number) => void;
 }
 
 const MessageRender = memo((props: MessageProps) => {
-  const {
-    markMentionsAsRead,
-    markMessageAsRead,
-    messagesOrDate,
-    channelOrUserId,
-  } = props;
+  const { markMentionsAsRead, markMessageAsRead, messagesOrDate, parentId } =
+    props;
   if (typeof messagesOrDate === "string") {
     return (
       <div className="py-8 text-center font-semibold text-sm">
@@ -68,12 +71,13 @@ const MessageRender = memo((props: MessageProps) => {
       </div>
     );
   }
+
   return (
     <div className="ProseMirror">
       <ChatMessage
         onRender={(messageId) => {
-          markMentionsAsRead(channelOrUserId)(messageId);
-          markMessageAsRead(channelOrUserId)(messageId);
+          markMentionsAsRead(parentId)(messageId);
+          markMessageAsRead(parentId)(messageId);
         }}
         messages={messagesOrDate}
         messageWrapper={renderMessageWrapper}
@@ -86,6 +90,7 @@ const MessageRender = memo((props: MessageProps) => {
     </div>
   );
 });
+
 MessageRender.displayName = "MessageRender";
 
 const MessageRendererFragment = ({
@@ -156,18 +161,31 @@ const MessageRendererFragment = ({
   );
 };
 
-const ChatHistory = memo(() => {
-  const { markMentionsAsRead, markMessageAsRead } = useContext(MessageContext);
-  const { state } = useLocation();
-  const initialRender = useRef(false);
-  const { channel, user: receiver } = state;
-
-  const channelOrUserId = channel ? channel.id : receiver.id;
-
-  const chatHistory = useChatHistory({
-    channelId: channel?.id,
-    receiverId: receiver?.id,
+const DMChatHistory = (props: { receiver: User }) => {
+  const messages = useDMChatHistory({
+    receiverId: props.receiver.id,
   });
+
+  return <MessageList parentId={props.receiver.id} messages={messages} />;
+};
+
+const ChannelChatHistory = (props: { channel: Channel }) => {
+  const messages = useChannelChatHistory({
+    channelId: props.channel.id,
+  });
+
+  return <MessageList parentId={props.channel.id!} messages={messages} />;
+};
+
+interface MessageListProps {
+  parentId: number;
+  messages: (string | Message[])[];
+}
+
+const MessageList = memo((props: MessageListProps) => {
+  const { messages, parentId } = props;
+  const { markMentionsAsRead, markMessageAsRead } = useContext(MessageContext);
+  const initialRender = useRef(false);
 
   const virtuoso = useRef<VirtuosoHandle>(null);
   const container = useRef<HTMLDivElement>(null);
@@ -184,7 +202,7 @@ const ChatHistory = memo(() => {
     if (!initialRender.current) {
       initialRender.current = true;
       virtuoso?.current?.scrollToIndex({
-        index: chatHistory.length - 1,
+        index: messages.length - 1,
         align: "end",
         behavior: "auto",
       });
@@ -203,7 +221,7 @@ const ChatHistory = memo(() => {
     >
       <Virtuoso
         ref={virtuoso}
-        data={chatHistory}
+        data={messages}
         style={{ height: "100%" }}
         alignToBottom={true}
         followOutput={true}
@@ -211,7 +229,7 @@ const ChatHistory = memo(() => {
           return (
             <MessageRender
               key={index}
-              channelOrUserId={channelOrUserId}
+              parentId={parentId}
               markMentionsAsRead={markMentionsAsRead}
               markMessageAsRead={markMessageAsRead}
               messagesOrDate={messagesOrDate}
@@ -223,14 +241,12 @@ const ChatHistory = memo(() => {
   );
 });
 
-ChatHistory.displayName = "ChatHistory";
+MessageList.displayName = "MessageList";
 
-interface DMChatProps {
-  receiver: User;
-}
-
-const DMChat = (props: DMChatProps) => {
-  const { receiver } = props;
+const DMChat = () => {
+  const { receiverPublicId } = useParams();
+  const { getUserByPublicId } = useContext(UsersContext);
+  const receiver = getUserByPublicId(receiverPublicId ?? "");
   const { sendMessage, canSendMessage } = useContext(MessageContext);
   const { user } = useUser();
   const theme = useTheme();
@@ -240,7 +256,7 @@ const DMChat = (props: DMChatProps) => {
     () =>
       getEditor({
         kind: "user",
-        user: receiver,
+        user: receiver!,
         onUpdate: () => {
           socket?.emit("user-typing", {
             channelOrUserId: receiver?.id!,
@@ -251,7 +267,7 @@ const DMChat = (props: DMChatProps) => {
           sendMessage(
             {
               text: message,
-              receiverId: receiver.id,
+              receiverId: receiver!.id,
               senderId: user?.id!,
             },
             []
@@ -259,6 +275,10 @@ const DMChat = (props: DMChatProps) => {
       }),
     [socket, receiver, sendMessage, user]
   );
+
+  if (!receiver) {
+    return null;
+  }
 
   return (
     <FileUploaderProvider pathPrefix={receiver?.publicId}>
@@ -275,7 +295,7 @@ const DMChat = (props: DMChatProps) => {
           />
         </div>
         <div className="relative h-full">
-          <ChatHistory />
+          <DMChatHistory receiver={receiver} />
         </div>
         <div className="p-2">
           <div className="px-6">
@@ -291,42 +311,50 @@ const DMChat = (props: DMChatProps) => {
   );
 };
 
-interface ChannelChatProps {
-  channel: Channel;
-}
-
-const ChannelChat = (props: ChannelChatProps) => {
-  const { channel } = props;
+const ChannelChat = () => {
+  const { channelPublicId } = useParams();
   const { sendMessage, canSendMessage } = useContext(MessageContext);
   const { user } = useUser();
   const theme = useTheme();
   const { socket } = useSocket();
+  const { data = [] } = useQuery("listChannels", { organisationId: "1" });
+
+  // TODO: fix type
+  const channel = (data as any)!.find(
+    (channel: any) => channel.publicId === channelPublicId
+  );
 
   const onUpdate = useCallback(() => {
     socket?.emit("user-typing", {
-      channelOrUserId: channel.id,
+      channelOrUserId: channel?.id,
       userId: user?.id!,
     });
-  }, [socket, user?.id, channel.id]);
+  }, [socket, user?.id, channel?.id]);
 
   const Editor = useMemo(
     () =>
-      getEditor({
-        kind: "channel",
-        channel,
-        onUpdate,
-        sendMessage: (message) =>
-          sendMessage(
-            {
-              text: message,
-              channelId: channel.id,
-              senderId: user?.id!,
-            },
-            []
-          ),
-      }),
+      channel
+        ? getEditor({
+            kind: "channel",
+            channel,
+            onUpdate,
+            sendMessage: (message) =>
+              sendMessage(
+                {
+                  text: message,
+                  channelId: channel?.id,
+                  senderId: user?.id!,
+                },
+                []
+              ),
+          })
+        : () => <></>,
     [onUpdate, channel, sendMessage, user]
   );
+
+  if (!channel) {
+    return null;
+  }
 
   return (
     <FileUploaderProvider pathPrefix={channel?.publicId}>
@@ -338,7 +366,7 @@ const ChannelChat = (props: ChannelChatProps) => {
           <div>{`# ${channel.name}`}</div>
         </div>
         <div className="relative h-full">
-          <ChatHistory />
+          <ChannelChatHistory channel={channel} />
         </div>
         <div className="p-2">
           <div className="px-6">
@@ -354,16 +382,25 @@ const ChannelChat = (props: ChannelChatProps) => {
   );
 };
 
-export const ChatScreen = () => {
-  const { state } = useLocation();
+export const ThreadScreen = () => {
+  return <div>Threads</div>;
+};
 
-  const { channel, user: receiver } = state;
+interface ChatScreenProps {
+  kind: "channel" | "dm";
+}
 
+export const ChatScreen = (props: ChatScreenProps) => {
   return (
-    <>
-      {channel ? <ChannelChat channel={channel} /> : null}
-      {receiver ? <DMChat receiver={receiver} /> : null}
-    </>
+    <div className="flex h-full">
+      <div className="flex-1">
+        {props.kind === "channel" ? <ChannelChat /> : null}
+        {props.kind === "dm" ? <DMChat /> : null}
+      </div>
+      <div className="max-w-sm">
+        <Outlet />
+      </div>
+    </div>
   );
 };
 
@@ -397,6 +434,7 @@ function getEditor(props: GetEditorProps) {
     }
     return editors.get(props.channel.id);
   }
+
   if (props.kind === "user") {
     if (!editors.has(props.user.id)) {
       editors.set(props.user.id, () => (

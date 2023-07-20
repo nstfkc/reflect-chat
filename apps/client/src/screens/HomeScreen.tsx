@@ -95,12 +95,12 @@ export const HomeScreen = () => {
           <ChannelList
             activeChannelId={channelId}
             onChannelClick={(channel) =>
-              navigate(channel.publicId, { state: { channel } })
+              navigate(`channel/${channel.publicId}`, { state: { channel } })
             }
           />
           <DMList
             onConversationPress={(user) => {
-              navigate(user.publicId, { state: { user } });
+              navigate(`dm/${user.publicId}`, { state: { user } });
             }}
           />
         </div>

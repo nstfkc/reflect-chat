@@ -12,7 +12,6 @@ export function useTypingUsers(channelOrUserId: number) {
   const { user } = useUser();
   const { getUserById } = useContext(UsersContext);
   const { typingUsersByChannelId } = useContext(UsersTypingContext);
-  console.log({ typingUsersByChannelId });
 
   return Array.from(typingUsersByChannelId.get(channelOrUserId) ?? [])
     .filter((userId) => userId !== user.id)

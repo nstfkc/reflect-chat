@@ -8,6 +8,11 @@ import { useSocket } from "../SocketContext";
 
 interface UsersContextValue {
   users: (User & { userProfile: UserProfile })[];
+  getUserByPublicId: (
+    id: string
+  ) =>
+    | (User & { userProfile: UserProfile } & { userStatus: UserStatus })
+    | null;
   getUserById: (
     id: number
   ) =>
@@ -119,13 +124,23 @@ export const UsersProvider = (props: UserProviderProps) => {
     return users.find((user) => user.id === userId);
   };
 
+  const getUserByPublicId = (userPublicId: string) => {
+    return users.find((user) => user.publicId === userPublicId);
+  };
+
   if (!users || users.length === 0) {
     return null;
   }
 
   return (
     <UsersContext.Provider
-      value={{ users, getUserById, setUserStatusById, setUserProfileById }}
+      value={{
+        users,
+        getUserById,
+        getUserByPublicId,
+        setUserStatusById,
+        setUserProfileById,
+      }}
     >
       {children}
     </UsersContext.Provider>

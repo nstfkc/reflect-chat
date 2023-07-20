@@ -1,17 +1,16 @@
 import { PropsWithChildren, useContext, useRef } from "react";
-import { View, Image } from "react-native";
+import { View } from "react-native";
 import { Text } from "../../lib/Text";
 
 import format from "date-fns/format";
 import { UsersContext } from "../../context/UsersContext";
 import { Message } from "db";
-import { ConfigContext } from "../../context/ConfigContext";
 import { UserProfilePicture } from "../UserProfilePicture";
 import { useTheme } from "../../context/ThemeContext";
 
 interface ChatMessageProps {
   messages: Message[];
-  onRender: (messageId: string) => void;
+  onRender: (messageId: number) => void;
   fragmentRenderer: (message: Message, index: number) => JSX.Element;
   messageWrapper: (
     message: Message
@@ -81,7 +80,9 @@ export const ChatMessage = (props: ChatMessageProps) => {
                   paddingHorizontal: 3,
                 }}
               >
-                <Text style={{ fontWeight: "800" }}>{author?.name}</Text>
+                <Text style={{ fontWeight: "800" }}>
+                  {author?.userProfile.username}
+                </Text>
                 <Text
                   style={{
                     fontSize: 12,

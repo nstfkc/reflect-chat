@@ -67,7 +67,7 @@ function useUnreadMessages() {
   const { socket } = useSocket();
 
   const markMessageAsRead = useCallback(
-    (channelId: string) => (messageId: string) => {
+    (channelId: string) => (messageId: number) => {
       removeItem(`key-${channelId}`, (message) => message.id === messageId);
     },
     [removeItem]
@@ -237,13 +237,13 @@ interface MessageContextValue {
   sendMessage: (cm: Partial<Message>, media: RawMedia[]) => void;
 
   unreadMessages: Record<string, Set<Message>>;
-  markMessageAsRead: (channelId: string) => (messageId: string) => void;
+  markMessageAsRead: (channelId: number) => (messageId: number) => void;
 
   unreadMentions: Record<string, Set<string>>;
-  markMentionsAsRead: (channelId: string) => (messageId: string) => void;
+  markMentionsAsRead: (channelId: number) => (messageId: number) => void;
 
   updateLastSeenMessage: (message: Message) => void;
-  getMessageHistoryById: (id: string) => MessageWithMedia[];
+  getMessageHistoryById: (id: number) => MessageWithMedia[];
 
   canSendMessage: boolean;
 }

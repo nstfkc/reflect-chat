@@ -15,7 +15,7 @@ import {
 
 import { HomeScreen } from "./screens/HomeScreen";
 import { PeopleScreen } from "./screens/PeopleScreen";
-import { ChatScreen } from "./screens/ChatScreen";
+import { ChatScreen, ThreadScreen } from "./screens/ChatScreen";
 import { getConfig } from "config";
 import { TbUsers } from "react-icons/tb";
 
@@ -34,9 +34,21 @@ const router = createBrowserRouter(
       element: <HomeScreen />,
       children: [
         {
-          path: ":channelId",
-          element: <ChatScreen />,
-          children: [{ path: ":messageId", element: <ChatScreen /> }],
+          path: "channel/:channelPublicId",
+          element: <ChatScreen kind="channel" />,
+          children: [
+            {
+              path: ":messagePublicId",
+              element: <ThreadScreen kind="channel" />,
+            },
+          ],
+        },
+        {
+          path: "dm/:receiverPublicId",
+          element: <ChatScreen kind="dm" />,
+          children: [
+            { path: ":messagePublicId", element: <ThreadScreen kind="dm" /> },
+          ],
         },
         { path: "/people", element: <PeopleScreen /> },
       ],

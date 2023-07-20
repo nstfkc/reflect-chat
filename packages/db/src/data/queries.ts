@@ -153,6 +153,56 @@ export const listMessages = createPrecedure({
   },
 });
 
+export const listChannelMessages = createPrecedure({
+  doNotValidate: true,
+  schema: z.object({
+    channelId: z.number().optional(),
+  }),
+  handler: async (args) => {
+    try {
+      const messages = await prisma.message.findMany({
+        where: {
+          channelId: Number(args.channelId),
+        },
+
+        orderBy: { createdAt: "asc" },
+      });
+
+      return {
+        success: true,
+        data: messages,
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  },
+});
+
+export const listDMMessages = createPrecedure({
+  doNotValidate: true,
+  schema: z.object({
+    receiverId: z.number().optional(),
+  }),
+  handler: async (args) => {
+    try {
+      const messages = await prisma.message.findMany({
+        where: {
+          receiverId: Number(args.receiverId),
+        },
+
+        orderBy: { createdAt: "asc" },
+      });
+
+      return {
+        success: true,
+        data: messages,
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  },
+});
+
 export const listUsers = createPrecedure({
   schema: z.object({ organisationId: z.string() }),
   handler: async (args) => {

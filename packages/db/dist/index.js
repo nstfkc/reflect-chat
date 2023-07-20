@@ -389,7 +389,9 @@ var updateProfile = createPrecedure({
 var queries_exports = {};
 __export(queries_exports, {
   getCurrentOrganisationId: () => getCurrentOrganisationId,
+  listChannelMessages: () => listChannelMessages,
   listChannels: () => listChannels,
+  listDMMessages: () => listDMMessages,
   listDirectMessages: () => listDirectMessages,
   listMessages: () => listMessages,
   listUsers: () => listUsers,
@@ -522,6 +524,50 @@ var listMessages = createPrecedure({
           orderBy: { createdAt: "asc" }
         });
       }
+      return {
+        success: true,
+        data: messages
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  }
+});
+var listChannelMessages = createPrecedure({
+  doNotValidate: true,
+  schema: z2.object({
+    channelId: z2.number().optional()
+  }),
+  handler: async (args) => {
+    try {
+      const messages = await prisma.message.findMany({
+        where: {
+          channelId: Number(args.channelId)
+        },
+        orderBy: { createdAt: "asc" }
+      });
+      return {
+        success: true,
+        data: messages
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  }
+});
+var listDMMessages = createPrecedure({
+  doNotValidate: true,
+  schema: z2.object({
+    receiverId: z2.number().optional()
+  }),
+  handler: async (args) => {
+    try {
+      const messages = await prisma.message.findMany({
+        where: {
+          receiverId: Number(args.receiverId)
+        },
+        orderBy: { createdAt: "asc" }
+      });
       return {
         success: true,
         data: messages
