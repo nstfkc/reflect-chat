@@ -16,15 +16,15 @@ export const createChannel = createPrecedure({
     kind: z.enum([ChannelKind.PRIVATE, ChannelKind.PUBLIC], {
       required_error: "Channel kind is required",
     }),
-    organisationId: z.string({ required_error: "Organisation id is required" }),
+    organisationId: z.number({ required_error: "Organisation id is required" }),
   }),
   handler: async (args, ctx) => {
     const { kind, name, organisationId } = args;
-    const { userId } = ctx;
+    const { id } = ctx;
 
     try {
       const data = await prisma.channel.create({
-        data: { name, kind, createdBy: userId, organisationId },
+        data: { name, kind, createdById: id, organisationId },
       });
       return {
         success: true,
@@ -38,7 +38,7 @@ export const createChannel = createPrecedure({
 
 export const createOrganisation = createPrecedure({
   schema: z.object({ name: z.string() }),
-  handler: async (args, ctx) => {
+  handler: async (args) => {
     try {
       const org = await prisma.organisation.create({
         data: {
@@ -70,7 +70,6 @@ export const signUp = createPrecedure({
       const user = await prisma.user.create({
         data: {
           email,
-          name,
           password,
           role: "CUSTOMER",
           userProfile: {
@@ -81,7 +80,6 @@ export const signUp = createPrecedure({
           },
         },
         select: {
-          name: true,
           email: true,
         },
       });
@@ -112,6 +110,7 @@ export const signIn = createPrecedure({
         where: { email },
         include: {
           userProfile: true,
+          userStatus: true,
           memberships: {
             include: {
               organisation: true,

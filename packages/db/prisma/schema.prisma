@@ -75,7 +75,6 @@ model User {
   publicId  String     @unique @default(cuid())
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  name      String
   email     String     @unique
   password  String
   role      GlobalRole
@@ -148,7 +147,9 @@ model Channel {
 }
 
 model Media {
-  id       String @id @default(cuid())
+  id       Int    @id @default(autoincrement())
+  publicId String @default(cuid())
+
   kind     String
   filename String
   size     Int
@@ -157,31 +158,39 @@ model Media {
   path     String
 
   createdAt DateTime @default(now())
+
   Message   Message? @relation(fields: [messageId], references: [id])
-  messageId String?
+  messageId Int?
 
   @@index([messageId])
 }
 
 model Message {
-  id String @id @default(cuid())
+  id       Int    @id @default(autoincrement())
+  publicId String @default(cuid())
 
-  text  String  @db.Text
-  media Media[]
+  text   String    @db.Text
+  media  Media[]
+  thread Message[] @relation("Conversation")
 
-  sender     User     @relation("Sender", fields: [senderId], references: [id])
-  receiver   User?    @relation("Receiver", fields: [receiverId], references: [id])
-  channel    Channel? @relation(fields: [channelId], references: [id])
-  receiverId Int?
-  channelId  Int?
-  senderId   Int
+  sender       User     @relation("Sender", fields: [senderId], references: [id])
+  receiver     User?    @relation("Receiver", fields: [receiverId], references: [id])
+  channel      Channel? @relation(fields: [channelId], references: [id])
+  conversation Message? @relation("Conversation", fields: [conversationId], references: [id], onUpdate: NoAction, onDelete: NoAction)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  senderId       Int
+  receiverId     Int?
+  channelId      Int?
+  conversationId Int?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([senderId])
   @@index([receiverId])
   @@index([channelId])
+  @@index([conversationId])
 }
 
 model UserNotifications {

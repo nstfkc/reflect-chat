@@ -225,88 +225,61 @@ const ChatHistory = memo(() => {
 
 ChatHistory.displayName = "ChatHistory";
 
-export const ChatScreen = () => {
-  const { socket } = useSocket();
-  const theme = useTheme();
+interface DMChatProps {
+  receiver: User;
+}
+
+const DMChat = (props: DMChatProps) => {
+  const { receiver } = props;
   const { sendMessage, canSendMessage } = useContext(MessageContext);
-  const { state } = useLocation();
   const { user } = useUser();
-
-  const { channel, user: receiver } = state;
-
-  const channelOrUserId = channel ? channel.id : receiver.id;
-
-  const onUpdate = useCallback(() => {
-    if (channel) {
-      socket?.emit("user-typing", { channelOrUserId, userId: user?.id! });
-    } else {
-      socket?.emit("user-typing", {
-        channelOrUserId: user?.id!,
-        userId: user?.id!,
-      });
-    }
-  }, [channel, channelOrUserId, socket, user?.publicId]);
+  const theme = useTheme();
+  const { socket } = useSocket();
 
   const Editor = useMemo(
     () =>
-      channel
-        ? getEditor({
-            kind: "channel",
-            channel,
-            onUpdate,
-            sendMessage: (message) =>
-              sendMessage(
-                {
-                  text: message,
-                  channelId: channel.id,
-                  senderId: user?.id!,
-                },
-                []
-              ),
-          })
-        : user
-        ? getEditor({
-            kind: "user",
-            user: receiver,
-            onUpdate,
-            sendMessage: (message) =>
-              sendMessage(
-                {
-                  text: message,
-                  receiverId: receiver.id,
-                  senderId: user?.id!,
-                },
-                []
-              ),
-          })
-        : () => <></>,
-    [channel, onUpdate, receiver, sendMessage, user]
+      getEditor({
+        kind: "user",
+        user: receiver,
+        onUpdate: () => {
+          socket?.emit("user-typing", {
+            channelOrUserId: receiver?.id!,
+            userId: user?.id!,
+          });
+        },
+        sendMessage: (message) =>
+          sendMessage(
+            {
+              text: message,
+              receiverId: receiver.id,
+              senderId: user?.id!,
+            },
+            []
+          ),
+      }),
+    [socket, receiver, sendMessage, user]
   );
 
   return (
-    <FileUploaderProvider pathPrefix={channel?.id ?? receiver?.publicId}>
+    <FileUploaderProvider pathPrefix={receiver?.publicId}>
       <div className="h-full flex flex-col justify-between">
         <div
           className="px-4 py-2 font-bold"
           style={{ backgroundColor: theme.colors.alt1 }}
         >
-          {channel ? (
-            <div>{`# ${channel.name}`}</div>
-          ) : (
-            <UserProfilePicture
-              size={24}
-              textStyle={{ fontWeight: "bold" }}
-              statusIndicatorBorderColor={theme.colors.alt1}
-              userId={receiver.id}
-            />
-          )}
+          <UserProfilePicture
+            size={24}
+            textStyle={{ fontWeight: "bold" }}
+            statusIndicatorBorderColor={theme.colors.alt1}
+            userId={receiver.id}
+          />
         </div>
         <div className="relative h-full">
           <ChatHistory />
         </div>
         <div className="p-2">
           <div className="px-6">
-            <TypingUsersList channelOrUserId={channelOrUserId} />
+            <TypingUsersList channelOrUserId={user?.id!} />
           </div>
           <div className="w-full rounded-xl bg-white/40">
             <div>{canSendMessage ? "" : "Cant send message"}</div>
@@ -315,6 +288,82 @@ export const ChatScreen = () => {
         </div>
       </div>
     </FileUploaderProvider>
+  );
+};
+
+interface ChannelChatProps {
+  channel: Channel;
+}
+
+const ChannelChat = (props: ChannelChatProps) => {
+  const { channel } = props;
+  const { sendMessage, canSendMessage } = useContext(MessageContext);
+  const { user } = useUser();
+  const theme = useTheme();
+  const { socket } = useSocket();
+
+  const onUpdate = useCallback(() => {
+    socket?.emit("user-typing", {
+      channelOrUserId: channel.id,
+      userId: user?.id!,
+    });
+  }, [socket, user?.id, channel.id]);
+
+  const Editor = useMemo(
+    () =>
+      getEditor({
+        kind: "channel",
+        channel,
+        onUpdate,
+        sendMessage: (message) =>
+          sendMessage(
+            {
+              text: message,
+              channelId: channel.id,
+              senderId: user?.id!,
+            },
+            []
+          ),
+      }),
+    [onUpdate, channel, sendMessage, user]
+  );
+
+  return (
+    <FileUploaderProvider pathPrefix={channel?.publicId}>
+      <div className="h-full flex flex-col justify-between">
+        <div
+          className="px-4 py-2 font-bold"
+          style={{ backgroundColor: theme.colors.alt1 }}
+        >
+          <div>{`# ${channel.name}`}</div>
+        </div>
+        <div className="relative h-full">
+          <ChatHistory />
+        </div>
+        <div className="p-2">
+          <div className="px-6">
+            <TypingUsersList channelOrUserId={channel.id} />
+          </div>
+          <div className="w-full rounded-xl bg-white/40">
+            <div>{canSendMessage ? "" : "Cant send message"}</div>
+            {Editor ? <Editor /> : null}
+          </div>
+        </div>
+      </div>
+    </FileUploaderProvider>
+  );
+};
+
+export const ChatScreen = () => {
+  const { state } = useLocation();
+
+  const { channel, user: receiver } = state;
+
+  return (
+    <>
+      {channel ? <ChannelChat channel={channel} /> : null}
+      {receiver ? <DMChat receiver={receiver} /> : null}
+    </>
   );
 };
 
@@ -356,7 +405,7 @@ function getEditor(props: GetEditorProps) {
           onSubmit={(message) => {
             props.sendMessage(message);
           }}
-          placeholder={`Message ${props.user.name}`}
+          placeholder={`Message ${(props.user as any).userProfile.username}`}
         />
       ));
     }

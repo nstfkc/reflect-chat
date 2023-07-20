@@ -80,11 +80,11 @@ function toInteger(dirtyNumber) {
   if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
     return NaN;
   }
-  var number2 = Number(dirtyNumber);
-  if (isNaN(number2)) {
-    return number2;
+  var number3 = Number(dirtyNumber);
+  if (isNaN(number3)) {
+    return number3;
   }
-  return number2 < 0 ? Math.ceil(number2) : Math.floor(number2);
+  return number3 < 0 ? Math.ceil(number3) : Math.floor(number3);
 }
 
 // ../../node_modules/date-fns/esm/_lib/requiredArgs/index.js
@@ -206,14 +206,14 @@ var createChannel = createPrecedure({
     kind: z.enum([import_client2.ChannelKind.PRIVATE, import_client2.ChannelKind.PUBLIC], {
       required_error: "Channel kind is required"
     }),
-    organisationId: z.string({ required_error: "Organisation id is required" })
+    organisationId: z.number({ required_error: "Organisation id is required" })
   }),
   handler: async (args, ctx) => {
     const { kind, name, organisationId } = args;
-    const { userId } = ctx;
+    const { id } = ctx;
     try {
       const data = await prisma.channel.create({
-        data: { name, kind, createdBy: userId, organisationId }
+        data: { name, kind, createdById: id, organisationId }
       });
       return {
         success: true,
@@ -226,7 +226,7 @@ var createChannel = createPrecedure({
 });
 var createOrganisation = createPrecedure({
   schema: z.object({ name: z.string() }),
-  handler: async (args, ctx) => {
+  handler: async (args) => {
     try {
       const org = await prisma.organisation.create({
         data: {
@@ -256,7 +256,6 @@ var signUp = createPrecedure({
       const user = await prisma.user.create({
         data: {
           email,
-          name,
           password,
           role: "CUSTOMER",
           userProfile: {
@@ -267,7 +266,6 @@ var signUp = createPrecedure({
           }
         },
         select: {
-          name: true,
           email: true
         }
       });
@@ -295,6 +293,7 @@ var signIn = createPrecedure({
         where: { email },
         include: {
           userProfile: true,
+          userStatus: true,
           memberships: {
             include: {
               organisation: true
@@ -629,7 +628,6 @@ async function seed() {
   });
   const admin = await prisma.user.create({
     data: {
-      name: "Enes Tufekci",
       email: "enes@reflect.rocks",
       password: await hashPassword("reflectrocks"),
       role: "SUPERADMIN",
@@ -662,12 +660,17 @@ async function seed() {
       },
       {
         createdById: admin.id,
-        name: "Marketing",
+        name: "Bugs",
         organisationId: org.id
       },
       {
         createdById: admin.id,
-        name: "Sales",
+        name: "Feedback",
+        organisationId: org.id
+      },
+      {
+        createdById: admin.id,
+        name: "Feature requests",
         organisationId: org.id
       }
     ]
@@ -676,7 +679,6 @@ async function seed() {
     await prisma.user.create({
       data: {
         email: person.email,
-        name: person.name,
         role: "CUSTOMER",
         password: await hashPassword(person.password),
         userProfile: {

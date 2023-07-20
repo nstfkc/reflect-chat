@@ -36,6 +36,7 @@ const router = createBrowserRouter(
         {
           path: ":channelId",
           element: <ChatScreen />,
+          children: [{ path: ":messageId", element: <ChatScreen /> }],
         },
         { path: "/people", element: <PeopleScreen /> },
       ],

@@ -74,7 +74,6 @@ export async function seed() {
 
   const admin = await prisma.user.create({
     data: {
-      name: "Enes Tufekci",
       email: "enes@reflect.rocks",
       password: await hashPassword("reflectrocks"),
       role: "SUPERADMIN",
@@ -108,12 +107,17 @@ export async function seed() {
       },
       {
         createdById: admin.id,
-        name: "Marketing",
+        name: "Bugs",
         organisationId: org.id,
       },
       {
         createdById: admin.id,
-        name: "Sales",
+        name: "Feedback",
+        organisationId: org.id,
+      },
+      {
+        createdById: admin.id,
+        name: "Feature requests",
         organisationId: org.id,
       },
     ],
@@ -123,7 +127,6 @@ export async function seed() {
     await prisma.user.create({
       data: {
         email: person.email,
-        name: person.name,
         role: "CUSTOMER",
         password: await hashPassword(person.password),
         userProfile: {

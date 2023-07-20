@@ -31,7 +31,6 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
 
   useSocket("user-typing", ({ channelOrUserId, userId }) => {
     const key = `${channelOrUserId}-${userId}`;
-
     if (timerRefs.current.get(key)) {
       clearTimeout(timerRefs.current.get(key));
     }
@@ -57,6 +56,7 @@ export const UsersTypingProvider = (props: PropsWithChildren) => {
     if (channelId) {
       removeUserFromTyping({ channelOrUserId: channelId, userId: senderId });
     } else {
+      console.log({ channelOrUserId: senderId, userId: senderId });
       removeUserFromTyping({ channelOrUserId: senderId, userId: senderId });
     }
   });

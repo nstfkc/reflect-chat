@@ -12,6 +12,7 @@ export function useTypingUsers(channelOrUserId: number) {
   const { user } = useUser();
   const { getUserById } = useContext(UsersContext);
   const { typingUsersByChannelId } = useContext(UsersTypingContext);
+  console.log({ typingUsersByChannelId });
 
   return Array.from(typingUsersByChannelId.get(channelOrUserId) ?? [])
     .filter((userId) => userId !== user.id)
@@ -33,7 +34,7 @@ export const TypingUsersList = (props: TypingUsersListProps) => {
           <View key={user?.id}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text style={{ fontSize: 12, opacity: 0.8, fontWeight: "bold" }}>
-                {user.name}{" "}
+                {user.userProfile.username}{" "}
                 <Text style={{ fontWeight: "normal" }}>is typing</Text>
               </Text>
             </View>
