@@ -35,6 +35,7 @@ export { DMList } from "./components/ui/DMList";
 export { TypingUsersList } from "./components/ui/Chat/TypingUsersList";
 export { UserProfilePicture } from "./components/ui/UserProfilePicture";
 export { UserActions } from "./components/ui/UserActions";
+export { UserProfile } from "./components/ui/UserProfile";
 
 export {
   theme,

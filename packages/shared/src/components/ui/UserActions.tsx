@@ -10,6 +10,7 @@ import { UserStatusKind } from "db";
 
 interface UserActionsProps {
   onStatusSelect: (userStatus: UserStatusKind) => void;
+  onProfilePress: VoidFunction;
 }
 
 export const UserActions = (props: UserActionsProps) => {
@@ -75,7 +76,7 @@ export const UserActions = (props: UserActionsProps) => {
       </View>
       <View></View>
       <View>
-        <Pressable>
+        <Pressable onPress={props.onProfilePress}>
           <Text style={{ fontWeight: "500" }}>Profile</Text>
         </Pressable>
       </View>

@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  MessageMedia,
-  MessageWithMedia,
-  UserStatus,
-} from "../../../types/global";
-import type { Channel, Message, User, UserStatusKind } from "db";
+import { MessageMedia, MessageWithMedia } from "../../../types/global";
+import type { Channel, Message, User, UserProfile, UserStatusKind } from "db";
 import {
   ReactNode,
   createContext,
@@ -30,6 +26,10 @@ type EmitEvents = {
     userStatusId: number;
     userStatus: UserStatusKind;
   }) => void;
+  "update-user-profile": (payload: {
+    userProfile: UserProfile;
+    userId: number;
+  }) => void;
 };
 
 export type ListenEvents = {
@@ -42,6 +42,10 @@ export type ListenEvents = {
   "update-user-status": (payload: {
     userStatusId: number;
     userStatus: UserStatusKind;
+  }) => void;
+  "update-user-profile": (payload: {
+    userProfile: UserProfile;
+    userId: number;
   }) => void;
 };
 

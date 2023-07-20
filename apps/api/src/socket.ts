@@ -77,6 +77,10 @@ export function sockets(io: Server) {
       }
     );
 
+    socket.on("update-user-profile", async (payload: any) => {
+      io.emit("update-user-profile", payload);
+    });
+
     socket.on("message:create", (message, medias) => {
       if (message.channelId) {
         prisma.message

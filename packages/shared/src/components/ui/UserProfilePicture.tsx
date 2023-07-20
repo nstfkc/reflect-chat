@@ -77,7 +77,9 @@ export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
           />
         ) : null}
       </View>
-      {showUserName ? <Text style={{ ...textStyle }}>{user.name}</Text> : null}
+      {showUserName ? (
+        <Text style={{ ...textStyle }}>{user.userProfile.username}</Text>
+      ) : null}
     </View>
   );
 };

@@ -5,6 +5,7 @@ import { useQuery } from "../utils/useQuery";
 import { useMutation } from "../utils/useMutation";
 import { useContext } from "react";
 import { AuthContext } from "./Context";
+import { useSWRConfig } from "swr";
 
 export function useSignIn() {
   const { onSignIn } = useContext(AuthContext);
@@ -22,11 +23,12 @@ export function useSignUp() {
 }
 
 export function useUser() {
-  const { data, isLoading, error } = useQuery("me");
+  const { data, isLoading, error, mutate } = useQuery("me");
   return {
     user: data,
     isLoading,
     error,
+    mutate,
   };
 }
 

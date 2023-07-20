@@ -35,19 +35,19 @@ export const DMList = (props: DMListProps) => {
     )
   );
 
-  useEffect(() => {
-    setUserIds((ids) => {
-      return Array.from(
-        new Set([
-          ...data
-            .map((message) => [message.receiverId, message.senderId])
-            .flat(),
-          ...newDMUserIds,
-          ...ids,
-        ])
-      );
-    });
-  }, [data, newDMUserIds]);
+  /* useEffect(() => {
+   *   setUserIds((ids) => {
+   *     return Array.from(
+   *       new Set([
+   *         ...data
+   *           .map((message) => [message.receiverId, message.senderId])
+   *           .flat(),
+   *         ...newDMUserIds,
+   *         ...ids,
+   *       ])
+   *     );
+   *   });
+   * }, [data, newDMUserIds]); */
 
   const { users: allUsers } = useContext(UsersContext);
 

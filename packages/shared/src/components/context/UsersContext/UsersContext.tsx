@@ -14,6 +14,7 @@ interface UsersContextValue {
     | (User & { userProfile: UserProfile } & { userStatus: UserStatus })
     | null;
   setUserStatusById: (userId: number, userStatus: UserStatusKind) => void;
+  setUserProfileById: (userId: number, userProfile: UserProfile) => void;
 }
 
 export const UsersContext = createContext({ users: [] } as UsersContextValue);
@@ -51,6 +52,22 @@ export const UsersProvider = (props: UserProviderProps) => {
     }
   );
 
+  useSocket("update-user-profile", ({ userId, userProfile }) => {
+    mutate((users) => {
+      return [
+        ...users.map((user) => {
+          if (user.id === userId) {
+            return {
+              ...user,
+              userProfile,
+            };
+          }
+          return user;
+        }),
+      ];
+    });
+  });
+
   const initialStatuses = new Map<number, UserStatusKind>();
   users.forEach((user) => {
     initialStatuses.set(user.userStatus.id, user.userStatus.status);
@@ -80,6 +97,24 @@ export const UsersProvider = (props: UserProviderProps) => {
     });
   };
 
+  const setUserProfileById = (userId: number, userProfile: UserProfile) => {
+    socket.emit("update-user-profile", { userId, userProfile });
+
+    mutate((users) => {
+      return [
+        ...users.map((user) => {
+          if (user.id === userId) {
+            return {
+              ...user,
+              userProfile,
+            };
+          }
+          return user;
+        }),
+      ];
+    });
+  };
+
   const getUserById = (userId: number) => {
     return users.find((user) => user.id === userId);
   };
@@ -89,7 +124,9 @@ export const UsersProvider = (props: UserProviderProps) => {
   }
 
   return (
-    <UsersContext.Provider value={{ users, getUserById, setUserStatusById }}>
+    <UsersContext.Provider
+      value={{ users, getUserById, setUserStatusById, setUserProfileById }}
+    >
       {children}
     </UsersContext.Provider>
   );

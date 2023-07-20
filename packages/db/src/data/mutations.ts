@@ -193,3 +193,19 @@ export const setCurrentOrganisationId = createPrecedure({
     };
   },
 });
+
+export const updateProfile = createPrecedure({
+  schema: z.object({ username: z.string(), profilePictureUrl: z.string() }),
+  handler: async (args, ctx) => {
+    const { profilePictureUrl, username } = args;
+    const userProfile = await prisma.userProfile.update({
+      data: { username, profilePictureUrl },
+      where: { userId: ctx.id },
+    });
+
+    return {
+      success: true,
+      data: userProfile,
+    };
+  },
+});
