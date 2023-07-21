@@ -96,6 +96,7 @@ export function sockets(io: Server) {
             },
           })
           .then((message) => {
+            console.log(JSON.stringify(message));
             const mentions = parseMentions(message.text);
             for (let mentionIds of mentions) {
               if (userIdSocketMap.has(mentionIds)) {
@@ -126,6 +127,24 @@ export function sockets(io: Server) {
             userIdSocketMap.get(message.receiverId).forEach((socket) => {
               socket?.emit("message:created", dm);
             });
+          })
+          .catch((error) => console.log(error));
+      }
+      if (message.conversationId) {
+        prisma.message
+          .create({
+            data: {
+              ...message,
+              media: {
+                create: medias,
+              },
+            },
+            include: {
+              media: true,
+            },
+          })
+          .then((message) => {
+            io.emit("message:created", message);
           })
           .catch((error) => console.log(error));
       }

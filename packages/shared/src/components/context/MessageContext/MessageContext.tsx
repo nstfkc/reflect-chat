@@ -67,8 +67,9 @@ function useUnreadMessages() {
   const { socket } = useSocket();
 
   const markMessageAsRead = useCallback(
-    (channelId: string) => (messageId: number) => {
-      removeItem(`key-${channelId}`, (message) => message.id === messageId);
+    // parentId => senderId, channelId, conversationId
+    (parentId: string) => (messageId: number) => {
+      removeItem(`key-${parentId}`, (message) => message.id === messageId);
     },
     [removeItem]
   );
@@ -77,8 +78,12 @@ function useUnreadMessages() {
     (message: Message) => {
       if (message.channelId) {
         addItem(`key-${message.channelId}`, message);
-      } else {
+      }
+      if (message.receiverId) {
         addItem(`key-${message.senderId}`, message);
+      }
+      if (message.conversationId) {
+        addItem(`key-${message.conversationId}`, message);
       }
     },
     [addItem]
@@ -267,6 +272,7 @@ export const MessageProvider = (props: MessageProviderProps) => {
 
   const sendMessage = useCallback(
     (message: Partial<Message>, medias: RawMedia[]) => {
+      console.log({ message });
       const media = medias.map((media) => ({
         filename: media.file.name,
         kind: media.fileKind,

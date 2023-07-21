@@ -20,7 +20,7 @@ export function groupItemsByCreatedAt<T extends Message>(
 export function insertDateBetweenMessages(
   messages: Message[]
 ): (string | Message[])[] {
-  let cache = new Set<string>();
+  let cache = new Set<number>();
   let messagesInTheSameDay: Record<string, Message[]> = {};
 
   for (let message of messages) {
@@ -46,7 +46,7 @@ export function insertDateBetweenMessages(
 
 function uniqueById<T extends Message>(messages: T[]): T[] {
   let out: T[] = [];
-  let cache: string[] = [];
+  let cache: number[] = [];
   for (let message of messages) {
     if (!cache.includes(message.id)) {
       cache.push(message.id);

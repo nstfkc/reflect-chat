@@ -581,13 +581,17 @@ var listDMMessages = createPrecedure({
 var listThreadMessages = createPrecedure({
   doNotValidate: true,
   schema: z2.object({
-    messageId: z2.number().optional()
+    messagePublicId: z2.string().optional()
   }),
   handler: async (args) => {
     try {
-      const messages = await prisma.message.findMany({
+      const messages = await prisma.message.findFirst({
         where: {
-          conversationId: Number(args.messageId)
+          publicId: args.messagePublicId
+        },
+        include: {
+          conversation: true,
+          thread: true
         },
         orderBy: { createdAt: "asc" }
       });

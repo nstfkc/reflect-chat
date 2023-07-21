@@ -42,13 +42,16 @@ export const useDMChatHistory = (props: { receiverId: number }) => {
   return insertDateBetweenMessages([...history, ...h]);
 };
 
-export const useThreadChatHistory = (props: { messageId: number }) => {
-  const { messageId } = props;
+export const useThreadChatHistory = (props: { messagePublicId: string }) => {
+  const { messagePublicId } = props;
   const { getMessageHistoryById } = useContext(MessageContext);
-  const { data: history = [] } = useQuery("listThreadMessages", {
-    messageId,
+  const { data: message } = useQuery("listThreadMessages", {
+    messagePublicId,
   });
 
-  const h = getMessageHistoryById(messageId);
-  return insertDateBetweenMessages([...history, ...h]);
+  const h = getMessageHistoryById(message?.id);
+  return {
+    message,
+    thread: insertDateBetweenMessages([...(message?.thread ?? []), ...h]) ?? [],
+  };
 };
