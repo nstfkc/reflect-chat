@@ -30,6 +30,7 @@ export {
   useChatHistory,
   useChannelChatHistory,
   useDMChatHistory,
+  useThreadChatHistory,
 } from "./components/ui/Chat/ChatHistory";
 export { ChatMessage } from "./components/ui/Chat/ChatMessage";
 export { ProfileButton } from "./components/ui/ProfileButton";

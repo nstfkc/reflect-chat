@@ -203,6 +203,31 @@ export const listDMMessages = createPrecedure({
   },
 });
 
+export const listThreadMessages = createPrecedure({
+  doNotValidate: true,
+  schema: z.object({
+    messageId: z.number().optional(),
+  }),
+  handler: async (args) => {
+    try {
+      const messages = await prisma.message.findMany({
+        where: {
+          conversationId: Number(args.messageId),
+        },
+
+        orderBy: { createdAt: "asc" },
+      });
+
+      return {
+        success: true,
+        data: messages,
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  },
+});
+
 export const listUsers = createPrecedure({
   schema: z.object({ organisationId: z.string() }),
   handler: async (args) => {

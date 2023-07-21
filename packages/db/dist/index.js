@@ -394,6 +394,7 @@ __export(queries_exports, {
   listDMMessages: () => listDMMessages,
   listDirectMessages: () => listDirectMessages,
   listMessages: () => listMessages,
+  listThreadMessages: () => listThreadMessages,
   listUsers: () => listUsers,
   me: () => me
 });
@@ -565,6 +566,28 @@ var listDMMessages = createPrecedure({
       const messages = await prisma.message.findMany({
         where: {
           receiverId: Number(args.receiverId)
+        },
+        orderBy: { createdAt: "asc" }
+      });
+      return {
+        success: true,
+        data: messages
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  }
+});
+var listThreadMessages = createPrecedure({
+  doNotValidate: true,
+  schema: z2.object({
+    messageId: z2.number().optional()
+  }),
+  handler: async (args) => {
+    try {
+      const messages = await prisma.message.findMany({
+        where: {
+          conversationId: Number(args.messageId)
         },
         orderBy: { createdAt: "asc" }
       });

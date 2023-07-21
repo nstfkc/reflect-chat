@@ -41,3 +41,14 @@ export const useDMChatHistory = (props: { receiverId: number }) => {
   const h = getMessageHistoryById(receiverId);
   return insertDateBetweenMessages([...history, ...h]);
 };
+
+export const useThreadChatHistory = (props: { messageId: number }) => {
+  const { messageId } = props;
+  const { getMessageHistoryById } = useContext(MessageContext);
+  const { data: history = [] } = useQuery("listThreadMessages", {
+    messageId,
+  });
+
+  const h = getMessageHistoryById(messageId);
+  return insertDateBetweenMessages([...history, ...h]);
+};

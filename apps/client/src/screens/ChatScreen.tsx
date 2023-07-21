@@ -1,5 +1,5 @@
 import { Channel, User, Message } from "@prisma/client";
-import { TbBulb } from "react-icons/tb";
+import { TbX, TbMessage } from "react-icons/tb";
 
 import {
   useContext,
@@ -22,6 +22,7 @@ import {
   ChatMessage,
   useChannelChatHistory,
   useDMChatHistory,
+  useThreadChatHistory,
   TypingUsersList,
   useSocket,
   useTheme,
@@ -30,17 +31,19 @@ import {
   useQuery,
 } from "shared";
 
-function MessageWrapper({ children }: PropsWithChildren<{ message: Message }>) {
+function MessageWrapper({
+  children,
+  message,
+}: PropsWithChildren<{ message: Message }>) {
   const navigate = useNavigate();
   return (
-    <div
-      onClick={() => navigate("/")}
-      className={"group hover:bg-gray-400/10 rounded-md relative p-1"}
-    >
+    <div className={"group hover:bg-gray-400/10 rounded-md relative p-1"}>
       {children}
       <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 p-1 h-full">
-        <button>
-          <TbBulb className="text-yellow-600 stroke-2 text-xl" />
+        <button
+          onClick={() => navigate(message.publicId, { state: { message } })}
+        >
+          <TbMessage className="stroke-2 text-xl" />
         </button>
       </div>
     </div>
@@ -175,6 +178,14 @@ const ChannelChatHistory = (props: { channel: Channel }) => {
   });
 
   return <MessageList parentId={props.channel.id!} messages={messages} />;
+};
+
+const ThreadChatHistory = (props: { message: Message }) => {
+  const messages = useThreadChatHistory({
+    messageId: props.message.id,
+  });
+
+  return <MessageList parentId={props.message.id!} messages={messages} />;
 };
 
 interface MessageListProps {
@@ -382,8 +393,74 @@ const ChannelChat = () => {
   );
 };
 
-export const ThreadScreen = () => {
-  return <div>Threads</div>;
+interface ThreadScreenProps {
+  kind: "channel" | "dm";
+}
+
+export const ThreadScreen = (props: ThreadScreenProps) => {
+  const { channelPublicId, receiverPublicId } = useParams();
+  const parentId =
+    props.kind === "channel" ? channelPublicId : receiverPublicId;
+  const { sendMessage, canSendMessage } = useContext(MessageContext);
+
+  const parentMesage = {} as Message;
+  const { socket } = useSocket();
+
+  const navigate = useNavigate();
+  const { user } = useUser();
+
+  const onUpdate = useCallback(() => {
+    socket?.emit("user-typing", {
+      channelOrUserId: parentMesage?.id,
+      userId: user?.id!,
+    });
+  }, [socket, user?.id, parentMesage?.id]);
+
+  const Editor = useMemo(
+    () =>
+      parentMesage
+        ? getEditor({
+            kind: "thread",
+            message: parentMesage,
+            onUpdate,
+            sendMessage: (message) =>
+              sendMessage(
+                {
+                  text: message,
+                  conversationId: parentMesage.id,
+                  senderId: user?.id!,
+                },
+                []
+              ),
+          })
+        : () => <></>,
+    [onUpdate, parentMesage, sendMessage, user]
+  );
+
+  return (
+    <FileUploaderProvider pathPrefix={parentMesage?.publicId}>
+      <div className="bg-black/5 shadow-md h-full flex flex-col">
+        <div className="p-4 flex justify-between items-center">
+          <span className="font-bold">Thread</span>
+          <button onClick={() => navigate(`/${props.kind}/${parentId}`)}>
+            <TbX className="text-2xl" />
+          </button>
+        </div>
+        <div className="">
+          <ThreadChatHistory message={parentMesage} />
+        </div>
+        <div className="p-2">
+          <div className="px-6">
+            <TypingUsersList channelOrUserId={parentMesage.id} />
+          </div>
+          <div className="w-full rounded-xl bg-white/40">
+            <div>{canSendMessage ? "" : "Cant send message"}</div>
+            {Editor ? <Editor /> : null}
+          </div>
+        </div>
+      </div>
+    </FileUploaderProvider>
+  );
 };
 
 interface ChatScreenProps {
@@ -397,7 +474,7 @@ export const ChatScreen = (props: ChatScreenProps) => {
         {props.kind === "channel" ? <ChannelChat /> : null}
         {props.kind === "dm" ? <DMChat /> : null}
       </div>
-      <div className="max-w-sm">
+      <div className="max-w-md">
         <Outlet />
       </div>
     </div>
@@ -408,6 +485,12 @@ type GetEditorProps =
   | {
       kind: "channel";
       channel: Channel;
+      onUpdate: VoidFunction;
+      sendMessage: (message: string) => void;
+    }
+  | {
+      kind: "thread";
+      message: Message;
       onUpdate: VoidFunction;
       sendMessage: (message: string) => void;
     }
@@ -433,6 +516,21 @@ function getEditor(props: GetEditorProps) {
       ));
     }
     return editors.get(props.channel.id);
+  }
+
+  if (props.kind === "thread") {
+    if (!editors.has(props.message.id)) {
+      editors.set(props.message.id, () => (
+        <TextEditor
+          onUpdate={props.onUpdate}
+          onSubmit={(message) => {
+            props.sendMessage(message);
+          }}
+          placeholder={`Reply...`}
+        />
+      ));
+    }
+    return editors.get(props.message.id);
   }
 
   if (props.kind === "user") {
