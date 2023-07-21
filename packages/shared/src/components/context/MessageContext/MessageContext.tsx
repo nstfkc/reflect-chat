@@ -183,6 +183,10 @@ function useMessageHistory() {
         key = dm.channelId;
       }
 
+      if (dm.conversationId) {
+        key = dm.conversationId;
+      }
+
       if (!dmHistoryMapRef.current.has(key)) {
         !dmHistoryMapRef.current.set(key, []);
       }
@@ -207,6 +211,10 @@ function useMessageHistory() {
 
       if (dm.channelId) {
         key = dm.channelId;
+      }
+
+      if (dm.conversationId) {
+        key = dm.conversationId;
       }
 
       if (!dmHistoryMapRef.current.has(key)) {
@@ -272,7 +280,6 @@ export const MessageProvider = (props: MessageProviderProps) => {
 
   const sendMessage = useCallback(
     (message: Partial<Message>, medias: RawMedia[]) => {
-      console.log({ message });
       const media = medias.map((media) => ({
         filename: media.file.name,
         kind: media.fileKind,
