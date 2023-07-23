@@ -67,7 +67,11 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
         </div>
         <div className="p-2">
           <div className="bg-black/5 rounded-lg">
-            <MessageRender messagesOrDate={[parentMessage]} parentId={0} />
+            <MessageRender
+              showThreadCount={false}
+              messagesOrDate={[parentMessage as any]}
+              parentId={0}
+            />
           </div>
         </div>
         <div className="grow">
