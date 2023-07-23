@@ -192,7 +192,23 @@ function useMessageHistory() {
       }
 
       const current = dmHistoryMapRef.current.get(key)!;
-      current.push(dm);
+      const messageExists = current.find(
+        (message) => message.publicId === dm.publicId
+      );
+
+      console.log({ messageExists });
+      if (messageExists) {
+        current.map((message) => {
+          if (message.publicId === dm.publicId) {
+            return dm;
+          }
+          return message;
+        });
+      } else {
+        current.push(dm);
+      }
+      dmHistoryMapRef.current.set(key, [...current]);
+      console.log(dmHistoryMapRef.current.get(key));
       setDmHistory(new Map(dmHistoryMapRef.current));
     },
     [user?.id]
@@ -222,7 +238,21 @@ function useMessageHistory() {
       }
 
       const current = dmHistoryMapRef.current.get(key)!;
-      current.push(dm);
+      const messageExists = current.find(
+        (message) => message.publicId === dm.publicId
+      );
+      console.log({ messageExists });
+      if (messageExists) {
+        current.map((message) => {
+          if (message.publicId === dm.publicId) {
+            return dm;
+          }
+          return message;
+        });
+      } else {
+        current.push(dm);
+      }
+      dmHistoryMapRef.current.set(key, [...current]);
       setDmHistory(new Map(dmHistoryMapRef.current));
     },
     [user?.id]
@@ -232,6 +262,13 @@ function useMessageHistory() {
     socket?.on("message:created", handleUpdateMessageHistoryInternal);
     return () => {
       socket?.off("message:created", handleUpdateMessageHistoryInternal);
+    };
+  }, [socket, handleUpdateMessageHistoryInternal]);
+
+  useEffect(() => {
+    socket?.on("message:updated", handleUpdateMessageHistoryInternal);
+    return () => {
+      socket?.off("message:updated", handleUpdateMessageHistoryInternal);
     };
   }, [socket, handleUpdateMessageHistoryInternal]);
 
@@ -248,6 +285,7 @@ function useMessageHistory() {
 
 interface MessageContextValue {
   sendMessage: (cm: Partial<Message>, media: RawMedia[]) => void;
+  updateMessage: (cm: Partial<Message>, media: RawMedia[]) => void;
 
   unreadMessages: Record<string, Set<Message>>;
   markMessageAsRead: (channelId: number) => (messageId: number) => void;
@@ -312,8 +350,40 @@ export const MessageProvider = (props: MessageProviderProps) => {
     [handleUpdateMessageHistory, socket]
   );
 
+  const updateMessage = useCallback(
+    (message: Partial<Message>, medias: RawMedia[]) => {
+      const media = medias.map((media) => ({
+        filename: media.file.name,
+        kind: media.fileKind,
+        path: media.path,
+        size: media.file.size,
+        width: media.width,
+        height: media.height,
+      }));
+
+      try {
+        socket.emit(
+          "message:update",
+          message,
+          media as any //TODO fix
+        );
+      } catch (err) {
+        console.log(err);
+      }
+
+      const messageWithMedia = {
+        ...message,
+        media: media as any,
+      } as any; // TODO: fix
+
+      handleUpdateMessageHistory(messageWithMedia);
+    },
+    [handleUpdateMessageHistory, socket]
+  );
+
   const value = {
     sendMessage,
+    updateMessage,
     getMessageHistoryById,
     updateLastSeenMessage,
     unreadMentions,

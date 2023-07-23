@@ -1,46 +1,91 @@
 import { Message } from "@prisma/client";
-import { TbMessage } from "react-icons/tb";
+import { TbMessage, TbEdit, TbX } from "react-icons/tb";
 
-import { PropsWithChildren, memo } from "react";
+import {
+  PropsWithChildren,
+  memo,
+  useState,
+  useContext,
+  createContext,
+} from "react";
 import { useNavigate } from "react-router-dom";
-import { JSONContent, ChatMessage } from "shared";
+import { JSONContent, ChatMessage, TextEditor, MessageContext } from "shared";
+
+const MessageEditingContext = createContext({ isEditActive: false });
 
 function MessageWrapper({
   children,
   message,
 }: PropsWithChildren<{ message: Message }>) {
+  const [isEditActive, setIsEditActive] = useState(false);
   const navigate = useNavigate();
+
   return (
-    <div className={"group hover:bg-gray-400/10 rounded-md relative p-1"}>
-      {children}
-      <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 p-1 h-full">
-        <button
-          onClick={() => navigate(message.publicId, { state: { message } })}
-        >
-          <TbMessage className="stroke-2 text-xl" />
-        </button>
+    <MessageEditingContext.Provider value={{ isEditActive }}>
+      <div className={"group hover:bg-gray-400/10 rounded-md relative p-1"}>
+        {children}
+        <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 p-1 h-full">
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate(message.publicId, { state: { message } })}
+            >
+              <TbMessage className="stroke-2 text-xl" />
+            </button>
+            <button onClick={() => setIsEditActive((c) => !c)}>
+              {isEditActive ? (
+                <TbX className="stroke-2 text-xl" />
+              ) : (
+                <TbEdit className="stroke-2 text-xl" />
+              )}
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </MessageEditingContext.Provider>
   );
 }
 
-function renderMessageWrapper(message: Message) {
-  const C = (props: PropsWithChildren) => (
-    <MessageWrapper message={message}>{props.children}</MessageWrapper>
-  );
-  return C;
-}
+const MessageRendererFragmentWrapper = ({ message }: { message: Message }) => {
+  const { isEditActive } = useContext(MessageEditingContext);
+  const { updateMessage } = useContext(MessageContext);
+
+  if (isEditActive) {
+    return (
+      <div
+        className="border-gray-400/30 border-[1px] rounded-lg p-1"
+        ref={(el) => {
+          el?.scrollIntoView();
+        }}
+      >
+        <TextEditor
+          showActions={false}
+          initialContent={JSON.parse(message.text)}
+          onSubmit={(text) => {
+            updateMessage(
+              {
+                ...message,
+                text,
+              },
+              []
+            );
+          }}
+          onMentionListUpdate={() => {}}
+          onUpdate={() => {}}
+          placeholder={""}
+        />
+      </div>
+    );
+  }
+  return <MessageRendererFragment content={JSON.parse(message.text)} />;
+};
 
 interface MessageProps {
   messagesOrDate: string | Message[];
   parentId: number;
-  markMentionsAsRead: (id: number) => (id: number) => void;
-  markMessageAsRead: (id: number) => (id: number) => void;
 }
 
 export const MessageRender = memo((props: MessageProps) => {
-  const { markMentionsAsRead, markMessageAsRead, messagesOrDate, parentId } =
-    props;
+  const { messagesOrDate } = props;
   if (typeof messagesOrDate === "string") {
     return (
       <div className="py-8 text-center font-semibold text-sm">
@@ -49,19 +94,19 @@ export const MessageRender = memo((props: MessageProps) => {
     );
   }
 
+  function renderMessageWrapper(message: Message) {
+    const C = (props: PropsWithChildren) => (
+      <MessageWrapper message={message}>{props.children}</MessageWrapper>
+    );
+    return C;
+  }
   return (
     <div className="ProseMirror">
       <ChatMessage
-        onRender={(messageId) => {
-          markMentionsAsRead(parentId)(messageId);
-          markMessageAsRead(parentId)(messageId);
-        }}
         messages={messagesOrDate}
         messageWrapper={renderMessageWrapper}
         fragmentRenderer={(message) => (
-          <MessageRendererFragment
-            content={JSON.parse(message.text)}
-          ></MessageRendererFragment>
+          <MessageRendererFragmentWrapper message={message} />
         )}
       />
     </div>

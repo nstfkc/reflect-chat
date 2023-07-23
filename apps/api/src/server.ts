@@ -52,7 +52,6 @@ server.addHook("onRequest", (req, _rep, done) => {
     const decoded = decode(token) as Record<string, string>;
     req.requestContext.set("context", { ...decoded, currentOrganisationId });
   }
-
   done();
 });
 

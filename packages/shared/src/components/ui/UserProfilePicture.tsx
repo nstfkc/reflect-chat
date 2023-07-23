@@ -1,6 +1,6 @@
 import { View, Image, TextStyle } from "react-native";
 import { Text } from "../lib/Text";
-import { useContext } from "react";
+import { memo, useContext } from "react";
 import { ConfigContext } from "../context/ConfigContext";
 import { UsersContext } from "../context/UsersContext";
 import { useTheme } from "../context/ThemeContext";
@@ -15,7 +15,7 @@ interface UserWithProfilePictureProps {
   statusIndicatorBorderColor?: string;
 }
 
-export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
+export const UserProfilePicture = memo((props: UserWithProfilePictureProps) => {
   const { assetsServiceUrl } = useContext(ConfigContext);
   const { getUserById } = useContext(UsersContext);
   const theme = useTheme();
@@ -49,18 +49,25 @@ export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
           borderRadius: size / 4,
         }}
       >
-        {user.userProfile?.profilePictureUrl && (
-          <Image
-            style={{ borderRadius: size / 4 }}
-            source={{
-              width: size,
-              height: size,
-              uri: [assetsServiceUrl, user.userProfile?.profilePictureUrl].join(
-                "/"
-              ),
-            }}
-          />
-        )}
+        <Image
+          style={{ borderRadius: size / 4 }}
+          source={{
+            width: size,
+            height: size,
+            cache: "force-cache",
+            uri: [assetsServiceUrl, user.userProfile?.profilePictureUrl].join(
+              "/"
+            ),
+          }}
+          defaultSource={{
+            width: size,
+            height: size,
+            cache: "force-cache",
+            uri: [assetsServiceUrl, user.userProfile?.profilePictureUrl].join(
+              "/"
+            ),
+          }}
+        />
         {showStatusIndicator ? (
           <View
             style={{
@@ -82,4 +89,6 @@ export const UserProfilePicture = (props: UserWithProfilePictureProps) => {
       ) : null}
     </View>
   );
-};
+});
+
+UserProfilePicture.displayName = "UserProfilePicture";

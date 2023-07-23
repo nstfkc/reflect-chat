@@ -81,10 +81,35 @@ export function sockets(io: Server) {
       io.emit("update-user-profile", payload);
     });
 
-    socket.on("message:create", (message, medias) => {
+    socket.on("message:create", (message) => {
+      if (message.channelId) {
+        const mentions = parseMentions(message.text);
+        for (let mentionIds of mentions) {
+          if (userIdSocketMap.has(mentionIds)) {
+            userIdSocketMap.get(mentionIds)?.forEach((socket) => {
+              socket?.emit("new-mention", { message });
+            });
+          }
+        }
+        io.emit("message:created", message);
+      }
+
+      if (message.receiverId) {
+        userIdSocketMap.get(message.receiverId).forEach((socket) => {
+          socket?.emit("message:created", message);
+        });
+      }
+      if (message.conversationId) {
+        io.emit("message:created", message);
+      }
+    });
+    socket.on("message:update", (message, medias) => {
       if (message.channelId) {
         prisma.message
-          .create({
+          .update({
+            where: {
+              id: message.id,
+            },
             data: {
               ...message,
               media: {
@@ -105,14 +130,15 @@ export function sockets(io: Server) {
                 });
               }
             }
-            io.emit("message:created", message);
+            io.emit("message:updated", message);
           });
         // emit new message to sender and receiver
       }
 
       if (message.receiverId) {
         prisma.message
-          .create({
+          .update({
+            where: { id: message.id },
             data: {
               ...message,
               media: {
@@ -125,14 +151,15 @@ export function sockets(io: Server) {
           })
           .then((dm) => {
             userIdSocketMap.get(message.receiverId).forEach((socket) => {
-              socket?.emit("message:created", dm);
+              socket?.emit("message:updated", dm);
             });
           })
           .catch((error) => console.log(error));
       }
       if (message.conversationId) {
         prisma.message
-          .create({
+          .update({
+            where: { id: message.id },
             data: {
               ...message,
               media: {
@@ -144,7 +171,7 @@ export function sockets(io: Server) {
             },
           })
           .then((message) => {
-            io.emit("message:created", message);
+            io.emit("message:updated", message);
           })
           .catch((error) => console.log(error));
       }

@@ -78,11 +78,3 @@ export function createPrecedure<U, T extends ZodRawShape>(args: {
     },
   };
 }
-
-// export const handleOrganisationCreate = (input: any, context: Context) => {};
-// export const handleSignUp = (input: any, context: Context) => {};
-// export const handleSignIn = (input: any, context: Context) => {};
-
-// export const handleListChannels = (input: any, context: Context) => {};
-// export const handleListMessages = (input: any, context: Context) => {};
-// export const handleListUsers = (input: any, context: Context) => {};

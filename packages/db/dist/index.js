@@ -55,6 +55,7 @@ __reExport(src_exports, require("@prisma/client"), module.exports);
 var mutations_exports = {};
 __export(mutations_exports, {
   createChannel: () => createChannel,
+  createMessage: () => createMessage,
   createOrganisation: () => createOrganisation,
   setCurrentOrganisationId: () => setCurrentOrganisationId,
   signIn: () => signIn,
@@ -384,6 +385,33 @@ var updateProfile = createPrecedure({
     };
   }
 });
+var createMessage = createPrecedure({
+  schema: z.object({
+    text: z.string(),
+    publicId: z.string(),
+    senderId: z.number(),
+    //
+    conversationId: z.number().optional(),
+    receiverId: z.number().optional(),
+    channelId: z.number().optional()
+  }),
+  handler: async (args, ctx) => {
+    console.log(args);
+    try {
+      const message = await prisma.message.create({
+        data: {
+          ...args
+        }
+      });
+      return {
+        success: true,
+        data: message
+      };
+    } catch (err) {
+      return prismaError({ message: err, statusCode: 403 });
+    }
+  }
+});
 
 // src/data/queries.ts
 var queries_exports = {};
@@ -423,7 +451,8 @@ var me = createPrecedure({
   }
 });
 var listChannels = createPrecedure({
-  schema: z2.object({ organisationId: z2.string() }),
+  doNotValidate: true,
+  schema: z2.object({ organisationId: z2.number() }),
   handler: async (args) => {
     try {
       const channels = await prisma.channel.findMany({
@@ -496,7 +525,8 @@ var listMessages = createPrecedure({
   doNotValidate: true,
   schema: z2.object({
     channelId: z2.number().optional(),
-    receiverId: z2.number().optional()
+    receiverId: z2.number().optional(),
+    conversationId: z2.number().optional()
   }),
   handler: async (args, ctx) => {
     const channelId = Number(args.channelId);

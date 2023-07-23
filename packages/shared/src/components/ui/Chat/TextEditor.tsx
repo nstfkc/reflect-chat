@@ -53,14 +53,24 @@ const HandleEnter = (handlePressEnter: (editor: EditorInstance) => void) =>
   });
 
 interface TextEditorProps {
+  initialContent: any;
   placeholder: string;
   onSubmit: (text: string, media: RawMedia[]) => void;
   onMentionListUpdate?: (user: User) => void;
   onUpdate: VoidFunction;
+  onRender?: (editor: EditorInstance) => void;
+  showActions?: boolean;
 }
 
 export const TextEditor = (props: TextEditorProps) => {
-  const { placeholder, onSubmit, onUpdate } = props;
+  const {
+    placeholder,
+    onSubmit,
+    onUpdate,
+    initialContent,
+    onRender,
+    showActions = true,
+  } = props;
   const { users } = useContext(UsersContext);
   const { uploadQueue, clearUplaodQueue } = useContext(FileUploaderContext);
 
@@ -85,7 +95,11 @@ export const TextEditor = (props: TextEditorProps) => {
   };
 
   const editor = useEditor({
-    autofocus: true,
+    autofocus: "end",
+    content: {
+      type: "doc",
+      content: initialContent,
+    },
     onUpdate: () => {
       onUpdate();
     },
@@ -132,91 +146,94 @@ export const TextEditor = (props: TextEditorProps) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div className="flex gap-4 px-2 py-3">
-        <div className="flex gap-2 items-center">
-          <button
-            className={cx(
-              buttonClass,
-              editor?.isActive("bold") ? "bg-gray-200" : ""
-            )}
-            onClick={() => editor?.chain().focus().toggleBold().run()}
-            disabled={!editor?.can().chain().focus().toggleBold().run()}
-          >
-            <RxFontBold className="drop-shadow-md" />
-          </button>
-          <button
-            className={cx(
-              buttonClass,
-              editor?.isActive("italic") ? "bg-gray-200" : ""
-            )}
-            onClick={() => editor?.chain().focus().toggleItalic().run()}
-            disabled={!editor?.can().chain().focus().toggleItalic().run()}
-          >
-            <RxFontItalic className="drop-shadow-md" />
-          </button>
-          <button
-            className={cx(
-              buttonClass,
-              editor?.isActive("strike") ? "bg-gray-200" : ""
-            )}
-            onClick={() => editor?.chain().focus().toggleStrike().run()}
-            disabled={!editor?.can().chain().focus().toggleStrike().run()}
-          >
-            <RxStrikethrough className="drop-shadow-md" />
-          </button>
-        </div>
-        <div className="border-l-[1px] border-gray-400"></div>
-        <div className="flex gap-2 items-center ">
-          <button className={cx(buttonClass)}>
-            <RxLink1 className="drop-shadow-md" />
-          </button>
-        </div>
-        <div className="border-l-[1px] border-gray-400"></div>
-        <div className="flex gap-2 items-center">
-          <button
-            className={cx(
-              buttonClass,
-              editor?.isActive("orderedList") ? "bg-gray-200" : ""
-            )}
-            onClick={() => {
-              editor?.chain().focus().toggleOrderedList().run();
-            }}
-            disabled={!editor?.can().chain().focus().toggleOrderedList().run()}
-          >
-            <MdOutlineFormatListNumbered className="drop-shadow-md" />
-          </button>
+      {showActions ? (
+        <div className="flex gap-4 px-2 py-3">
+          <div className="flex gap-2 items-center">
+            <button
+              className={cx(
+                buttonClass,
+                editor?.isActive("bold") ? "bg-gray-200" : ""
+              )}
+              onClick={() => editor?.chain().focus().toggleBold().run()}
+              disabled={!editor?.can().chain().focus().toggleBold().run()}
+            >
+              <RxFontBold className="drop-shadow-md" />
+            </button>
+            <button
+              className={cx(
+                buttonClass,
+                editor?.isActive("italic") ? "bg-gray-200" : ""
+              )}
+              onClick={() => editor?.chain().focus().toggleItalic().run()}
+              disabled={!editor?.can().chain().focus().toggleItalic().run()}
+            >
+              <RxFontItalic className="drop-shadow-md" />
+            </button>
+            <button
+              className={cx(
+                buttonClass,
+                editor?.isActive("strike") ? "bg-gray-200" : ""
+              )}
+              onClick={() => editor?.chain().focus().toggleStrike().run()}
+              disabled={!editor?.can().chain().focus().toggleStrike().run()}
+            >
+              <RxStrikethrough className="drop-shadow-md" />
+            </button>
+          </div>
+          <div className="border-l-[1px] border-gray-400"></div>
+          <div className="flex gap-2 items-center ">
+            <button className={cx(buttonClass)}>
+              <RxLink1 className="drop-shadow-md" />
+            </button>
+          </div>
+          <div className="border-l-[1px] border-gray-400"></div>
+          <div className="flex gap-2 items-center">
+            <button
+              className={cx(
+                buttonClass,
+                editor?.isActive("orderedList") ? "bg-gray-200" : ""
+              )}
+              onClick={() => {
+                editor?.chain().focus().toggleOrderedList().run();
+              }}
+              disabled={
+                !editor?.can().chain().focus().toggleOrderedList().run()
+              }
+            >
+              <MdOutlineFormatListNumbered className="drop-shadow-md" />
+            </button>
 
-          <button
-            className={cx(
-              buttonClass,
-              editor?.isActive("bulletList") ? "bg-gray-200" : ""
-            )}
-            onClick={() => {
-              editor?.chain().focus().toggleBulletList().run();
-            }}
-            disabled={!editor?.can().chain().focus().toggleBulletList().run()}
-          >
-            <RxListBullet className="drop-shadow-md" />
-          </button>
-          <button
-            className={cx(buttonClass)}
-            onClick={() => {
-              editor?.chain().focus().liftListItem("listItem").run();
-            }}
-          >
-            <TbIndentDecrease className="drop-shadow-md" />
-          </button>
-          <button
-            className={cx(buttonClass)}
-            onClick={() => {
-              editor?.chain().focus().sinkListItem("listItem").run();
-            }}
-          >
-            <TbIndentIncrease className="drop-shadow-md" />
-          </button>
+            <button
+              className={cx(
+                buttonClass,
+                editor?.isActive("bulletList") ? "bg-gray-200" : ""
+              )}
+              onClick={() => {
+                editor?.chain().focus().toggleBulletList().run();
+              }}
+              disabled={!editor?.can().chain().focus().toggleBulletList().run()}
+            >
+              <RxListBullet className="drop-shadow-md" />
+            </button>
+            <button
+              className={cx(buttonClass)}
+              onClick={() => {
+                editor?.chain().focus().liftListItem("listItem").run();
+              }}
+            >
+              <TbIndentDecrease className="drop-shadow-md" />
+            </button>
+            <button
+              className={cx(buttonClass)}
+              onClick={() => {
+                editor?.chain().focus().sinkListItem("listItem").run();
+              }}
+            >
+              <TbIndentIncrease className="drop-shadow-md" />
+            </button>
+          </div>
         </div>
-      </div>
-
+      ) : null}
       <div className="px-4">
         <EditorContent editor={editor} style={{ minHeight: "40px" }} />
       </div>

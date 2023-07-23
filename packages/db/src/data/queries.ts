@@ -30,7 +30,8 @@ export const me = createPrecedure({
 });
 
 export const listChannels = createPrecedure({
-  schema: z.object({ organisationId: z.string() }),
+  doNotValidate: true,
+  schema: z.object({ organisationId: z.number() }),
   handler: async (args) => {
     try {
       const channels = await prisma.channel.findMany({
@@ -109,6 +110,7 @@ export const listMessages = createPrecedure({
   schema: z.object({
     channelId: z.number().optional(),
     receiverId: z.number().optional(),
+    conversationId: z.number().optional(),
   }),
   handler: async (args, ctx) => {
     const channelId = Number(args.channelId);
@@ -234,6 +236,7 @@ export const listThreadMessages = createPrecedure({
 export const listUsers = createPrecedure({
   schema: z.object({ organisationId: z.string() }),
   handler: async (args) => {
+    // TODO: check if user has membership for this organisation
     try {
       const users = await prisma.user.findMany({
         where: {

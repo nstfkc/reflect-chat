@@ -1,8 +1,9 @@
 import { Channel } from "@prisma/client";
 
-import { useContext, useCallback, useMemo } from "react";
+import { useContext, useCallback, useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
+  OrganisationContext,
   FileUploaderProvider,
   MessageContext,
   useUser,
@@ -11,6 +12,7 @@ import {
   useSocket,
   useTheme,
   useQuery,
+  ChatContext,
 } from "shared";
 import { getEditor } from "./getEditor";
 import { MessageList } from "./MessageList";
@@ -26,21 +28,33 @@ const ChannelChatHistory = (props: { channel: Channel }) => {
 export const ChannelChat = () => {
   const { channelPublicId } = useParams();
   const { sendMessage, canSendMessage } = useContext(MessageContext);
+  const { channels } = useContext(OrganisationContext);
+  const { getChat } = useContext(ChatContext);
   const { user } = useUser();
   const theme = useTheme();
   const { socket } = useSocket();
-  const { data = [] } = useQuery("listChannels", { organisationId: "1" });
 
-  // TODO: fix type
-  const channel = (data as any)!.find(
+  const channel = channels.find(
     (channel: any) => channel.publicId === channelPublicId
   );
 
+  const chat = getChat({ kind: "channel", channelId: channel?.id! });
+  const [messages, setMessages] = useState(chat.messages$.getValue());
+
+  useEffect(() => {
+    chat.activate();
+    const subs = chat.messages$.subscribe((messages) => setMessages(messages));
+    return () => {
+      chat.deactivate();
+      subs.unsubscribe();
+    };
+  }, []);
+
   const onUpdate = useCallback(() => {
-    socket?.emit("user-typing", {
-      channelOrUserId: channel?.id,
-      userId: user?.id!,
-    });
+    /* socket?.emit("user-typing", {
+     *   channelOrUserId: channel?.id,
+     *   userId: user?.id!,
+     * }); */
   }, [socket, user?.id, channel?.id]);
 
   const Editor = useMemo(
@@ -50,15 +64,7 @@ export const ChannelChat = () => {
             kind: "channel",
             channel,
             onUpdate,
-            sendMessage: (message) =>
-              sendMessage(
-                {
-                  text: message,
-                  channelId: channel?.id,
-                  senderId: user?.id!,
-                },
-                []
-              ),
+            sendMessage: (message) => chat.createMessage(message),
           })
         : () => <></>,
     [onUpdate, channel, sendMessage, user]
@@ -78,7 +84,9 @@ export const ChannelChat = () => {
           <div>{`# ${channel.name}`}</div>
         </div>
         <div className="relative h-full">
-          <ChannelChatHistory channel={channel} />
+          {messages ? (
+            <MessageList parentId={channel.id!} messages={messages} />
+          ) : null}
         </div>
         <div className="p-2">
           <div className="px-6">

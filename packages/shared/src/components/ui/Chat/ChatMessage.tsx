@@ -10,7 +10,7 @@ import { useTheme } from "../../context/ThemeContext";
 
 interface ChatMessageProps {
   messages: Message[];
-  onRender: (messageId: number) => void;
+  onRender?: (messageId: number) => void;
   fragmentRenderer: (message: Message, index: number) => JSX.Element;
   messageWrapper: (
     message: Message
@@ -18,7 +18,12 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = (props: ChatMessageProps) => {
-  const { fragmentRenderer, messages, onRender, messageWrapper } = props;
+  const {
+    fragmentRenderer,
+    messages,
+    onRender = () => {},
+    messageWrapper,
+  } = props;
   const theme = useTheme();
   const { getUserById } = useContext(UsersContext);
   const rendered = useRef(false);
@@ -36,15 +41,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
   return (
     <>
       <View
-        ref={() => {
-          if (!rendered.current) {
-            rendered.current = true;
-            messages.forEach((message) => {
-              onRender(message.id);
-            });
-          }
-        }}
-        key={messages[0].id}
+        key={messages[0]?.publicId}
         style={{
           width: "100%",
           paddingHorizontal: 6,
@@ -63,7 +60,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
               size={32}
               showUserName={false}
               statusIndicatorBorderColor={theme.colors.primary}
-              userId={author.id}
+              userId={author?.id}
             />
 
             <View
@@ -103,7 +100,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
           {rest.map((message, index) => {
             const MessageWrapper = messageWrapper(message);
             return (
-              <MessageWrapper key={message.id}>
+              <MessageWrapper key={message.publicId}>
                 <View style={{ paddingLeft: 38 }}>
                   {fragmentRenderer(message, index)}
                 </View>

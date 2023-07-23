@@ -20,7 +20,8 @@ type EmitEvents = {
   "channel-created": (channel: Channel) => void;
   "last-seen-message": (params: { userId: number; message: Message }) => void;
   /*  */
-  "message:create": (message: Partial<Message>, medias: MessageMedia[]) => void;
+  "message:create": (message: Partial<MessageWithMedia>) => void;
+  "message:update": (message: Partial<MessageWithMedia>) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
     userStatusId: number;
@@ -38,6 +39,7 @@ export type ListenEvents = {
   "new-mention": (props: { message: Message }) => void;
   /*  */
   "message:created": (message: MessageWithMedia) => void;
+  "message:updated": (message: Partial<MessageWithMedia>) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
     userStatusId: number;

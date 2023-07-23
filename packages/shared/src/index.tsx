@@ -24,7 +24,12 @@ export {
   UsersTypingContext,
   UsersTypingProvider,
 } from "./components/context/UsersTypingContext";
+export { OrganisationContext } from "./components/context/OrganisationContext/OrganisationContext";
 export { RootProvider } from "./components/context/RootProvider";
+export {
+  ChatContext,
+  ChatProvider,
+} from "./components/context/Chat/ChatContext";
 
 export {
   useChatHistory,
@@ -50,6 +55,7 @@ export {
 } from "./components/context/ThemeContext";
 
 export { useQuery } from "./utils/useQuery";
+export { useLazyQuery } from "./utils/useLazyQuery";
 export { useMutation } from "./utils/useMutation";
 export { SWRConfig } from "swr";
 

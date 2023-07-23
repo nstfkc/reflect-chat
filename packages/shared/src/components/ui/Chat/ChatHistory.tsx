@@ -28,6 +28,8 @@ export const useChannelChatHistory = (props: { channelId: number }) => {
   });
 
   const h = getMessageHistoryById(channelId);
+
+  console.log({ h });
   return insertDateBetweenMessages([...history, ...h]);
 };
 

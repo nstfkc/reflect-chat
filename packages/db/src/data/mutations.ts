@@ -208,3 +208,31 @@ export const updateProfile = createPrecedure({
     };
   },
 });
+
+export const createMessage = createPrecedure({
+  schema: z.object({
+    text: z.string(),
+    publicId: z.string(),
+    senderId: z.number(),
+    //
+    conversationId: z.number().optional(),
+    receiverId: z.number().optional(),
+    channelId: z.number().optional(),
+  }),
+  handler: async (args, ctx) => {
+    console.log(args);
+    try {
+      const message = await prisma.message.create({
+        data: {
+          ...args,
+        } as any,
+      });
+      return {
+        success: true,
+        data: message,
+      };
+    } catch (err) {
+      return prismaError({ message: err, statusCode: 403 });
+    }
+  },
+});
