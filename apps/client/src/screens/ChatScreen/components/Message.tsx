@@ -9,21 +9,52 @@ import {
   createContext,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { JSONContent, ChatMessage, TextEditor, MessageContext } from "shared";
+import {
+  MessageWithThread,
+  JSONContent,
+  ChatMessage,
+  TextEditor,
+  MessageContext,
+  UserProfilePicture,
+} from "shared";
 
 const MessageEditingContext = createContext({ isEditActive: false });
 
 function MessageWrapper({
   children,
   message,
-}: PropsWithChildren<{ message: Message }>) {
+}: PropsWithChildren<{ message: MessageWithThread }>) {
   const [isEditActive, setIsEditActive] = useState(false);
   const navigate = useNavigate();
-
   return (
     <MessageEditingContext.Provider value={{ isEditActive }}>
       <div className={"group hover:bg-gray-400/10 rounded-md relative p-1"}>
         {children}
+        {message.thread?.length > 0 ? (
+          <div className="pl-[38px]">
+            <button
+              onClick={() => navigate(message.publicId, { state: { message } })}
+              className="font-semibold text-xs flex gap-2 items-center"
+            >
+              <div className="flex gap-1 items-center">
+                {Array.from(
+                  new Set(message.thread.map((message) => message.senderId))
+                ).map((userId) => (
+                  <UserProfilePicture
+                    key={userId}
+                    userId={userId}
+                    showStatusIndicator={false}
+                    showUserName={false}
+                    size={24}
+                  />
+                ))}
+                <span className="text-green-500">
+                  {message.thread?.length} replies
+                </span>
+              </div>
+            </button>
+          </div>
+        ) : null}
         <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 p-1 h-full">
           <div className="flex gap-2">
             <button
@@ -80,7 +111,7 @@ const MessageRendererFragmentWrapper = ({ message }: { message: Message }) => {
 };
 
 interface MessageProps {
-  messagesOrDate: string | Message[];
+  messagesOrDate: string | MessageWithThread[];
   parentId?: number;
 }
 
@@ -94,7 +125,7 @@ export const MessageRender = memo((props: MessageProps) => {
     );
   }
 
-  function renderMessageWrapper(message: Message) {
+  function renderMessageWrapper(message: MessageWithThread) {
     const C = (props: PropsWithChildren) => (
       <MessageWrapper message={message}>{props.children}</MessageWrapper>
     );

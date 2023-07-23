@@ -17,11 +17,11 @@ export function groupItemsByCreatedAt<T extends Message>(
   return groups;
 }
 
-export function insertDateBetweenMessages(
-  messages: Message[]
-): (string | Message[])[] {
+export function insertDateBetweenMessages<T extends Message>(
+  messages: T[]
+): (string | T[])[] {
   let cache = new Set<number>();
-  let messagesInTheSameDay: Record<string, Message[]> = {};
+  let messagesInTheSameDay: Record<string, T[]> = {};
 
   for (let message of messages) {
     if (!cache.has(message.id)) {

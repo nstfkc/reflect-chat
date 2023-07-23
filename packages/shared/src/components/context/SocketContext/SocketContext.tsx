@@ -1,6 +1,5 @@
 "use client";
 
-import { MessageMedia, MessageWithMedia } from "../../../types/global";
 import type { Channel, Message, User, UserProfile, UserStatusKind } from "db";
 import {
   ReactNode,
@@ -20,8 +19,8 @@ type EmitEvents = {
   "channel-created": (channel: Channel) => void;
   "last-seen-message": (params: { userId: number; message: Message }) => void;
   /*  */
-  "message:create": (message: Partial<MessageWithMedia>) => void;
-  "message:update": (message: Partial<MessageWithMedia>) => void;
+  "message:create": (message: Partial<Message>) => void;
+  "message:update": (message: Partial<Message>) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
     userStatusId: number;
@@ -38,8 +37,8 @@ export type ListenEvents = {
   "channel-created": (channel: Channel) => void;
   "new-mention": (props: { message: Message }) => void;
   /*  */
-  "message:created": (message: MessageWithMedia) => void;
-  "message:updated": (message: Partial<MessageWithMedia>) => void;
+  "message:created": (message: Message) => void;
+  "message:updated": (message: Partial<Message>) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
     userStatusId: number;

@@ -3,6 +3,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { insertDateBetweenMessages } from "../../ui/Chat/utils";
 import { Subject } from "../../../utils/Subject";
 import { InternalSocket } from "../SocketContext/SocketContext";
+import { MessageWithThread } from "../../../types/global";
 
 export type ChatArgs =
   | { kind: "thread"; conversationId: number }
@@ -13,8 +14,8 @@ interface ChatParams {
   user: User;
   socket: InternalSocket;
   streamSize: number;
-  fetchMessages: () => Promise<Message[]>;
-  createMessage: (message: Partial<Message>) => Promise<Message>;
+  fetchMessages: () => Promise<MessageWithThread[]>;
+  createMessage: (message: Partial<Message>) => Promise<MessageWithThread>;
   args: ChatArgs;
   parentChat?: Chat;
 }
@@ -22,8 +23,8 @@ interface ChatParams {
 export function createChat(params: ChatParams) {
   let streamSize = params.streamSize;
   let isActive = false;
-  let messages: Record<string, Message> = {};
-  let unseenMessages: Record<string, Message> = {};
+  let messages: Record<string, MessageWithThread> = {};
+  let unseenMessages: Record<string, MessageWithThread> = {};
 
   const getMessages = () => insertDateBetweenMessages(Object.values(messages));
   const messages$ = new Subject(getMessages());
@@ -32,7 +33,7 @@ export function createChat(params: ChatParams) {
   const createMessage = (text: string) => {
     const publicId = createId();
     const { kind, ...rest } = params.args;
-    const message: Partial<Message> = {
+    const message: Partial<MessageWithThread> = {
       ...rest,
       text,
       publicId,
@@ -42,7 +43,8 @@ export function createChat(params: ChatParams) {
       ...message,
       createdAt: new Date(Date.now()),
       updatedAt: new Date(Date.now()),
-    } as Message;
+      thread: [],
+    } as MessageWithThread;
     messages$.next(getMessages());
     params.createMessage(message).then((message) => {
       messages[publicId] = message;
@@ -65,15 +67,33 @@ export function createChat(params: ChatParams) {
         ? message.receiverId === params.user.id
         : false;
 
+    const existInMessages = Object.values(messages).find(
+      (m) => m.id === message.conversationId
+    );
+
+    const existInUnseenMessages = Object.values(unseenMessages).find(
+      (m) => m.id === message.conversationId
+    );
+
+    if (existInMessages) {
+      messages[existInMessages.publicId].thread.push(message);
+      messages$.next(getMessages());
+    }
+
+    if (existInUnseenMessages) {
+      unseenMessages[existInUnseenMessages.publicId].thread.push(message);
+      unseenMessages$.next(Object.values(unseenMessages));
+    }
+
     if (!collect) {
       return null;
     }
 
     if (isActive) {
-      messages[message.publicId] = message;
+      messages[message.publicId] = { thread: [], ...message };
       messages$.next(getMessages());
     } else {
-      unseenMessages[message.publicId] = message;
+      unseenMessages[message.publicId] = { thread: [], ...message };
       unseenMessages$.next(Object.values(unseenMessages));
     }
   };

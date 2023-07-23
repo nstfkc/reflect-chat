@@ -1,10 +1,11 @@
-import { Message } from "@prisma/client";
 import { MessageRender } from "./Message";
+import { MessageWithThread } from "shared";
+
 import { useEffect, useLayoutEffect, useMemo, useRef, memo } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
 interface MessageListProps {
-  messages: (string | Message[])[];
+  messages: (string | MessageWithThread[])[];
 }
 
 export const MessageList = memo((props: MessageListProps) => {

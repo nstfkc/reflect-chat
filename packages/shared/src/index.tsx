@@ -1,4 +1,4 @@
-/* export * from "./types/global"; */
+export * from "./types/global";
 
 export * from "./components/context/ConfigContext";
 export { HttpContext, HttpProvider } from "./components/context/HttpContext";

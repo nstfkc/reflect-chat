@@ -1,4 +1,4 @@
-import { PropsWithChildren, useContext, useRef } from "react";
+import { PropsWithChildren, useContext } from "react";
 import { View } from "react-native";
 import { Text } from "../../lib/Text";
 
@@ -7,26 +7,20 @@ import { UsersContext } from "../../context/UsersContext";
 import { Message } from "db";
 import { UserProfilePicture } from "../UserProfilePicture";
 import { useTheme } from "../../context/ThemeContext";
+import { MessageWithThread } from "../../../types/global";
 
 interface ChatMessageProps {
-  messages: Message[];
-  onRender?: (messageId: number) => void;
+  messages: MessageWithThread[];
   fragmentRenderer: (message: Message, index: number) => JSX.Element;
   messageWrapper: (
-    message: Message
+    message: MessageWithThread
   ) => (props: PropsWithChildren<{ isFirstMessage?: boolean }>) => JSX.Element;
 }
 
 export const ChatMessage = (props: ChatMessageProps) => {
-  const {
-    fragmentRenderer,
-    messages,
-    onRender = () => {},
-    messageWrapper,
-  } = props;
+  const { fragmentRenderer, messages, messageWrapper } = props;
   const theme = useTheme();
   const { getUserById } = useContext(UsersContext);
-  const rendered = useRef(false);
 
   if (!messages[0]) {
     return null;
