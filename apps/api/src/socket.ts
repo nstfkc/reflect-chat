@@ -95,7 +95,7 @@ export function sockets(io: Server) {
       }
 
       if (message.receiverId) {
-        userIdSocketMap.get(message.receiverId).forEach((socket) => {
+        userIdSocketMap.get(message.receiverId)?.forEach((socket) => {
           socket?.emit("message:created", message);
         });
       }

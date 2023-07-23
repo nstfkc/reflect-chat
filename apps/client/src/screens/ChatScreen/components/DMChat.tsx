@@ -1,36 +1,38 @@
-import { User } from "@prisma/client";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   FileUploaderProvider,
-  MessageContext,
   useUser,
   TypingUsersList,
-  useSocket,
   useTheme,
   UserProfilePicture,
   UsersContext,
-  useDMChatHistory,
+  ChatContext,
 } from "shared";
 import { getEditor } from "./getEditor";
 import { MessageList } from "./MessageList";
-
-const DMChatHistory = (props: { receiver: User }) => {
-  const messages = useDMChatHistory({
-    receiverId: props.receiver.id,
-  });
-
-  return <MessageList parentId={props.receiver.id} messages={messages} />;
-};
 
 export const DMChat = () => {
   const { receiverPublicId } = useParams();
   const { getUserByPublicId } = useContext(UsersContext);
   const receiver = getUserByPublicId(receiverPublicId ?? "");
-  const { sendMessage, canSendMessage } = useContext(MessageContext);
+
+  const { getChat } = useContext(ChatContext);
+  const chat = getChat({ kind: "dm", receiverId: receiver?.id! });
+
   const { user } = useUser();
   const theme = useTheme();
-  const { socket } = useSocket();
+  const [messages, setMessages] = useState(chat.messages$.getValue());
+
+  useEffect(() => {
+    chat.activate();
+    const subs = chat.messages$.subscribe((messages) => setMessages(messages));
+    setMessages(chat.messages$.getValue());
+    return () => {
+      chat.deactivate();
+      subs.unsubscribe();
+    };
+  }, [chat]);
 
   const Editor = useMemo(
     () =>
@@ -38,22 +40,11 @@ export const DMChat = () => {
         kind: "user",
         user: receiver!,
         onUpdate: () => {
-          socket?.emit("user-typing", {
-            channelOrUserId: receiver?.id!,
-            userId: user?.id!,
-          });
+          //
         },
-        sendMessage: (message) =>
-          sendMessage(
-            {
-              text: message,
-              receiverId: receiver!.id,
-              senderId: user?.id!,
-            },
-            []
-          ),
+        sendMessage: (message) => chat.createMessage(message),
       }),
-    [socket, receiver, sendMessage, user]
+    [chat, receiver]
   );
 
   if (!receiver) {
@@ -75,14 +66,13 @@ export const DMChat = () => {
           />
         </div>
         <div className="relative h-full">
-          <DMChatHistory receiver={receiver} />
+          <MessageList messages={messages} />
         </div>
         <div className="p-2">
           <div className="px-6">
             <TypingUsersList channelOrUserId={user?.id!} />
           </div>
           <div className="w-full rounded-xl bg-white/40">
-            <div>{canSendMessage ? "" : "Cant send message"}</div>
             {Editor ? <Editor /> : null}
           </div>
         </div>

@@ -7,7 +7,7 @@ export const PeopleScreen = () => {
     <div className="p-4">
       <PeopleList
         onUserPress={(user) =>
-          navigate(`/${user.publicId}`, { state: { user } })
+          navigate(`/dm/${user.publicId}`, { state: { user } })
         }
       ></PeopleList>
     </div>

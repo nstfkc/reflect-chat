@@ -241,7 +241,6 @@ function useMessageHistory() {
       const messageExists = current.find(
         (message) => message.publicId === dm.publicId
       );
-      console.log({ messageExists });
       if (messageExists) {
         current.map((message) => {
           if (message.publicId === dm.publicId) {

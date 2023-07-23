@@ -1,24 +1,14 @@
 import { Message } from "@prisma/client";
 import { MessageRender } from "./Message";
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  memo,
-} from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, memo } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { MessageContext } from "shared";
 
 interface MessageListProps {
-  parentId: number;
   messages: (string | Message[])[];
 }
 
 export const MessageList = memo((props: MessageListProps) => {
-  const { messages, parentId } = props;
-  const { markMentionsAsRead, markMessageAsRead } = useContext(MessageContext);
+  const { messages } = props;
   const initialRender = useRef(false);
 
   const virtuoso = useRef<VirtuosoHandle>(null);
@@ -60,15 +50,7 @@ export const MessageList = memo((props: MessageListProps) => {
         alignToBottom={true}
         followOutput={true}
         itemContent={(index, messagesOrDate) => {
-          return (
-            <MessageRender
-              key={index}
-              parentId={parentId}
-              markMentionsAsRead={markMentionsAsRead}
-              markMessageAsRead={markMessageAsRead}
-              messagesOrDate={messagesOrDate}
-            />
-          );
+          return <MessageRender key={index} messagesOrDate={messagesOrDate} />;
         }}
       />
     </div>

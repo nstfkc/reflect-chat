@@ -1,15 +1,8 @@
 import { TbX } from "react-icons/tb";
 
-import { useContext, useCallback, useMemo } from "react";
+import { useEffect, useState, useContext, useMemo } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import {
-  FileUploaderProvider,
-  MessageContext,
-  useUser,
-  useThreadChatHistory,
-  TypingUsersList,
-  useSocket,
-} from "shared";
+import { FileUploaderProvider, TypingUsersList, ChatContext } from "shared";
 import { getEditor } from "./components/getEditor";
 import { MessageList } from "./components/MessageList";
 import { DMChat } from "./components/DMChat";
@@ -28,22 +21,23 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
   } = useParams();
   const parentId =
     props.kind === "channel" ? channelPublicId : receiverPublicId;
-  const { sendMessage, canSendMessage } = useContext(MessageContext);
-  const { message: parentMessage, thread } = useThreadChatHistory({
-    messagePublicId,
-  });
+  const { getMessageByPublicId, getChat } = useContext(ChatContext);
 
-  const { socket } = useSocket();
-
+  const parentMessage = getMessageByPublicId(messagePublicId);
   const navigate = useNavigate();
-  const { user } = useUser();
 
-  const onUpdate = useCallback(() => {
-    socket?.emit("user-typing", {
-      channelOrUserId: parentMessage?.id!,
-      userId: user?.id!,
-    });
-  }, [socket, user?.id, parentMessage?.id]);
+  const chat = getChat({ kind: "thread", conversationId: parentMessage?.id! });
+  const [messages, setMessages] = useState(chat.messages$.getValue());
+
+  useEffect(() => {
+    chat.activate();
+    const subs = chat.messages$.subscribe((messages) => setMessages(messages));
+    setMessages(chat.messages$.getValue());
+    return () => {
+      chat.deactivate();
+      subs.unsubscribe();
+    };
+  }, [chat]);
 
   const Editor = useMemo(
     () =>
@@ -51,19 +45,11 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
         ? getEditor({
             kind: "thread",
             message: parentMessage,
-            onUpdate,
-            sendMessage: (message) =>
-              sendMessage(
-                {
-                  text: message,
-                  conversationId: parentMessage.id,
-                  senderId: user?.id!,
-                },
-                []
-              ),
+            onUpdate: () => {},
+            sendMessage: (message) => chat.createMessage(message),
           })
         : () => <></>,
-    [onUpdate, parentMessage, sendMessage, user]
+    [chat, parentMessage]
   );
 
   if (!parentMessage) {
@@ -81,23 +67,17 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
         </div>
         <div className="p-2">
           <div className="bg-black/5 rounded-lg">
-            <MessageRender
-              messagesOrDate={[parentMessage]}
-              parentId={0}
-              markMentionsAsRead={() => () => {}}
-              markMessageAsRead={() => () => {}}
-            />
+            <MessageRender messagesOrDate={[parentMessage]} parentId={0} />
           </div>
         </div>
         <div className="grow">
-          <MessageList parentId={parentMessage?.id!} messages={thread} />
+          <MessageList messages={messages} />
         </div>
         <div className="p-2">
           <div className="px-6">
             <TypingUsersList channelOrUserId={parentMessage?.id!} />
           </div>
           <div className="w-full rounded-xl bg-white/40">
-            <div>{canSendMessage ? "" : "Cant send message"}</div>
             {Editor ? <Editor /> : null}
           </div>
         </div>

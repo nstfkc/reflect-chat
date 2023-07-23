@@ -16,6 +16,7 @@ interface ChatParams {
   fetchMessages: () => Promise<Message[]>;
   createMessage: (message: Partial<Message>) => Promise<Message>;
   args: ChatArgs;
+  parentChat?: Chat;
 }
 
 export function createChat(params: ChatParams) {
@@ -55,6 +56,19 @@ export function createChat(params: ChatParams) {
     if (messages[message.publicId] || unseenMessages[message.publicId]) {
       return;
     }
+    const collect =
+      params.args.kind === "thread"
+        ? message.conversationId === params.args.conversationId
+        : params.args.kind === "channel"
+        ? message.channelId === params.args.channelId
+        : params.args.kind === "dm"
+        ? message.receiverId === params.user.id
+        : false;
+
+    if (!collect) {
+      return null;
+    }
+
     if (isActive) {
       messages[message.publicId] = message;
       messages$.next(getMessages());
@@ -99,6 +113,10 @@ export function createChat(params: ChatParams) {
     destroy,
     activate,
     deactivate,
+    getAllMessages: () => ({
+      ...messages,
+      ...unseenMessages,
+    }),
   };
 }
 

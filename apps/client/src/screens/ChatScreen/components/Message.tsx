@@ -81,7 +81,7 @@ const MessageRendererFragmentWrapper = ({ message }: { message: Message }) => {
 
 interface MessageProps {
   messagesOrDate: string | Message[];
-  parentId: number;
+  parentId?: number;
 }
 
 export const MessageRender = memo((props: MessageProps) => {
