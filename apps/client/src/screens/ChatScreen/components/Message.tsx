@@ -63,7 +63,7 @@ function MessageWrapper({
         ) : null}
         <div className="absolute opacity-0 group-hover:opacity-100 right-0 top-0 p-1 h-full">
           <div className="flex gap-2">
-            {message.conversationId === null ? (
+            {!message.conversationId ? (
               <button
                 onClick={() =>
                   navigate(message.publicId, { state: { message } })

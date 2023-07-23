@@ -226,6 +226,9 @@ export const createMessage = createPrecedure({
         data: {
           ...args,
         } as any,
+        include: {
+          thread: true,
+        },
       });
       return {
         success: true,

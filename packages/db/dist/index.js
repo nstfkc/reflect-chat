@@ -401,6 +401,9 @@ var createMessage = createPrecedure({
       const message = await prisma.message.create({
         data: {
           ...args
+        },
+        include: {
+          thread: true
         }
       });
       return {
