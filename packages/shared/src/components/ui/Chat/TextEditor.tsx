@@ -145,7 +145,7 @@ export const TextEditor = (props: TextEditorProps) => {
   const buttonClass = "p-1 rounded-md text-lg text-secondary";
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col">
       {showActions ? (
         <div className="flex gap-4 px-2 py-3">
           <div className="flex gap-2 items-center">

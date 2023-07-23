@@ -73,9 +73,7 @@ export const ChannelChat = () => {
           <div>{`# ${channel.name}`}</div>
         </div>
         <div className="relative h-full">
-          {messages ? (
-            <MessageList parentId={channel.id!} messages={messages} />
-          ) : null}
+          {messages ? <MessageList messages={messages} /> : null}
         </div>
         <div className="p-2">
           <div className="px-6">
