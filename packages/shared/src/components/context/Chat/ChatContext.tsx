@@ -61,7 +61,6 @@ export const ChatProvider = (props: PropsWithChildren) => {
   });
 
   useSocket("new-mention", ({ message }) => {
-    console.log("new mention", { message });
     mentionSubject.next(message);
   });
 

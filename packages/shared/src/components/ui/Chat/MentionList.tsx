@@ -8,12 +8,14 @@ import {
 } from "react";
 import { User } from "db";
 import { ConfigContext } from "../../context/ConfigContext";
+import { useTheme } from "../../context/ThemeContext";
 
 interface MentionListProps {
   items: User[];
   command: ({ id }: any) => void;
 }
 export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
+  const theme = useTheme();
   const { assetsServiceUrl } = useContext(ConfigContext);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -63,7 +65,10 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
   }));
 
   return (
-    <ul className="bg-red-50 shadow-md rounded-lg overflow-hidden">
+    <ul
+      style={{ backgroundColor: theme.colors.alt2 }}
+      className="shadow-md rounded-lg overflow-hidden"
+    >
       {props.items.length ? (
         props.items.map((item, index) => (
           <li key={index}>
