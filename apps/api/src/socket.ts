@@ -103,9 +103,8 @@ export function sockets(io: Server) {
         io.emit("message:created", message);
       }
     });
-    socket.on("message:update", (message, medias) => {
+    socket.on("message:update", (message) => {
       if (message.channelId) {
-        console.log(JSON.stringify(message));
         const mentions = parseMentions(message.text);
         for (let mentionIds of mentions) {
           if (userIdSocketMap.has(mentionIds)) {
@@ -122,6 +121,7 @@ export function sockets(io: Server) {
           socket?.emit("message:updated", message);
         });
       }
+
       if (message.conversationId) {
         io.emit("message:updated", message);
       }

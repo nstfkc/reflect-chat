@@ -1,20 +1,11 @@
 import { Message, User } from "@prisma/client";
-import {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { PropsWithChildren, createContext, useContext, useRef } from "react";
 import { Chat, ChatArgs, createChat } from "./Chat";
 import { useUser } from "../../../auth";
 import { useSocket } from "../SocketContext";
 import { useMutation } from "../../../utils/useMutation";
 import { useLazyQuery } from "../../../utils/useLazyQuery";
-import {
-  OrganisationContext,
-  UserWithProfileAndStatus,
-} from "../OrganisationContext/OrganisationContext";
+import { OrganisationContext } from "../OrganisationContext/OrganisationContext";
 import { Subject } from "../../../utils/Subject";
 
 interface ChatContextValue {
@@ -29,7 +20,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
   const { user } = useUser();
   const { trigger: triggerCreateMessage } = useMutation("createMessage");
   const { trigger: triggerUpdateMessage } = useMutation("updateMessage");
-  const { directMessageUserIds, channels, users, getUserById } =
+  const { directMessageUserIds, channels, users } =
     useContext(OrganisationContext);
   const listDirectMessages = useLazyQuery("listDMMessages");
   const listChannelMessages = useLazyQuery("listChannelMessages");
@@ -42,6 +33,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
   );
 
   const messageSubject = new Subject<Message>({} as Message);
+  const messageUpdateSubject = new Subject<Message>({} as Message);
   const mentionSubject = new Subject<Message>({} as Message);
 
   const { socket } = useSocket("message:created", (message) => {
@@ -61,6 +53,10 @@ export const ChatProvider = (props: PropsWithChildren) => {
     messageSubject.next(message);
   });
 
+  useSocket("message:updated", (message) => {
+    messageUpdateSubject.next(message);
+  });
+
   useSocket("new-mention", ({ message }) => {
     mentionSubject.next(message);
   });
@@ -71,6 +67,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
       user,
       messageSubject,
       mentionSubject,
+      messageUpdateSubject,
       fetchMessages: () =>
         args.kind === "channel"
           ? listChannelMessages({ channelId: args.channelId })

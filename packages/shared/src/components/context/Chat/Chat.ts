@@ -15,6 +15,7 @@ interface ChatParams {
   createMessage: (message: Partial<Message>) => Promise<MessageWithThread>;
   updateMessage: (message: Message) => Promise<MessageWithThread>;
   messageSubject: Subject<Message>;
+  messageUpdateSubject: Subject<Message>;
   mentionSubject: Subject<Message>;
   args: ChatArgs;
 }
@@ -50,6 +51,7 @@ export function createChat(params: ChatParams) {
   };
 
   const updateMessage = (message: Message) => {
+    console.log({ message });
     const { thread } = messages[message.publicId];
     messages[message.publicId] = { ...message, thread };
     messages$.next(getMessages());
@@ -99,6 +101,14 @@ export function createChat(params: ChatParams) {
     messages$.next(getMessages());
   };
 
+  const handleUpdateMessage = (message: Message) => {
+    const collect = canMessageBeCollected(message);
+    if (!collect) return;
+    const { thread = [] } = messages?.[message.publicId] ?? {};
+    messages[message.publicId] = { ...message, thread };
+    messages$.next(getMessages());
+  };
+
   const handleNewMention = (message: Message) => {
     const collect = canMessageBeCollected(message);
     if (!collect) {
@@ -112,10 +122,11 @@ export function createChat(params: ChatParams) {
   const unsubscribeMessageSubscription =
     params.messageSubject.subscribe(handleCreateMessage);
 
+  const unsubscribeMessageUpdateSubscription =
+    params.messageUpdateSubject.subscribe(handleUpdateMessage);
+
   const unsubscribeMentionSubscription =
     params.mentionSubject.subscribe(handleNewMention);
-
-  const handleUpdateMessage = (message: Message) => {};
 
   const handleReadMessage = (message: Message) => {
     const newSet = unseenMessageIds$.getValue();
@@ -132,6 +143,7 @@ export function createChat(params: ChatParams) {
   const activate = () => {
     isActive = true;
   };
+
   const deactivate = () => {
     isActive = false;
   };
@@ -139,6 +151,7 @@ export function createChat(params: ChatParams) {
   const destroy = () => {
     unsubscribeMessageSubscription();
     unsubscribeMentionSubscription();
+    unsubscribeMessageUpdateSubscription();
   };
 
   params.fetchMessages().then((_messages) => {

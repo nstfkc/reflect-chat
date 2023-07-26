@@ -172,6 +172,7 @@ model Message {
   text   String    @db.Text
   media  Media[]
   thread Message[] @relation("Conversation")
+  // Some comment
 
   sender       User     @relation("Sender", fields: [senderId], references: [id])
   receiver     User?    @relation("Receiver", fields: [receiverId], references: [id])

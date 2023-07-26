@@ -38,7 +38,7 @@ export type ListenEvents = {
   "new-mention": (props: { message: Message }) => void;
   /*  */
   "message:created": (message: Message) => void;
-  "message:updated": (message: Partial<Message>) => void;
+  "message:updated": (message: Message) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
     userStatusId: number;
