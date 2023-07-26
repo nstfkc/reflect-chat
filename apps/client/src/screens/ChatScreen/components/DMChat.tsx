@@ -1,4 +1,4 @@
-import { useContext, useMemo, useEffect, useState } from "react";
+import { useContext, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   FileUploaderProvider,
@@ -8,29 +8,27 @@ import {
   UserProfilePicture,
   UsersContext,
   ChatContext,
+  useSubjectValue,
 } from "shared";
 import { getEditor } from "./getEditor";
 import { MessageList } from "./MessageList";
 
 export const DMChat = () => {
+  const theme = useTheme();
   const { receiverPublicId } = useParams();
   const { getUserByPublicId } = useContext(UsersContext);
+  const { user } = useUser();
   const receiver = getUserByPublicId(receiverPublicId ?? "");
 
   const { getChat } = useContext(ChatContext);
   const chat = getChat({ kind: "dm", receiverId: receiver?.id! });
 
-  const { user } = useUser();
-  const theme = useTheme();
-  const [messages, setMessages] = useState(chat.messages$.getValue());
+  const messages = useSubjectValue(chat.messages$);
 
   useEffect(() => {
     chat.activate();
-    const subs = chat.messages$.subscribe((messages) => setMessages(messages));
-    setMessages(chat.messages$.getValue());
     return () => {
       chat.deactivate();
-      subs.unsubscribe();
     };
   }, [chat]);
 

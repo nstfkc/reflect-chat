@@ -1,12 +1,70 @@
 import { View, Pressable, Image } from "react-native";
 import { Text } from "../lib/Text";
-import { useQuery } from "../../utils/useQuery";
 import { useContext, useEffect, useState } from "react";
-import { UsersContext } from "../context/UsersContext";
 import { useUser } from "../../auth";
-import { MessageContext } from "../context/MessageContext";
 import { UserProfilePicture } from "./UserProfilePicture";
 import { theme } from "../context/ThemeContext";
+import { ChatContext } from "../context/Chat/ChatContext";
+import { User } from "db";
+import { OrganisationContext } from "../context/OrganisationContext/OrganisationContext";
+import { useSubjectValue } from "../../utils/useSubjectValue";
+
+interface DMProps {
+  userId: number;
+  onConversationPress: (user: User) => void;
+}
+const DM = (props: DMProps) => {
+  const { onConversationPress, userId } = props;
+  const { getChat } = useContext(ChatContext);
+  const { getUserById } = useContext(OrganisationContext);
+  const user = getUserById(userId);
+
+  const chat = getChat({ kind: "dm", receiverId: user.id });
+
+  const unseenMessagesCount = useSubjectValue(chat.unseenMessagesCount$);
+
+  return (
+    <Pressable key={user.publicId} onPress={() => onConversationPress(user)}>
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 4,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <UserProfilePicture
+          size={20}
+          userId={user.id}
+          statusIndicatorBorderColor={theme.colors.alt2}
+        />
+
+        {unseenMessagesCount > 0 ? (
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              width: 20,
+              height: 20,
+              borderRadius: 6,
+              backgroundColor: "rgba(0,0,0,0.2)",
+            }}
+          >
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: 14,
+                fontWeight: "600",
+              }}
+            >
+              {unseenMessagesCount}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+};
 
 interface DMListProps {
   onConversationPress: (user) => void;
@@ -15,45 +73,9 @@ interface DMListProps {
 export const DMList = (props: DMListProps) => {
   const { onConversationPress } = props;
   const { user } = useUser();
-  const { data = [] } = useQuery("listDirectMessages");
-  const { unreadMessages } = useContext(MessageContext);
+  const { directMessageUserIds$ } = useContext(ChatContext);
 
-  const newDMUserIds = Object.entries(unreadMessages)
-    .map(([, messages]) =>
-      Array.from(messages)
-        .filter((message) => message.receiverId === user.id)
-        .map((message) => message.senderId)
-    )
-    .flat();
-
-  const [userIds, setUserIds] = useState(
-    Array.from(
-      new Set([
-        ...data.map((message) => [message.receiverId, message.senderId]).flat(),
-        ...newDMUserIds,
-      ])
-    )
-  );
-
-  /* useEffect(() => {
-   *   setUserIds((ids) => {
-   *     return Array.from(
-   *       new Set([
-   *         ...data
-   *           .map((message) => [message.receiverId, message.senderId])
-   *           .flat(),
-   *         ...newDMUserIds,
-   *         ...ids,
-   *       ])
-   *     );
-   *   });
-   * }, [data, newDMUserIds]); */
-
-  const { users: allUsers } = useContext(UsersContext);
-
-  const users = allUsers.filter(
-    (u) => userIds.includes(u.id) && u.id !== user.id
-  );
+  const directMessageUserIds = useSubjectValue(directMessageUserIds$);
 
   return (
     <View style={{ gap: 8 }}>
@@ -76,53 +98,13 @@ export const DMList = (props: DMListProps) => {
         </View>
       </Pressable>
 
-      {users.map((user) => {
-        const unreadMessageCount = (
-          unreadMessages[`key-${user.id}`] ?? new Set()
-        ).size;
+      {directMessageUserIds.map((userId) => {
         return (
-          <Pressable
-            key={user.publicId}
-            onPress={() => onConversationPress(user)}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 4,
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <UserProfilePicture
-                size={20}
-                userId={user.id}
-                statusIndicatorBorderColor={theme.colors.alt2}
-              />
-
-              {unreadMessageCount > 0 ? (
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: 20,
-                    height: 20,
-                    borderRadius: 6,
-                    backgroundColor: "rgba(0,0,0,0.2)",
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      fontSize: 14,
-                      fontWeight: "600",
-                    }}
-                  >
-                    {unreadMessageCount}
-                  </Text>
-                </View>
-              ) : null}
-            </View>
-          </Pressable>
+          <DM
+            key={userId}
+            onConversationPress={onConversationPress}
+            userId={userId}
+          />
         );
       })}
     </View>

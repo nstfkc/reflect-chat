@@ -31,11 +31,13 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
 
   useEffect(() => {
     chat.activate();
-    const subs = chat.messages$.subscribe((messages) => setMessages(messages));
+    const unsubscribe = chat.messages$.subscribe((messages) =>
+      setMessages(messages)
+    );
     setMessages(chat.messages$.getValue());
     return () => {
       chat.deactivate();
-      subs.unsubscribe();
+      unsubscribe();
     };
   }, [chat]);
 

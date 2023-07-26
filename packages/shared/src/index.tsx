@@ -57,6 +57,7 @@ export {
 export { useQuery } from "./utils/useQuery";
 export { useLazyQuery } from "./utils/useLazyQuery";
 export { useMutation } from "./utils/useMutation";
+export { useSubjectValue } from "./utils/useSubjectValue";
 export { SWRConfig } from "swr";
 
 export {

@@ -185,11 +185,20 @@ export const listDMMessages = createPrecedure({
   schema: z.object({
     receiverId: z.number().optional(),
   }),
-  handler: async (args) => {
+  handler: async (args, ctx) => {
     try {
       const messages = await prisma.message.findMany({
         where: {
-          receiverId: Number(args.receiverId),
+          OR: [
+            {
+              receiverId: Number(args.receiverId),
+              senderId: Number(ctx.id),
+            },
+            {
+              receiverId: Number(ctx.id),
+              senderId: Number(args.receiverId),
+            },
+          ],
         },
         include: { thread: true },
         orderBy: { createdAt: "asc" },

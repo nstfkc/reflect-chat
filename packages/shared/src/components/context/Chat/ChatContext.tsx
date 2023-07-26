@@ -1,67 +1,113 @@
-import { Message } from "@prisma/client";
-import { PropsWithChildren, createContext, useRef } from "react";
+import { Message, User } from "@prisma/client";
+import {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import { Chat, ChatArgs, createChat } from "./Chat";
 import { useUser } from "../../../auth";
 import { useSocket } from "../SocketContext";
 import { useMutation } from "../../../utils/useMutation";
 import { useLazyQuery } from "../../../utils/useLazyQuery";
+import {
+  OrganisationContext,
+  UserWithProfileAndStatus,
+} from "../OrganisationContext/OrganisationContext";
+import { Subject } from "../../../utils/Subject";
 
 interface ChatContextValue {
   getChat: (args: ChatArgs) => Chat;
   getMessageByPublicId: (publicId: string) => Message | null;
+  directMessageUserIds$: Subject<number[]>;
 }
 
 export const ChatContext = createContext({} as ChatContextValue);
 
 export const ChatProvider = (props: PropsWithChildren) => {
-  const chatListRef = useRef(new Map<string, Chat>());
   const { user } = useUser();
-  const { socket } = useSocket();
   const { trigger } = useMutation("createMessage");
+  const { directMessageUserIds, channels, users, getUserById } =
+    useContext(OrganisationContext);
   const listDirectMessages = useLazyQuery("listDMMessages");
   const listChannelMessages = useLazyQuery("listChannelMessages");
   const listThreadMessages = useLazyQuery("listThreadMessages");
+
+  const directMessageUserIds$ = new Subject(
+    users
+      .filter((user) => directMessageUserIds.includes(user.id))
+      .map((user) => user.id)
+  );
+
+  const messageSubject = new Subject<Message>({} as Message);
+
+  const { socket } = useSocket("message:created", (message) => {
+    let userIdToAddDMUserIds: number | null = null;
+    if (message.receiverId === user.id) {
+      userIdToAddDMUserIds = message.senderId;
+    }
+    if (message.senderId === user.id) {
+      userIdToAddDMUserIds = message.receiverId;
+    }
+
+    const currentUserIds = directMessageUserIds$.getValue();
+    const shouldAddUser = !currentUserIds.includes(message.senderId);
+    if (shouldAddUser && userIdToAddDMUserIds) {
+      directMessageUserIds$.next([...currentUserIds, userIdToAddDMUserIds]);
+    }
+    messageSubject.next(message);
+  });
+
+  const createNewChat = (args: ChatArgs) => {
+    const chat = createChat({
+      args,
+      user,
+      messageSubject,
+      fetchMessages: () =>
+        args.kind === "channel"
+          ? listChannelMessages({ channelId: args.channelId })
+          : args.kind === "dm"
+          ? listDirectMessages({
+              receiverId: args.receiverId,
+            })
+          : listThreadMessages({ conversationId: args.conversationId }),
+      createMessage: (message) =>
+        trigger(message).then((res) => {
+          if (res.success === true) {
+            socket.emit("message:create", res.data);
+            return res.data;
+          }
+        }),
+    });
+    return chat;
+  };
+
+  const map = new Map<string, Chat>();
+
+  for (const dmId of directMessageUserIds) {
+    map.set(`dm-${dmId}`, createNewChat({ kind: "dm", receiverId: dmId }));
+  }
+
+  for (const channel of channels) {
+    map.set(
+      `channel-${channel.id}`,
+      createNewChat({ kind: "channel", channelId: channel.id })
+    );
+  }
+
+  const chatListRef = useRef(map);
 
   if (!socket) {
     return null;
   }
 
-  const getChat = (args: ChatArgs, streamSize = 10) => {
+  const getChat = (args: ChatArgs) => {
     const { kind, ...rest } = args;
     const id = [kind, ...Object.values(rest)].join("-");
 
     if (!chatListRef.current.has(id)) {
-      let parentChat = null;
-      if (args.kind === "thread") {
-        if (chatListRef.current.has(`dm-${args.conversationId}`)) {
-          parentChat = chatListRef.current.get(`dm-${args.conversationId}`);
-        }
-        if (chatListRef.current.has(`channel-${args.conversationId}`)) {
-          parentChat = chatListRef.current.get(
-            `channel-${args.conversationId}`
-          );
-        }
-      }
-      chatListRef.current.set(
-        id,
-        createChat({
-          args,
-          user,
-          streamSize,
-          socket,
-          parentChat,
-          fetchMessages: () =>
-            args.kind === "channel"
-              ? listChannelMessages({ channelId: args.channelId })
-              : args.kind === "dm"
-              ? listDirectMessages({ receiverId: args.receiverId })
-              : listThreadMessages({ conversationId: args.conversationId }),
-          createMessage: (message) =>
-            trigger(message).then((res) =>
-              res.success === true ? res.data : null
-            ),
-        })
-      );
+      chatListRef.current.set(id, createNewChat(args));
     }
     return chatListRef.current.get(id);
   };
@@ -77,7 +123,9 @@ export const ChatProvider = (props: PropsWithChildren) => {
   };
 
   return (
-    <ChatContext.Provider value={{ getChat, getMessageByPublicId }}>
+    <ChatContext.Provider
+      value={{ getChat, getMessageByPublicId, directMessageUserIds$ }}
+    >
       {props.children}
     </ChatContext.Provider>
   );

@@ -19,8 +19,6 @@ export class Subject<T> {
 
   subscribe = (subscriber: Subscriber<T>) => {
     this.subscribers.add(subscriber);
-    return {
-      unsubscribe: () => this.subscribers.delete(subscriber),
-    };
+    return () => this.subscribers.delete(subscriber);
   };
 }

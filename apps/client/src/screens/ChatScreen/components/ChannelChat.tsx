@@ -1,4 +1,4 @@
-import { useContext, useCallback, useMemo, useState, useEffect } from "react";
+import { useContext, useCallback, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   OrganisationContext,
@@ -9,6 +9,7 @@ import {
   useSocket,
   useTheme,
   ChatContext,
+  useSubjectValue,
 } from "shared";
 import { getEditor } from "./getEditor";
 import { MessageList } from "./MessageList";
@@ -27,15 +28,12 @@ export const ChannelChat = () => {
   );
 
   const chat = getChat({ kind: "channel", channelId: channel?.id! });
-  const [messages, setMessages] = useState(chat.messages$.getValue());
+  const messages = useSubjectValue(chat.messages$);
 
   useEffect(() => {
     chat.activate();
-    const subs = chat.messages$.subscribe((messages) => setMessages(messages));
-    setMessages(chat.messages$.getValue());
     return () => {
       chat.deactivate();
-      subs.unsubscribe();
     };
   }, [chat]);
 
