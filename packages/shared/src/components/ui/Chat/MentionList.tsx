@@ -21,7 +21,7 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
     const item = props.items[index];
 
     if (item) {
-      props.command({ id: item.id, label: item.name });
+      props.command({ id: item.id, label: (item as any).userProfile.username });
     }
   };
 
@@ -88,7 +88,7 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
                   alt=""
                 />
               </div>
-              <span>{item.name}</span>
+              <span>{(item as any).userProfile.username}</span>
             </button>
           </li>
         ))

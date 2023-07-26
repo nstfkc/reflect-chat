@@ -2,7 +2,12 @@ import { TbX } from "react-icons/tb";
 
 import { useEffect, useState, useContext, useMemo } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { FileUploaderProvider, TypingUsersList, ChatContext } from "shared";
+import {
+  FileUploaderProvider,
+  TypingUsersList,
+  ChatContext,
+  useSubjectValue,
+} from "shared";
 import { getEditor } from "./components/getEditor";
 import { MessageList } from "./components/MessageList";
 import { DMChat } from "./components/DMChat";
@@ -27,17 +32,12 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
   const navigate = useNavigate();
 
   const chat = getChat({ kind: "thread", conversationId: parentMessage?.id! });
-  const [messages, setMessages] = useState(chat.messages$.getValue());
+  const messages = useSubjectValue(chat.messages$);
 
   useEffect(() => {
     chat.activate();
-    const unsubscribe = chat.messages$.subscribe((messages) =>
-      setMessages(messages)
-    );
-    setMessages(chat.messages$.getValue());
     return () => {
       chat.deactivate();
-      unsubscribe();
     };
   }, [chat]);
 
@@ -78,7 +78,10 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
           </div>
         </div>
         <div className="grow">
-          <MessageList messages={messages} />
+          <MessageList
+            onMessageRender={chat.handleReadMessage}
+            messages={messages}
+          />
         </div>
         <div className="p-2">
           <div className="px-6">

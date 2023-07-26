@@ -18,7 +18,9 @@ export const createMentionSuggestions = (
     items: ({ query }: { query: string }) => {
       return params.users
         .filter((item) =>
-          item.name.toLowerCase().startsWith(query.toLowerCase())
+          (item as any).userProfile.username
+            .toLowerCase()
+            .startsWith(query.toLowerCase())
         )
         .slice(0, 5);
     },

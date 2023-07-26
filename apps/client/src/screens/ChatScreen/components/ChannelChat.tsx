@@ -71,7 +71,12 @@ export const ChannelChat = () => {
           <div>{`# ${channel.name}`}</div>
         </div>
         <div className="relative h-full">
-          {messages ? <MessageList messages={messages} /> : null}
+          {messages ? (
+            <MessageList
+              onMessageRender={chat.handleReadMessage}
+              messages={messages}
+            />
+          ) : null}
         </div>
         <div className="p-2">
           <div className="px-6">

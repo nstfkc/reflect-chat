@@ -61,6 +61,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
   });
 
   useSocket("new-mention", ({ message }) => {
+    console.log("new mention", { message });
     mentionSubject.next(message);
   });
 
@@ -69,6 +70,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
       args,
       user,
       messageSubject,
+      mentionSubject,
       fetchMessages: () =>
         args.kind === "channel"
           ? listChannelMessages({ channelId: args.channelId })

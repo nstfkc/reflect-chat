@@ -27,6 +27,7 @@ import { UploadQueue } from "./UploadQueue";
 import { TbIndentDecrease, TbIndentIncrease } from "react-icons/tb";
 import { User } from "db";
 import { UsersContext } from "../../context/UsersContext";
+import { OrganisationContext } from "../../context/OrganisationContext/OrganisationContext";
 
 let shiftEnter = false;
 
@@ -71,7 +72,7 @@ export const TextEditor = (props: TextEditorProps) => {
     onRender,
     showActions = true,
   } = props;
-  const { users } = useContext(UsersContext);
+  const { users } = useContext(OrganisationContext);
   const { uploadQueue, clearUplaodQueue } = useContext(FileUploaderContext);
 
   const medias = Array.from(uploadQueue);
@@ -127,12 +128,9 @@ export const TextEditor = (props: TextEditorProps) => {
             shiftEnter = false;
           },
           onStart: (props) => {
-            console.log(props);
             shiftEnter = true;
           },
-          onUpdate: (props) => {
-            console.log(props);
-          },
+          onUpdate: (props) => {},
         }),
       }),
       HandleEnter(handlePressEnter),

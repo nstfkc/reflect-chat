@@ -14,6 +14,7 @@ interface ChatParams {
   fetchMessages: () => Promise<MessageWithThread[]>;
   createMessage: (message: Partial<Message>) => Promise<MessageWithThread>;
   messageSubject: Subject<Message>;
+  mentionSubject: Subject<Message>;
   args: ChatArgs;
 }
 
@@ -47,6 +48,19 @@ export function createChat(params: ChatParams) {
     });
   };
 
+  const canMessageBeCollected = (message: Message) => {
+    return params.args.kind === "thread"
+      ? message.conversationId === params.args.conversationId
+      : params.args.kind === "channel"
+      ? message.channelId === params.args.channelId
+      : params.args.kind === "dm"
+      ? (message.senderId === params.args.receiverId &&
+          message.receiverId === params.user.id) ||
+        (message.receiverId === params.args.receiverId &&
+          message.senderId === params.user.id)
+      : false;
+  };
+
   const editMessage = (message: Partial<Message>) => {};
 
   const handleCreateMessage = (message: Message) => {
@@ -54,17 +68,7 @@ export function createChat(params: ChatParams) {
       return;
     }
 
-    const collect =
-      params.args.kind === "thread"
-        ? message.conversationId === params.args.conversationId
-        : params.args.kind === "channel"
-        ? message.channelId === params.args.channelId
-        : params.args.kind === "dm"
-        ? (message.senderId === params.args.receiverId &&
-            message.receiverId === params.user.id) ||
-          (message.receiverId === params.args.receiverId &&
-            message.senderId === params.user.id)
-        : false;
+    const collect = canMessageBeCollected(message);
 
     const existInMessages = Object.values(messages).find(
       (m) => m.id === message.conversationId
@@ -89,8 +93,21 @@ export function createChat(params: ChatParams) {
     messages$.next(getMessages());
   };
 
+  const handleNewMention = (message: Message) => {
+    const collect = canMessageBeCollected(message);
+    if (!collect) {
+      return;
+    }
+    const current = unseenMentions$.getValue();
+    current.add(message.id);
+    unseenMentions$.next(new Set(current));
+  };
+
   const unsubscribeMessageSubscription =
     params.messageSubject.subscribe(handleCreateMessage);
+
+  const unsubscribeMentionSubscription =
+    params.mentionSubject.subscribe(handleNewMention);
 
   const handleUpdateMessage = (message: Message) => {};
 
@@ -98,6 +115,12 @@ export function createChat(params: ChatParams) {
     const newSet = unseenMessageIds$.getValue();
     newSet.delete(message.id);
     unseenMessageIds$.next(new Set(newSet));
+
+    const newMentionSet = unseenMentions$.getValue();
+    if (newMentionSet.has(message.id)) {
+      newMentionSet.delete(message.id);
+      unseenMentions$.next(new Set(newMentionSet));
+    }
   };
 
   const activate = () => {
@@ -109,6 +132,7 @@ export function createChat(params: ChatParams) {
 
   const destroy = () => {
     unsubscribeMessageSubscription();
+    unsubscribeMentionSubscription();
   };
 
   params.fetchMessages().then((_messages) => {
@@ -123,6 +147,7 @@ export function createChat(params: ChatParams) {
     editMessage,
     messages$,
     unseenMessageIds$,
+    unseenMentions$,
     destroy,
     activate,
     deactivate,
