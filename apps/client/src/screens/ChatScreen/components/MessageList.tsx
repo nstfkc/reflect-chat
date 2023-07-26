@@ -1,3 +1,5 @@
+import { Message } from "@prisma/client";
+
 import { MessageRender } from "./Message";
 import { MessageWithThread } from "shared";
 
@@ -6,6 +8,7 @@ import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
 interface MessageListProps {
   messages: (string | MessageWithThread[])[];
+  onMessageRender: (message: Message) => void;
 }
 
 export const MessageList = memo((props: MessageListProps) => {
@@ -51,7 +54,13 @@ export const MessageList = memo((props: MessageListProps) => {
         alignToBottom={true}
         followOutput={true}
         itemContent={(index, messagesOrDate) => {
-          return <MessageRender key={index} messagesOrDate={messagesOrDate} />;
+          return (
+            <MessageRender
+              onMessageRender={props.onMessageRender}
+              key={index}
+              messagesOrDate={messagesOrDate}
+            />
+          );
         }}
       />
     </div>

@@ -70,6 +70,7 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
         <div className="p-2">
           <div className="bg-black/5 rounded-lg">
             <MessageRender
+              onMessageRender={chat.handleReadMessage}
               showThreadCount={false}
               messagesOrDate={[parentMessage as any]}
               parentId={0}

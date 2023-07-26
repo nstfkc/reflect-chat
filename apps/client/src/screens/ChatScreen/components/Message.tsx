@@ -25,16 +25,21 @@ function MessageWrapper({
   children,
   message,
   showThreadCount = true,
+  onRender,
 }: PropsWithChildren<{
   message: MessageWithThread;
   showThreadCount?: boolean;
+  onRender: VoidFunction;
 }>) {
   const [isEditActive, setIsEditActive] = useState(false);
   const navigate = useNavigate();
   const { user } = useUser();
   return (
     <MessageEditingContext.Provider value={{ isEditActive }}>
-      <div className={"group hover:bg-gray-400/10 rounded-md relative p-1"}>
+      <div
+        ref={() => onRender()}
+        className={"group hover:bg-gray-400/10 rounded-md relative p-1"}
+      >
         {children}
         {message.thread?.length > 0 && showThreadCount ? (
           <div className="pl-[38px]">
@@ -126,10 +131,11 @@ interface MessageProps {
   messagesOrDate: string | MessageWithThread[];
   parentId?: number;
   showThreadCount?: boolean;
+  onMessageRender: (message: Message) => void;
 }
 
 export const MessageRender = memo((props: MessageProps) => {
-  const { messagesOrDate, showThreadCount } = props;
+  const { messagesOrDate, showThreadCount, onMessageRender } = props;
   if (typeof messagesOrDate === "string") {
     return (
       <div className="py-8 text-center font-semibold text-sm">
@@ -140,7 +146,11 @@ export const MessageRender = memo((props: MessageProps) => {
 
   function renderMessageWrapper(message: MessageWithThread) {
     const C = (props: PropsWithChildren) => (
-      <MessageWrapper showThreadCount={showThreadCount} message={message}>
+      <MessageWrapper
+        onRender={() => onMessageRender(message)}
+        showThreadCount={showThreadCount}
+        message={message}
+      >
         {props.children}
       </MessageWrapper>
     );

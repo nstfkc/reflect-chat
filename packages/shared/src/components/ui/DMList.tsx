@@ -21,7 +21,7 @@ const DM = (props: DMProps) => {
 
   const chat = getChat({ kind: "dm", receiverId: user.id });
 
-  const unseenMessagesCount = useSubjectValue(chat.unseenMessagesCount$);
+  const unseenMessagesCount = useSubjectValue(chat.unseenMessageIds$);
 
   return (
     <Pressable key={user.publicId} onPress={() => onConversationPress(user)}>
@@ -39,7 +39,7 @@ const DM = (props: DMProps) => {
           statusIndicatorBorderColor={theme.colors.alt2}
         />
 
-        {unseenMessagesCount > 0 ? (
+        {unseenMessagesCount.size > 0 ? (
           <View
             style={{
               justifyContent: "center",
@@ -57,7 +57,7 @@ const DM = (props: DMProps) => {
                 fontWeight: "600",
               }}
             >
-              {unseenMessagesCount}
+              {unseenMessagesCount.size}
             </Text>
           </View>
         ) : null}

@@ -23,7 +23,8 @@ export function createChat(params: ChatParams) {
 
   const getMessages = () => insertDateBetweenMessages(Object.values(messages));
   const messages$ = new Subject(getMessages());
-  const unseenMessagesCount$ = new Subject(0);
+  const unseenMessageIds$ = new Subject<Set<number>>(new Set());
+  const unseenMentions$ = new Subject<Set<number>>(new Set());
 
   const createMessage = (text: string) => {
     const publicId = createId();
@@ -79,7 +80,9 @@ export function createChat(params: ChatParams) {
     }
 
     if (!isActive) {
-      unseenMessagesCount$.next(unseenMessagesCount$.getValue() + 1);
+      unseenMessageIds$.next(
+        new Set(unseenMessageIds$.getValue().add(message.id))
+      );
     }
 
     messages[message.publicId] = { thread: [], ...message };
@@ -90,6 +93,12 @@ export function createChat(params: ChatParams) {
     params.messageSubject.subscribe(handleCreateMessage);
 
   const handleUpdateMessage = (message: Message) => {};
+
+  const handleReadMessage = (message: Message) => {
+    const newSet = unseenMessageIds$.getValue();
+    newSet.delete(message.id);
+    unseenMessageIds$.next(new Set(newSet));
+  };
 
   const activate = () => {
     isActive = true;
@@ -113,11 +122,12 @@ export function createChat(params: ChatParams) {
     createMessage,
     editMessage,
     messages$,
-    unseenMessagesCount$,
+    unseenMessageIds$,
     destroy,
     activate,
     deactivate,
     handleCreateMessage,
+    handleReadMessage,
     getAllMessages: () => messages,
   };
 }

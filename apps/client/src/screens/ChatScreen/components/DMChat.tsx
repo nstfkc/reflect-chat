@@ -64,7 +64,10 @@ export const DMChat = () => {
           />
         </div>
         <div className="relative h-full">
-          <MessageList messages={messages} />
+          <MessageList
+            onMessageRender={chat.handleReadMessage}
+            messages={messages}
+          />
         </div>
         <div className="p-2">
           <div className="px-6">

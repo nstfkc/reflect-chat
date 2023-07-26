@@ -41,6 +41,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
   );
 
   const messageSubject = new Subject<Message>({} as Message);
+  const mentionSubject = new Subject<Message>({} as Message);
 
   const { socket } = useSocket("message:created", (message) => {
     let userIdToAddDMUserIds: number | null = null;
@@ -57,6 +58,10 @@ export const ChatProvider = (props: PropsWithChildren) => {
       directMessageUserIds$.next([...currentUserIds, userIdToAddDMUserIds]);
     }
     messageSubject.next(message);
+  });
+
+  useSocket("new-mention", ({ message }) => {
+    mentionSubject.next(message);
   });
 
   const createNewChat = (args: ChatArgs) => {
