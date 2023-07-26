@@ -105,75 +105,25 @@ export function sockets(io: Server) {
     });
     socket.on("message:update", (message, medias) => {
       if (message.channelId) {
-        prisma.message
-          .update({
-            where: {
-              id: message.id,
-            },
-            data: {
-              ...message,
-              media: {
-                create: medias,
-              },
-            },
-            include: {
-              media: true,
-            },
-          })
-          .then((message) => {
-            console.log(JSON.stringify(message));
-            const mentions = parseMentions(message.text);
-            for (let mentionIds of mentions) {
-              if (userIdSocketMap.has(mentionIds)) {
-                userIdSocketMap.get(mentionIds)?.forEach((socket) => {
-                  socket?.emit("new-mention", { message });
-                });
-              }
-            }
-            io.emit("message:updated", message);
-          });
-        // emit new message to sender and receiver
+        console.log(JSON.stringify(message));
+        const mentions = parseMentions(message.text);
+        for (let mentionIds of mentions) {
+          if (userIdSocketMap.has(mentionIds)) {
+            userIdSocketMap.get(mentionIds)?.forEach((socket) => {
+              socket?.emit("new-mention", { message });
+            });
+          }
+        }
+        io.emit("message:updated", message);
       }
 
       if (message.receiverId) {
-        prisma.message
-          .update({
-            where: { id: message.id },
-            data: {
-              ...message,
-              media: {
-                create: medias,
-              },
-            },
-            include: {
-              media: true,
-            },
-          })
-          .then((dm) => {
-            userIdSocketMap.get(message.receiverId).forEach((socket) => {
-              socket?.emit("message:updated", dm);
-            });
-          })
-          .catch((error) => console.log(error));
+        userIdSocketMap.get(message.receiverId).forEach((socket) => {
+          socket?.emit("message:updated", message);
+        });
       }
       if (message.conversationId) {
-        prisma.message
-          .update({
-            where: { id: message.id },
-            data: {
-              ...message,
-              media: {
-                create: medias,
-              },
-            },
-            include: {
-              media: true,
-            },
-          })
-          .then((message) => {
-            io.emit("message:updated", message);
-          })
-          .catch((error) => console.log(error));
+        io.emit("message:updated", message);
       }
     });
   });

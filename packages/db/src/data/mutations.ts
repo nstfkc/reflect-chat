@@ -220,12 +220,37 @@ export const createMessage = createPrecedure({
     channelId: z.number().optional(),
   }),
   handler: async (args, ctx) => {
-    console.log(args);
     try {
       const message = await prisma.message.create({
         data: {
           ...args,
         } as any,
+        include: {
+          thread: true,
+        },
+      });
+      return {
+        success: true,
+        data: message,
+      };
+    } catch (err) {
+      return prismaError({ message: err, statusCode: 403 });
+    }
+  },
+});
+
+export const updateMessage = createPrecedure({
+  schema: z.object({
+    text: z.string(),
+    publicId: z.string(),
+  }),
+  handler: async (args) => {
+    try {
+      const message = await prisma.message.update({
+        where: { publicId: args.publicId },
+        data: {
+          text: args.text,
+        },
         include: {
           thread: true,
         },

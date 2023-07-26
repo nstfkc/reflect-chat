@@ -9,6 +9,7 @@ import {
   useSocket,
   useTheme,
   ChatContext,
+  ChatInstanceProvider,
   useSubjectValue,
 } from "shared";
 import { getEditor } from "./getEditor";
@@ -62,32 +63,34 @@ export const ChannelChat = () => {
   }
 
   return (
-    <FileUploaderProvider pathPrefix={channel?.publicId}>
-      <div className="h-full flex flex-col justify-between">
-        <div
-          className="px-4 py-2 font-bold"
-          style={{ backgroundColor: theme.colors.alt1 }}
-        >
-          <div>{`# ${channel.name}`}</div>
-        </div>
-        <div className="relative h-full">
-          {messages ? (
-            <MessageList
-              onMessageRender={chat.handleReadMessage}
-              messages={messages}
-            />
-          ) : null}
-        </div>
-        <div className="p-2">
-          <div className="px-6">
-            <TypingUsersList channelOrUserId={channel.id} />
+    <ChatInstanceProvider chat={chat}>
+      <FileUploaderProvider pathPrefix={channel?.publicId}>
+        <div className="h-full flex flex-col justify-between">
+          <div
+            className="px-4 py-2 font-bold"
+            style={{ backgroundColor: theme.colors.alt1 }}
+          >
+            <div>{`# ${channel.name}`}</div>
           </div>
-          <div className="w-full rounded-xl bg-white/40">
-            <div>{canSendMessage ? "" : "Cant send message"}</div>
-            {Editor ? <Editor /> : null}
+          <div className="relative h-full">
+            {messages ? (
+              <MessageList
+                onMessageRender={chat.handleReadMessage}
+                messages={messages}
+              />
+            ) : null}
+          </div>
+          <div className="p-2">
+            <div className="px-6">
+              <TypingUsersList channelOrUserId={channel.id} />
+            </div>
+            <div className="w-full rounded-xl bg-white/40">
+              <div>{canSendMessage ? "" : "Cant send message"}</div>
+              {Editor ? <Editor /> : null}
+            </div>
           </div>
         </div>
-      </div>
-    </FileUploaderProvider>
+      </FileUploaderProvider>
+    </ChatInstanceProvider>
   );
 };

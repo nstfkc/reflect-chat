@@ -30,6 +30,10 @@ export {
   ChatContext,
   ChatProvider,
 } from "./components/context/Chat/ChatContext";
+export {
+  ChatInstanceContext,
+  ChatInstanceProvider,
+} from "./components/context/Chat/ChatInstanceContext";
 
 export {
   useChatHistory,

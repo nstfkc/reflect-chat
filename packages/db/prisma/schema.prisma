@@ -167,7 +167,7 @@ model Media {
 
 model Message {
   id       Int    @id @default(autoincrement())
-  publicId String @default(cuid())
+  publicId String @unique @default(cuid())
 
   text   String    @db.Text
   media  Media[]

@@ -14,12 +14,15 @@ import {
   JSONContent,
   ChatMessage,
   TextEditor,
-  MessageContext,
   UserProfilePicture,
   useUser,
+  ChatInstanceContext,
 } from "shared";
 
-const MessageEditingContext = createContext({ isEditActive: false });
+const MessageEditingContext = createContext({
+  isEditActive: false,
+  toggleEdit: () => {},
+});
 
 function MessageWrapper({
   children,
@@ -35,7 +38,9 @@ function MessageWrapper({
   const navigate = useNavigate();
   const { user } = useUser();
   return (
-    <MessageEditingContext.Provider value={{ isEditActive }}>
+    <MessageEditingContext.Provider
+      value={{ isEditActive, toggleEdit: () => setIsEditActive((s) => !s) }}
+    >
       <div
         ref={() => onRender()}
         className={"group hover:bg-gray-400/10 rounded-md relative p-1"}
@@ -94,9 +99,8 @@ function MessageWrapper({
 }
 
 const MessageRendererFragmentWrapper = ({ message }: { message: Message }) => {
-  const { isEditActive } = useContext(MessageEditingContext);
-  const { updateMessage } = useContext(MessageContext);
-
+  const { isEditActive, toggleEdit } = useContext(MessageEditingContext);
+  const { chat } = useContext(ChatInstanceContext);
   if (isEditActive) {
     return (
       <div
@@ -109,13 +113,11 @@ const MessageRendererFragmentWrapper = ({ message }: { message: Message }) => {
           showActions={false}
           initialContent={JSON.parse(message.text)}
           onSubmit={(text) => {
-            updateMessage(
-              {
-                ...message,
-                text,
-              },
-              []
-            );
+            chat.updateMessage({
+              ...message,
+              text,
+            });
+            toggleEdit();
           }}
           onMentionListUpdate={() => {}}
           onUpdate={() => {}}

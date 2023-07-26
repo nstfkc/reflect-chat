@@ -27,7 +27,8 @@ export const ChatContext = createContext({} as ChatContextValue);
 
 export const ChatProvider = (props: PropsWithChildren) => {
   const { user } = useUser();
-  const { trigger } = useMutation("createMessage");
+  const { trigger: triggerCreateMessage } = useMutation("createMessage");
+  const { trigger: triggerUpdateMessage } = useMutation("updateMessage");
   const { directMessageUserIds, channels, users, getUserById } =
     useContext(OrganisationContext);
   const listDirectMessages = useLazyQuery("listDMMessages");
@@ -79,9 +80,19 @@ export const ChatProvider = (props: PropsWithChildren) => {
             })
           : listThreadMessages({ conversationId: args.conversationId }),
       createMessage: (message) =>
-        trigger(message).then((res) => {
+        triggerCreateMessage(message).then((res) => {
           if (res.success === true) {
             socket.emit("message:create", res.data);
+            return res.data;
+          }
+        }),
+      updateMessage: (message) =>
+        triggerUpdateMessage({
+          publicId: message.publicId,
+          text: message.text,
+        }).then((res) => {
+          if (res.success === true) {
+            socket.emit("message:update", res.data);
             return res.data;
           }
         }),

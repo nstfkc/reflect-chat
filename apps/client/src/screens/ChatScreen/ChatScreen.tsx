@@ -7,6 +7,7 @@ import {
   TypingUsersList,
   ChatContext,
   useSubjectValue,
+  ChatInstanceProvider,
 } from "shared";
 import { getEditor } from "./components/getEditor";
 import { MessageList } from "./components/MessageList";
@@ -59,40 +60,42 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
   }
 
   return (
-    <FileUploaderProvider pathPrefix={parentMessage?.publicId!}>
-      <div className="bg-black/5 shadow-md h-full flex flex-col">
-        <div className="p-4 flex justify-between items-center">
-          <span className="font-bold">Thread</span>
-          <button onClick={() => navigate(`/${props.kind}/${parentId}`)}>
-            <TbX className="text-2xl" />
-          </button>
-        </div>
-        <div className="p-2">
-          <div className="bg-black/5 rounded-lg">
-            <MessageRender
+    <ChatInstanceProvider chat={chat}>
+      <FileUploaderProvider pathPrefix={parentMessage?.publicId!}>
+        <div className="bg-black/5 shadow-md h-full flex flex-col">
+          <div className="p-4 flex justify-between items-center">
+            <span className="font-bold">Thread</span>
+            <button onClick={() => navigate(`/${props.kind}/${parentId}`)}>
+              <TbX className="text-2xl" />
+            </button>
+          </div>
+          <div className="p-2">
+            <div className="bg-black/5 rounded-lg">
+              <MessageRender
+                onMessageRender={chat.handleReadMessage}
+                showThreadCount={false}
+                messagesOrDate={[parentMessage as any]}
+                parentId={0}
+              />
+            </div>
+          </div>
+          <div className="grow">
+            <MessageList
               onMessageRender={chat.handleReadMessage}
-              showThreadCount={false}
-              messagesOrDate={[parentMessage as any]}
-              parentId={0}
+              messages={messages}
             />
           </div>
-        </div>
-        <div className="grow">
-          <MessageList
-            onMessageRender={chat.handleReadMessage}
-            messages={messages}
-          />
-        </div>
-        <div className="p-2">
-          <div className="px-6">
-            <TypingUsersList channelOrUserId={parentMessage?.id!} />
-          </div>
-          <div className="w-full rounded-xl bg-white/40">
-            {Editor ? <Editor /> : null}
+          <div className="p-2">
+            <div className="px-6">
+              <TypingUsersList channelOrUserId={parentMessage?.id!} />
+            </div>
+            <div className="w-full rounded-xl bg-white/40">
+              {Editor ? <Editor /> : null}
+            </div>
           </div>
         </div>
-      </div>
-    </FileUploaderProvider>
+      </FileUploaderProvider>
+    </ChatInstanceProvider>
   );
 };
 

@@ -8,6 +8,7 @@ import {
   UserProfilePicture,
   UsersContext,
   ChatContext,
+  ChatInstanceProvider,
   useSubjectValue,
 } from "shared";
 import { getEditor } from "./getEditor";
@@ -50,34 +51,36 @@ export const DMChat = () => {
   }
 
   return (
-    <FileUploaderProvider pathPrefix={receiver?.publicId}>
-      <div className="h-full flex flex-col justify-between">
-        <div
-          className="px-4 py-2 font-bold"
-          style={{ backgroundColor: theme.colors.alt1 }}
-        >
-          <UserProfilePicture
-            size={24}
-            textStyle={{ fontWeight: "bold" }}
-            statusIndicatorBorderColor={theme.colors.alt1}
-            userId={receiver.id}
-          />
-        </div>
-        <div className="relative h-full">
-          <MessageList
-            onMessageRender={chat.handleReadMessage}
-            messages={messages}
-          />
-        </div>
-        <div className="p-2">
-          <div className="px-6">
-            <TypingUsersList channelOrUserId={user?.id!} />
+    <ChatInstanceProvider chat={chat}>
+      <FileUploaderProvider pathPrefix={receiver?.publicId}>
+        <div className="h-full flex flex-col justify-between">
+          <div
+            className="px-4 py-2 font-bold"
+            style={{ backgroundColor: theme.colors.alt1 }}
+          >
+            <UserProfilePicture
+              size={24}
+              textStyle={{ fontWeight: "bold" }}
+              statusIndicatorBorderColor={theme.colors.alt1}
+              userId={receiver.id}
+            />
           </div>
-          <div className="w-full rounded-xl bg-white/40">
-            {Editor ? <Editor /> : null}
+          <div className="relative h-full">
+            <MessageList
+              onMessageRender={chat.handleReadMessage}
+              messages={messages}
+            />
+          </div>
+          <div className="p-2">
+            <div className="px-6">
+              <TypingUsersList channelOrUserId={user?.id!} />
+            </div>
+            <div className="w-full rounded-xl bg-white/40">
+              {Editor ? <Editor /> : null}
+            </div>
           </div>
         </div>
-      </div>
-    </FileUploaderProvider>
+      </FileUploaderProvider>
+    </ChatInstanceProvider>
   );
 };

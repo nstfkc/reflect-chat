@@ -13,6 +13,7 @@ interface ChatParams {
   user: User;
   fetchMessages: () => Promise<MessageWithThread[]>;
   createMessage: (message: Partial<Message>) => Promise<MessageWithThread>;
+  updateMessage: (message: Message) => Promise<MessageWithThread>;
   messageSubject: Subject<Message>;
   mentionSubject: Subject<Message>;
   args: ChatArgs;
@@ -48,6 +49,13 @@ export function createChat(params: ChatParams) {
     });
   };
 
+  const updateMessage = (message: Message) => {
+    const { thread } = messages[message.publicId];
+    messages[message.publicId] = { ...message, thread };
+    messages$.next(getMessages());
+    params.updateMessage(message).then((message) => {});
+  };
+
   const canMessageBeCollected = (message: Message) => {
     return params.args.kind === "thread"
       ? message.conversationId === params.args.conversationId
@@ -60,8 +68,6 @@ export function createChat(params: ChatParams) {
           message.senderId === params.user.id)
       : false;
   };
-
-  const editMessage = (message: Partial<Message>) => {};
 
   const handleCreateMessage = (message: Message) => {
     if (messages[message.publicId]) {
@@ -144,7 +150,7 @@ export function createChat(params: ChatParams) {
 
   return {
     createMessage,
-    editMessage,
+    updateMessage,
     messages$,
     unseenMessageIds$,
     unseenMentions$,
