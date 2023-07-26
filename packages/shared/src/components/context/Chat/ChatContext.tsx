@@ -95,7 +95,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
             socket.emit("message:update", res.data);
             return res.data;
           }
-        }),
+        }) as any, // TODO: fix
     });
     return chat;
   };

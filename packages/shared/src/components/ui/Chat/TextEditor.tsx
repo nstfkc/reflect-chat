@@ -86,12 +86,14 @@ export const TextEditor = (props: TextEditorProps) => {
 
   const handlePressEnter = (editor: EditorInstance) => {
     if (pendingMedias.current.length === 0) {
-      onSubmit(
-        JSON.stringify(editor.getJSON().content),
-        uploadedMedias.current
-      );
-      editor.commands.clearContent();
-      clearUplaodQueue();
+      if (editor.getText().trim().length > 0) {
+        onSubmit(
+          JSON.stringify(editor.getJSON().content),
+          uploadedMedias.current
+        );
+        editor.commands.clearContent();
+        clearUplaodQueue();
+      }
     }
   };
 
