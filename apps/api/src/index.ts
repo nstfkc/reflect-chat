@@ -84,11 +84,11 @@ Object.entries(queries).map(([url, config]) => {
   });
 });
 
-server.get("/health", () => {
-  return "healthy";
+server.get("/api/health", () => {
+  return "healthy v0.9.0";
 });
 
-server.post("/test", (_req, reply) => {
+server.post("/api/test", (_req, reply) => {
   return _req.body;
 });
 
