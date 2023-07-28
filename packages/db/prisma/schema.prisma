@@ -87,6 +87,7 @@ model User {
   messagesSent           Message[]                @relation("Sender")
   messagesReceived       Message[]                @relation("Receiver")
   Channel                Channel[]
+  reactions              Reaction[]
 }
 
 enum UserStatusKind {
@@ -169,10 +170,10 @@ model Message {
   id       Int    @id @default(autoincrement())
   publicId String @unique @default(cuid())
 
-  text   String    @db.Text
-  media  Media[]
-  thread Message[] @relation("Conversation")
-  // Some comment
+  text      String     @db.Text
+  media     Media[]
+  thread    Message[]  @relation("Conversation")
+  reactions Reaction[]
 
   sender       User     @relation("Sender", fields: [senderId], references: [id])
   receiver     User?    @relation("Receiver", fields: [receiverId], references: [id])
@@ -192,6 +193,22 @@ model Message {
   @@index([receiverId])
   @@index([channelId])
   @@index([conversationId])
+}
+
+model Reaction {
+  id Int @id @default(autoincrement())
+
+  unified String  @db.Char(16)
+  user    User    @relation(fields: [userId], references: [id])
+  message Message @relation(fields: [messageId], references: [id])
+
+  userId    Int
+  messageId Int
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([messageId])
 }
 
 model UserNotifications {

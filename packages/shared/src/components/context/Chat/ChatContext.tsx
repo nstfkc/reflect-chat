@@ -1,4 +1,4 @@
-import { Message, User } from "@prisma/client";
+import { Message, Reaction, User } from "@prisma/client";
 import { PropsWithChildren, createContext, useContext, useRef } from "react";
 import { Chat, ChatArgs, createChat } from "./Chat";
 import { useUser } from "../../../auth";
@@ -18,10 +18,14 @@ export const ChatContext = createContext({} as ChatContextValue);
 
 export const ChatProvider = (props: PropsWithChildren) => {
   const { user } = useUser();
-  const { trigger: triggerCreateMessage } = useMutation("createMessage");
-  const { trigger: triggerUpdateMessage } = useMutation("updateMessage");
   const { directMessageUserIds, channels, users } =
     useContext(OrganisationContext);
+
+  const { trigger: triggerCreateMessage } = useMutation("createMessage");
+  const { trigger: triggerUpdateMessage } = useMutation("updateMessage");
+  const { trigger: triggerCreateReaction } = useMutation("createReaction");
+  const { trigger: triggerDeleteReaction } = useMutation("deleteReaction");
+
   const listDirectMessages = useLazyQuery("listDMMessages");
   const listChannelMessages = useLazyQuery("listChannelMessages");
   const listThreadMessages = useLazyQuery("listThreadMessages");
@@ -35,6 +39,8 @@ export const ChatProvider = (props: PropsWithChildren) => {
   const messageSubject = new Subject<Message>({} as Message);
   const messageUpdateSubject = new Subject<Message>({} as Message);
   const mentionSubject = new Subject<Message>({} as Message);
+  const reactionSubject = new Subject<Reaction>({} as Reaction);
+  const reactionDeleteSubject = new Subject<Reaction>({} as Reaction);
 
   const { socket } = useSocket("message:created", (message) => {
     let userIdToAddDMUserIds: number | null = null;
@@ -61,12 +67,22 @@ export const ChatProvider = (props: PropsWithChildren) => {
     mentionSubject.next(message);
   });
 
+  useSocket("reaction:created", (reaction) => {
+    reactionSubject.next(reaction);
+  });
+
+  useSocket("reaction:deleted", (reaction) => {
+    reactionDeleteSubject.next(reaction);
+  });
+
   const createNewChat = (args: ChatArgs) => {
     const chat = createChat({
       args,
       user,
       messageSubject,
       mentionSubject,
+      reactionSubject,
+      reactionDeleteSubject,
       messageUpdateSubject,
       fetchMessages: () =>
         args.kind === "channel"
@@ -93,6 +109,21 @@ export const ChatProvider = (props: PropsWithChildren) => {
             return res.data;
           }
         }) as any, // TODO: fix
+      createReaction: ({ messageId, unified }) =>
+        triggerCreateReaction({ messageId, unified }).then((res) => {
+          if (res.success === true) {
+            socket.emit("reaction:create", res.data);
+            return res.data;
+          }
+        }),
+      deleteReaction: (reaction) => {
+        return triggerDeleteReaction({ id: reaction.id }).then((res) => {
+          if (res.success === true) {
+            socket.emit("reaction:delete", res.data);
+            return res.data;
+          }
+        });
+      },
     });
     return chat;
   };

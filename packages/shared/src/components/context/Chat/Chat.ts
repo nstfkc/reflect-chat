@@ -1,4 +1,4 @@
-import { User, Message } from "@prisma/client";
+import { User, Message, Reaction } from "@prisma/client";
 import { createId } from "@paralleldrive/cuid2";
 import { insertDateBetweenMessages } from "../../ui/Chat/utils";
 import { Subject } from "../../../utils/Subject";
@@ -14,9 +14,16 @@ interface ChatParams {
   fetchMessages: () => Promise<MessageWithThread[]>;
   createMessage: (message: Partial<Message>) => Promise<MessageWithThread>;
   updateMessage: (message: Message) => Promise<MessageWithThread>;
+  createReaction: (params: {
+    unified: string;
+    messageId: number;
+  }) => Promise<Reaction>;
+  deleteReaction: (reaction: Reaction) => Promise<Reaction>;
   messageSubject: Subject<Message>;
   messageUpdateSubject: Subject<Message>;
   mentionSubject: Subject<Message>;
+  reactionSubject: Subject<Reaction>;
+  reactionDeleteSubject: Subject<Reaction>;
   args: ChatArgs;
 }
 
@@ -28,6 +35,25 @@ export function createChat(params: ChatParams) {
   const messages$ = new Subject(getMessages());
   const unseenMessageIds$ = new Subject<Set<number>>(new Set());
   const unseenMentions$ = new Subject<Set<number>>(new Set());
+
+  params.fetchMessages().then((_messages) => {
+    messages = Object.fromEntries(
+      _messages.map((message) => [message.publicId, message])
+    );
+    messages$.next(getMessages());
+  });
+
+  const handleReadMessage = (message: Message) => {
+    const newSet = unseenMessageIds$.getValue();
+    newSet.delete(message.id);
+    unseenMessageIds$.next(new Set(newSet));
+
+    const newMentionSet = unseenMentions$.getValue();
+    if (newMentionSet.has(message.id)) {
+      newMentionSet.delete(message.id);
+      unseenMentions$.next(new Set(newMentionSet));
+    }
+  };
 
   const createMessage = (text: string) => {
     const publicId = createId();
@@ -51,11 +77,78 @@ export function createChat(params: ChatParams) {
   };
 
   const updateMessage = (message: Message) => {
-    console.log({ message });
-    const { thread } = messages[message.publicId];
-    messages[message.publicId] = { ...message, thread };
+    const { thread, reactions } = messages[message.publicId];
+    messages[message.publicId] = { ...message, thread, reactions };
     messages$.next(getMessages());
     params.updateMessage(message).then((message) => {});
+  };
+
+  const createReaction = (args: { unified: string; messageId: number }) => {
+    const messageToAddReaction = Object.values(messages).find(
+      (message) => message.id === args.messageId
+    );
+    const { reactions } = messages[messageToAddReaction.publicId];
+    const itExists = reactions.find(
+      (reaction) =>
+        reaction.unified === args.unified && reaction.userId === params.user.id
+    );
+    if (itExists) {
+      return;
+    }
+    messages[messageToAddReaction.publicId] = {
+      ...messageToAddReaction,
+      reactions: [
+        ...reactions,
+        {
+          createdAt: null,
+          unified: args.unified,
+          messageId: args.messageId,
+          userId: params.user.id,
+          id: Date.now(),
+        },
+      ],
+    };
+    messages$.next(getMessages());
+    params.createReaction({ ...args }).then((reaction) => {
+      const { reactions } = messages[messageToAddReaction.publicId];
+      messages[messageToAddReaction.publicId] = {
+        ...messageToAddReaction,
+        reactions: [
+          ...reactions.map((_reaction) => {
+            if (
+              _reaction.unified === args.unified &&
+              _reaction.userId === params.user.id
+            ) {
+              return reaction;
+            }
+            return _reaction;
+          }),
+        ],
+      };
+      messages$.next(getMessages());
+    });
+  };
+
+  const deleteReaction = (reaction: Reaction) => {
+    const messageToRemoveReaction = Object.values(messages).find(
+      (message) => message.id === reaction.messageId
+    );
+    const { reactions } = messages[messageToRemoveReaction.publicId];
+    messages[messageToRemoveReaction.publicId] = {
+      ...messageToRemoveReaction,
+      reactions: [
+        ...reactions.filter(
+          (_reaction) =>
+            !(
+              _reaction.unified === reaction.unified &&
+              _reaction.userId === params.user.id
+            )
+        ),
+        ,
+      ],
+    };
+    messages$.next(getMessages());
+    params.deleteReaction(reaction);
   };
 
   const canMessageBeCollected = (message: Message) => {
@@ -97,15 +190,15 @@ export function createChat(params: ChatParams) {
       );
     }
 
-    messages[message.publicId] = { thread: [], ...message };
+    messages[message.publicId] = { thread: [], reactions: [], ...message };
     messages$.next(getMessages());
   };
 
   const handleUpdateMessage = (message: Message) => {
     const collect = canMessageBeCollected(message);
     if (!collect) return;
-    const { thread = [] } = messages?.[message.publicId] ?? {};
-    messages[message.publicId] = { ...message, thread };
+    const { thread = [], reactions = [] } = messages?.[message.publicId] ?? {};
+    messages[message.publicId] = { ...message, thread, reactions };
     messages$.next(getMessages());
   };
 
@@ -119,6 +212,39 @@ export function createChat(params: ChatParams) {
     unseenMentions$.next(new Set(current));
   };
 
+  const handleCreateReaction = (reaction: Reaction) => {
+    if (reaction.userId === params.user.id) {
+      return;
+    }
+    const messageToAddReaction = Object.values(messages).find(
+      (message) => message.id === reaction.messageId
+    );
+    if (messageToAddReaction) {
+      messages[messageToAddReaction.publicId] = {
+        ...messageToAddReaction,
+        reactions: [...messageToAddReaction.reactions, reaction],
+      };
+      messages$.next(getMessages());
+    }
+  };
+
+  const handleReactionDelete = (reaction: Reaction) => {
+    const messageToRemoveReaction = Object.values(messages).find(
+      (message) => message.id === reaction.messageId
+    );
+    if (!messageToRemoveReaction) {
+      return;
+    }
+    const { reactions } = messages[messageToRemoveReaction.publicId];
+    messages[messageToRemoveReaction.publicId] = {
+      ...messageToRemoveReaction,
+      reactions: [
+        ...reactions.filter((_reaction) => _reaction.id !== reaction.id),
+      ],
+    };
+    messages$.next(getMessages());
+  };
+
   const unsubscribeMessageSubscription =
     params.messageSubject.subscribe(handleCreateMessage);
 
@@ -128,16 +254,18 @@ export function createChat(params: ChatParams) {
   const unsubscribeMentionSubscription =
     params.mentionSubject.subscribe(handleNewMention);
 
-  const handleReadMessage = (message: Message) => {
-    const newSet = unseenMessageIds$.getValue();
-    newSet.delete(message.id);
-    unseenMessageIds$.next(new Set(newSet));
+  const unsubscribeReactionSubscription =
+    params.reactionSubject.subscribe(handleCreateReaction);
 
-    const newMentionSet = unseenMentions$.getValue();
-    if (newMentionSet.has(message.id)) {
-      newMentionSet.delete(message.id);
-      unseenMentions$.next(new Set(newMentionSet));
-    }
+  const unsubscribeReactionDeleteSubscription =
+    params.reactionDeleteSubject.subscribe(handleReactionDelete);
+
+  const destroy = () => {
+    unsubscribeMessageSubscription();
+    unsubscribeMentionSubscription();
+    unsubscribeMessageUpdateSubscription();
+    unsubscribeReactionSubscription();
+    unsubscribeReactionDeleteSubscription();
   };
 
   const activate = () => {
@@ -148,22 +276,11 @@ export function createChat(params: ChatParams) {
     isActive = false;
   };
 
-  const destroy = () => {
-    unsubscribeMessageSubscription();
-    unsubscribeMentionSubscription();
-    unsubscribeMessageUpdateSubscription();
-  };
-
-  params.fetchMessages().then((_messages) => {
-    messages = Object.fromEntries(
-      _messages.map((message) => [message.publicId, message])
-    );
-    messages$.next(getMessages());
-  });
-
   return {
     createMessage,
     updateMessage,
+    createReaction,
+    deleteReaction,
     messages$,
     unseenMessageIds$,
     unseenMentions$,

@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --emoji-bg: transparent;
+}
+
+.EmojiPickerReact {
+  --epr-emoji-fullsize: 24px;
+  --epr-emoji-padding: 2px;
+  --epr-category-label-text-color: var(--text-color);
+  --epr-category-label-height: 24px;
+  --epr-search-input-height: 32px;
+  --epr-search-border-color: transparent;
+  --epr-header-padding: 8px;
+  --epr-bg-color: var(--emoji-bg);
+  --epr-search-input-bg-color: rgba(255,255,255, 0.6);
+  --epr-category-label-bg-color: var(--emoji-bg);
+}
+
+.epr-emoji-category-label {
+  font-size: 12px;
+  font-weight: 600!important;
+}
 
 .titleBar {
   -webkit-user-select: none;

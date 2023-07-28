@@ -126,5 +126,13 @@ export function sockets(io: Server) {
         io.emit("message:updated", message);
       }
     });
+
+    socket.on("reaction:create", (reaction) => {
+      io.emit("reaction:created", reaction);
+    });
+
+    socket.on("reaction:delete", (reaction) => {
+      io.emit("reaction:deleted", reaction);
+    });
   });
 }

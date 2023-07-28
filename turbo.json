@@ -27,9 +27,13 @@
     "static": {},
     "open:ios": {},
     "db:generate": {},
-    "db:push": {},
+    "db:push": {
+      "cache": false
+    },
     "db:studio": {},
-    "db:seed": {},
+    "db:seed": {
+      "cache": false
+    },
     "deploy": {},
     "preview": {},
     "pack": {}

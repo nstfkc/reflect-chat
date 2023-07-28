@@ -57,6 +57,8 @@ __export(mutations_exports, {
   createChannel: () => createChannel,
   createMessage: () => createMessage,
   createOrganisation: () => createOrganisation,
+  createReaction: () => createReaction,
+  deleteReaction: () => deleteReaction,
   setCurrentOrganisationId: () => setCurrentOrganisationId,
   signIn: () => signIn,
   signOut: () => signOut,
@@ -403,7 +405,8 @@ var createMessage = createPrecedure({
           ...args
         },
         include: {
-          thread: true
+          thread: true,
+          reactions: true
         }
       });
       return {
@@ -438,6 +441,41 @@ var updateMessage = createPrecedure({
     } catch (err) {
       return prismaError({ message: err, statusCode: 403 });
     }
+  }
+});
+var createReaction = createPrecedure({
+  schema: z.object({
+    unified: z.string(),
+    messageId: z.number()
+  }),
+  handler: async (args, ctx) => {
+    const reaction = await prisma.reaction.create({
+      data: {
+        unified: args.unified,
+        messageId: args.messageId,
+        userId: ctx.id
+      }
+    });
+    return {
+      success: true,
+      data: reaction
+    };
+  }
+});
+var deleteReaction = createPrecedure({
+  schema: z.object({
+    id: z.number()
+  }),
+  handler: async (args) => {
+    const reaction = await prisma.reaction.delete({
+      where: {
+        id: args.id
+      }
+    });
+    return {
+      success: true,
+      data: reaction
+    };
   }
 });
 
@@ -603,7 +641,7 @@ var listChannelMessages = createPrecedure({
         where: {
           channelId: Number(args.channelId)
         },
-        include: { thread: true },
+        include: { thread: true, reactions: true },
         orderBy: { createdAt: "asc" }
       });
       return {
@@ -635,7 +673,7 @@ var listDMMessages = createPrecedure({
             }
           ]
         },
-        include: { thread: true },
+        include: { thread: true, reactions: true },
         orderBy: { createdAt: "asc" }
       });
       return {
@@ -658,7 +696,7 @@ var listThreadMessages = createPrecedure({
         where: {
           conversationId: Number(args.conversationId)
         },
-        include: { thread: true },
+        include: { thread: true, reactions: true },
         orderBy: { createdAt: "asc" }
       });
       return {

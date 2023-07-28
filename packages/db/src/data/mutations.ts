@@ -227,6 +227,7 @@ export const createMessage = createPrecedure({
         } as any,
         include: {
           thread: true,
+          reactions: true,
         },
       });
       return {
@@ -262,5 +263,44 @@ export const updateMessage = createPrecedure({
     } catch (err) {
       return prismaError({ message: err, statusCode: 403 });
     }
+  },
+});
+
+export const createReaction = createPrecedure({
+  schema: z.object({
+    unified: z.string(),
+    messageId: z.number(),
+  }),
+  handler: async (args, ctx) => {
+    const reaction = await prisma.reaction.create({
+      data: {
+        unified: args.unified,
+        messageId: args.messageId,
+        userId: ctx.id,
+      },
+    });
+
+    return {
+      success: true,
+      data: reaction,
+    };
+  },
+});
+
+export const deleteReaction = createPrecedure({
+  schema: z.object({
+    id: z.number(),
+  }),
+  handler: async (args) => {
+    const reaction = await prisma.reaction.delete({
+      where: {
+        id: args.id,
+      },
+    });
+
+    return {
+      success: true,
+      data: reaction,
+    };
   },
 });

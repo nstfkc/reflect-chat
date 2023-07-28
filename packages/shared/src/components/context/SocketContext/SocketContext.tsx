@@ -1,6 +1,13 @@
 "use client";
 
-import type { Channel, Message, User, UserProfile, UserStatusKind } from "db";
+import type {
+  Channel,
+  Message,
+  Reaction,
+  User,
+  UserProfile,
+  UserStatusKind,
+} from "db";
 import {
   ReactNode,
   createContext,
@@ -30,6 +37,8 @@ type EmitEvents = {
     userProfile: UserProfile;
     userId: number;
   }) => void;
+  "reaction:create": (reaction: Reaction) => void;
+  "reaction:delete": (reaction: Reaction) => void;
 };
 
 export type ListenEvents = {
@@ -39,6 +48,8 @@ export type ListenEvents = {
   /*  */
   "message:created": (message: Message) => void;
   "message:updated": (message: Message) => void;
+  "reaction:created": (reaction: Reaction) => void;
+  "reaction:deleted": (reaction: Reaction) => void;
   "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
   "update-user-status": (payload: {
     userStatusId: number;

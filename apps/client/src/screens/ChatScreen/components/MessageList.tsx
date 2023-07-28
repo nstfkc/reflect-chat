@@ -18,29 +18,29 @@ export const MessageList = memo((props: MessageListProps) => {
   const virtuoso = useRef<VirtuosoHandle>(null);
   const container = useRef<HTMLDivElement>(null);
 
-  const resizeObserver = useMemo(
-    () =>
-      new ResizeObserver(() => {
-        virtuoso?.current?.scrollTo({ top: 99999 });
-      }),
-    []
-  );
-
-  useLayoutEffect(() => {
-    if (!initialRender.current) {
-      initialRender.current = true;
-      virtuoso?.current?.scrollToIndex({
-        index: messages.length - 1,
-        align: "end",
-        behavior: "auto",
-      });
-    }
-  });
-
-  useEffect(() => {
-    resizeObserver.observe(container?.current!);
-  }, [resizeObserver]);
-
+  /* const resizeObserver = useMemo(
+   *   () =>
+   *     new ResizeObserver(() => {
+   *       virtuoso?.current?.scrollTo({ top: 99999 });
+   *     }),
+   *   []
+   * );
+   */
+  /* useLayoutEffect(() => {
+   *   if (!initialRender.current) {
+   *     initialRender.current = true;
+   *     virtuoso?.current?.scrollToIndex({
+   *       index: messages.length - 1,
+   *       align: "end",
+   *       behavior: "auto",
+   *     });
+   *   }
+   * });
+   */
+  /* useEffect(() => {
+   *   resizeObserver.observe(container?.current!);
+   * }, [resizeObserver]);
+   */
   return (
     <div
       ref={container}

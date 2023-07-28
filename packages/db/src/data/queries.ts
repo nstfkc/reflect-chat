@@ -166,7 +166,7 @@ export const listChannelMessages = createPrecedure({
         where: {
           channelId: Number(args.channelId),
         },
-        include: { thread: true },
+        include: { thread: true, reactions: true },
         orderBy: { createdAt: "asc" },
       });
 
@@ -200,7 +200,7 @@ export const listDMMessages = createPrecedure({
             },
           ],
         },
-        include: { thread: true },
+        include: { thread: true, reactions: true },
         orderBy: { createdAt: "asc" },
       });
 
@@ -225,7 +225,7 @@ export const listThreadMessages = createPrecedure({
         where: {
           conversationId: Number(args.conversationId),
         },
-        include: { thread: true },
+        include: { thread: true, reactions: true },
         orderBy: { createdAt: "asc" },
       });
 

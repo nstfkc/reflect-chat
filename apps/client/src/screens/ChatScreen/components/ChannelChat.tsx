@@ -1,12 +1,10 @@
-import { useContext, useCallback, useMemo, useEffect } from "react";
+import { useContext, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   OrganisationContext,
   FileUploaderProvider,
   MessageContext,
-  useUser,
   TypingUsersList,
-  useSocket,
   useTheme,
   ChatContext,
   ChatInstanceProvider,
@@ -20,9 +18,7 @@ export const ChannelChat = () => {
   const { canSendMessage } = useContext(MessageContext);
   const { channels } = useContext(OrganisationContext);
   const { getChat } = useContext(ChatContext);
-  const { user } = useUser();
   const theme = useTheme();
-  const { socket } = useSocket();
 
   const channel = channels.find(
     (channel: any) => channel.publicId === channelPublicId
@@ -38,24 +34,17 @@ export const ChannelChat = () => {
     };
   }, [chat]);
 
-  const onUpdate = useCallback(() => {
-    /* socket?.emit("user-typing", {
-     *   channelOrUserId: channel?.id,
-     *   userId: user?.id!,
-     * }); */
-  }, [socket, user?.id, channel?.id]);
-
   const Editor = useMemo(
     () =>
       channel
         ? getEditor({
             kind: "channel",
             channel,
-            onUpdate,
+            onUpdate: () => {},
             sendMessage: (message) => chat.createMessage(message),
           })
         : () => <></>,
-    [onUpdate, chat, channel]
+    [chat, channel]
   );
 
   if (!channel) {
