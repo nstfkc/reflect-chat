@@ -9,6 +9,7 @@ export {
 } from "./components/context/IconsContext";
 
 export { SignInForm } from "./components/forms";
+export { SignUpForm } from "./components/forms/SignUpForm";
 export { Button } from "./components/lib/Button";
 export { Text } from "./components/lib/Text";
 

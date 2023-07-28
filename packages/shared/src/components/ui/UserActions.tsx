@@ -1,6 +1,6 @@
 import { Pressable, View } from "react-native";
 import { UserProfilePicture } from "./UserProfilePicture";
-import { useOrganisation, useUser } from "../../auth";
+import { useOrganisation, useSignOut, useUser } from "../../auth";
 import { useTheme } from "../context/ThemeContext";
 import { Text } from "../lib/Text";
 import { useContext } from "react";
@@ -17,6 +17,7 @@ export const UserActions = (props: UserActionsProps) => {
   const { onStatusSelect } = props;
   const { user } = useUser();
   const { getUserById, setUserStatusById } = useContext(UsersContext);
+  const { trigger } = useSignOut();
   const theme = useTheme();
   const { organisation } = useOrganisation();
 
@@ -81,7 +82,10 @@ export const UserActions = (props: UserActionsProps) => {
         </Pressable>
       </View>
       <View>
-        <Pressable style={{ flexDirection: "row", gap: 3 }}>
+        <Pressable
+          onPress={() => trigger({})}
+          style={{ flexDirection: "row", gap: 3 }}
+        >
           <Text style={{ fontWeight: "500" }}>
             Sign out {organisation.name}
           </Text>

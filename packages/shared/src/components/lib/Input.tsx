@@ -1,10 +1,11 @@
 import { TextInput, TextInputProps } from "react-native";
 
 export const Input = (props: TextInputProps & { hasError?: boolean }) => {
-  const {} = props;
+  const { value = "", ...rest } = props;
   return (
     <TextInput
-      {...props}
+      {...rest}
+      value={value}
       style={{
         fontSize: 16,
         backgroundColor: "rgba(0,0,0,0.05)",

@@ -1,23 +1,20 @@
-import { useState } from "react";
-
 import { useForm, Controller } from "react-hook-form";
-import { Pressable, View } from "react-native";
-import { Text } from "../lib/Text";
-
+import { View, Pressable } from "react-native";
 import { Button } from "../lib/Button";
 
-import { useSignIn } from "../../auth";
+import { useSignIn, useSignUp } from "../../auth";
 import { useEffect } from "react";
 import { Input } from "../lib/Input";
+import { Text } from "../lib/Text";
+
 import { useTheme } from "../context/ThemeContext";
 
-interface SignInFormProps {
-  onSignUpPress: VoidFunction;
-  onSuccess: VoidFunction;
-  email?: string;
+interface Props {
+  onSignInPress: VoidFunction;
+  onSuccess: (email: string) => void;
 }
 
-export const SignInForm = (props: SignInFormProps) => {
+export const SignUpForm = (props: Props) => {
   const {
     control,
     handleSubmit,
@@ -26,27 +23,30 @@ export const SignInForm = (props: SignInFormProps) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: props.email ?? "",
+      email: "",
       password: "",
+      username: "",
     },
   });
 
-  const { trigger, isMutating, error } = useSignIn();
-  const [invalidCredentialsError, setInvalidCredentialsError] = useState("");
+  const { trigger, isMutating, error } = useSignUp();
   const onSubmit = () => {
+    console.log("submit");
     trigger({
       email: watch("email"),
+      name: watch("username"),
       password: watch("password"),
     }).then((res) => {
       if (res.success === true) {
-        props.onSuccess();
+        props.onSuccess(res.data.user.email);
       }
     });
   };
 
   useEffect(() => {
     if (error?.info?.title === "INVALID_CREDENTIALS_ERROR") {
-      setInvalidCredentialsError("Invalid crendentials");
+      setError("password", { message: "Invalid credentials" });
+      setError("email", { message: "Invalid credentials" });
     }
     if (error?.info?.title === "VALIDATION_ERROR") {
       error.info.payload.issues.forEach((issue) => {
@@ -56,9 +56,11 @@ export const SignInForm = (props: SignInFormProps) => {
   }, [error, setError]);
 
   const theme = useTheme();
+
   return (
     <View style={{ gap: 16 }}>
       <Text style={{ fontWeight: "900", fontSize: 24 }}>Reflect</Text>
+
       <View style={{ gap: 8 }}>
         <Controller
           control={control}
@@ -67,7 +69,23 @@ export const SignInForm = (props: SignInFormProps) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              autoFocus={!props.email}
+              autoFocus={true}
+              placeholder="Username"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="username"
+        />
+
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <Input
               placeholder="Email"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -76,7 +94,7 @@ export const SignInForm = (props: SignInFormProps) => {
           )}
           name="email"
         />
-        {errors.email?.message && <Text>{errors.email.message}</Text>}
+        {errors.email && <Text>This is required.</Text>}
 
         <Controller
           control={control}
@@ -85,7 +103,6 @@ export const SignInForm = (props: SignInFormProps) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              autoFocus={!!props.email}
               placeholder="Password"
               secureTextEntry={true}
               onBlur={onBlur}
@@ -95,17 +112,13 @@ export const SignInForm = (props: SignInFormProps) => {
           )}
           name="password"
         />
-        {errors.password?.message && <Text>{errors.password.message}</Text>}
       </View>
       <View style={{ gap: 24 }}>
         <Button disabled={isMutating} onPress={handleSubmit(onSubmit)}>
-          Sign In
+          Sign Up
         </Button>
-        {invalidCredentialsError.length ? (
-          <Text>{invalidCredentialsError}</Text>
-        ) : null}
         <Pressable
-          onPress={props.onSignUpPress}
+          onPress={props.onSignInPress}
           style={{
             backgroundColor: theme.colors.alt2,
             padding: 16,
@@ -113,8 +126,8 @@ export const SignInForm = (props: SignInFormProps) => {
           }}
         >
           <Text>
-            Don&apos;t have an account? Try{" "}
-            <Text style={{ fontWeight: "600" }}>sign up</Text>.
+            Have an account? Try{" "}
+            <Text style={{ fontWeight: "600" }}>sign in</Text>.
           </Text>
         </Pressable>
       </View>

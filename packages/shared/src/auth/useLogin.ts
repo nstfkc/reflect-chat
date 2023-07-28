@@ -5,7 +5,6 @@ import { useQuery } from "../utils/useQuery";
 import { useMutation } from "../utils/useMutation";
 import { useContext } from "react";
 import { AuthContext } from "./Context";
-import { useSWRConfig } from "swr";
 
 export function useSignIn() {
   const { onSignIn } = useContext(AuthContext);

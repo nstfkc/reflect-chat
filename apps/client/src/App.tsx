@@ -8,14 +8,16 @@ import {
   HTTPHandler,
   AuthProvider,
   SignedOut,
-  SignInForm,
   SignedIn,
   createIconsProvider,
+  ThemeProvider,
 } from "shared";
 
 import { HomeScreen } from "./screens/HomeScreen";
 import { PeopleScreen } from "./screens/PeopleScreen";
 import { ChatScreen, ThreadScreen } from "./screens/ChatScreen";
+import { SignInScreen } from "./screens/SignInScreen";
+import { SignUpScreen } from "./screens/SignUpScreen";
 import { getConfig } from "config";
 import { TbUsers } from "react-icons/tb";
 
@@ -53,6 +55,32 @@ const router = createBrowserRouter(
         { path: "/people", element: <PeopleScreen /> },
       ],
     },
+    {
+      path: "/*",
+      element: <HomeScreen />,
+    },
+  ],
+  { basename: "/client" }
+);
+
+const signedOutRouter = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <SignInScreen />,
+    },
+    {
+      path: "/*",
+      element: <SignInScreen />,
+    },
+    {
+      path: "/sign-in",
+      element: <SignInScreen />,
+    },
+    {
+      path: "/sign-up",
+      element: <SignUpScreen />,
+    },
   ],
   { basename: "/client" }
 );
@@ -69,6 +97,7 @@ function useAccessToken() {
   }, []);
 
   const updateToken = (newToken: string | null) => {
+    console.log("UPDATE TOKEN");
     if (newToken === null) {
       localStorage.removeItem("access_token");
     } else {
@@ -87,6 +116,7 @@ function useAccessToken() {
 function App() {
   const { isLoading, token, updateToken } = useAccessToken();
   const [electronApi, setElectronApi] = useState(null);
+
   useEffect(() => {
     if ((window as any).electronAPI) {
       setElectronApi((window as any).electronAPI);
@@ -131,15 +161,11 @@ function App() {
       <IconsProvider>
         <ConfigProvider baseUrl={config.baseUrl}>
           <HttpProvider accessToken={token} http={http}>
-            <AuthProvider>
+            <AuthProvider onSignOut={() => updateToken(null)}>
               <SignedOut>
-                <div className="flex w-full h-screen justify-center items-center">
-                  <SignInForm
-                    onSuccess={(token) => {
-                      updateToken(token);
-                    }}
-                  />
-                </div>
+                <ThemeProvider>
+                  <RouterProvider router={signedOutRouter}></RouterProvider>
+                </ThemeProvider>
               </SignedOut>
               <SignedIn>
                 <RootProvider>

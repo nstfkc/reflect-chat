@@ -267,6 +267,17 @@ var signUp = createPrecedure({
               username: name,
               profileColor: (0, import_uniqolor.random)({ saturation: 0.5 }).color
             }
+          },
+          userStatus: {
+            create: {
+              status: "ONLINE"
+            }
+          },
+          memberships: {
+            create: {
+              role: "USER",
+              organisationId: 1
+            }
           }
         },
         select: {

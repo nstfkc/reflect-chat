@@ -8,6 +8,7 @@ interface AuthContextValue {
   onSignOut: VoidFunction;
   onSignIn: (token: string) => void;
   isUserLoading: boolean;
+  error: any;
 }
 
 export const AuthContext = createContext({} as AuthContextValue);
@@ -20,7 +21,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = (props: AuthProviderProps) => {
   const { children, onSignOut = () => {}, onSignIn = (_) => {} } = props;
-  const { data, isLoading, mutate } = useQuery("me", null, {
+  const { data, isLoading, mutate, error } = useQuery("me", null, {
     shouldRetryOnError: false,
     revalidateOnFocus: false,
   });
@@ -30,11 +31,12 @@ export const AuthProvider = (props: AuthProviderProps) => {
       value={{
         onSignIn,
         onSignOut: () => {
-          console.log("mutated");
+          onSignOut();
           mutate(null);
         },
         isUserLoading: isLoading,
         user: data as any,
+        error,
       }}
     >
       {children}
@@ -43,18 +45,18 @@ export const AuthProvider = (props: AuthProviderProps) => {
 };
 
 export const SignedIn = (props: PropsWithChildren) => {
-  const { isUserLoading, user } = useContext(AuthContext);
+  const { isUserLoading, user, error } = useContext(AuthContext);
 
-  if (user && !isUserLoading) {
+  if (user && !isUserLoading && !error) {
     return <>{props.children}</>;
   }
   return null;
 };
 
 export const SignedOut = (props: PropsWithChildren) => {
-  const { isUserLoading, user } = useContext(AuthContext);
+  const { isUserLoading, error } = useContext(AuthContext);
 
-  if (!user && !isUserLoading) {
+  if (error && !isUserLoading) {
     return <>{props.children}</>;
   }
 

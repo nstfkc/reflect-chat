@@ -78,12 +78,22 @@ export const signUp = createPrecedure({
               profileColor: random({ saturation: 0.5 }).color,
             },
           },
+          userStatus: {
+            create: {
+              status: "ONLINE",
+            },
+          },
+          memberships: {
+            create: {
+              role: "USER",
+              organisationId: 1,
+            },
+          },
         },
         select: {
           email: true,
         },
       });
-
       return {
         success: true,
         data: { user },
