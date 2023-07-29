@@ -75,7 +75,7 @@ export const signUp = createPrecedure({
           userProfile: {
             create: {
               username: name,
-              profileColor: random({ saturation: 0.5 }).color,
+              profileColor: (() => random({ saturation: [50, 80] }).color)(),
             },
           },
           userStatus: {

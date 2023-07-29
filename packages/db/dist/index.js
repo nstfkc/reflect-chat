@@ -265,7 +265,7 @@ var signUp = createPrecedure({
           userProfile: {
             create: {
               username: name,
-              profileColor: (0, import_uniqolor.random)({ saturation: 0.5 }).color
+              profileColor: (() => (0, import_uniqolor.random)({ saturation: [50, 80] }).color)()
             }
           },
           userStatus: {

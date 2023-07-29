@@ -7,6 +7,8 @@ import { useMutation } from "../../utils/useMutation";
 import { UsersContext } from "../context/UsersContext";
 import { Button } from "../lib/Button";
 import { Input } from "../lib/Input";
+import { IconsContext } from "../context/IconsContext";
+import { useTheme } from "../context/ThemeContext";
 
 interface UserProfileProps {
   ImageWrapper: (
@@ -21,13 +23,17 @@ export const UserProfile = (props: UserProfileProps) => {
   const { ImageWrapper } = props;
   const { user, mutate } = useUser();
   const { assetsServiceUrl } = useContext(ConfigContext);
+  const { icons } = useContext(IconsContext);
   const { setUserProfileById } = useContext(UsersContext);
   const { trigger } = useMutation("updateProfile");
+  const theme = useTheme();
 
   const [username, setUserName] = useState(user.userProfile.username);
   const [profilePictureUrl, setNewProfilePictureUrl] = useState(
     user.userProfile.profilePictureUrl
   );
+
+  const UserIcon = icons.User;
 
   return (
     <View style={{ gap: 8 }}>
@@ -36,12 +42,27 @@ export const UserProfile = (props: UserProfileProps) => {
         <ImageWrapper
           onProfilePictureUpload={(path) => setNewProfilePictureUrl(path)}
         >
-          <Image
-            style={{ width: 128, height: 128, borderRadius: 16 }}
-            source={{
-              uri: [assetsServiceUrl, profilePictureUrl].join("/"),
-            }}
-          ></Image>
+          {profilePictureUrl ? (
+            <Image
+              style={{ width: 128, height: 128, borderRadius: 16 }}
+              source={{
+                uri: [assetsServiceUrl, profilePictureUrl].join("/"),
+              }}
+            ></Image>
+          ) : (
+            <View
+              style={{
+                width: 128,
+                height: 128,
+                borderRadius: 16,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0,0,0,0.1)",
+              }}
+            >
+              <UserIcon color={user.userProfile.profileColor} size={72} />
+            </View>
+          )}
         </ImageWrapper>
       </View>
 

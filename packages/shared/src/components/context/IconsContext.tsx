@@ -1,9 +1,14 @@
 import { PropsWithChildren, createContext } from "react";
 
-type Icon = (props: { size?: number; strokeWidth?: number }) => JSX.Element;
+type Icon = (props: {
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+}) => JSX.Element;
 
 interface Icons {
   Users: Icon;
+  User: Icon;
 }
 
 interface IconsContextValue {

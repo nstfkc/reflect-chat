@@ -19,7 +19,7 @@ import { ChatScreen, ThreadScreen } from "./screens/ChatScreen";
 import { SignInScreen } from "./screens/SignInScreen";
 import { SignUpScreen } from "./screens/SignUpScreen";
 import { getConfig } from "config";
-import { TbUsers } from "react-icons/tb";
+import { TbUsers, TbUser } from "react-icons/tb";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -27,6 +27,12 @@ const config = getConfig(import.meta.env.PROD);
 
 const IconsProvider = createIconsProvider({
   Users: () => <TbUsers className="text-secondary" />,
+  User: ({ size, color }) => (
+    <TbUser
+      style={{ color, fontSize: `${size}px` }}
+      className="text-secondary"
+    />
+  ),
 });
 
 const router = createBrowserRouter(

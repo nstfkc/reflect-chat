@@ -2,9 +2,10 @@ import { View, Image, TextStyle } from "react-native";
 import { Text } from "../lib/Text";
 import { memo, useContext } from "react";
 import { ConfigContext } from "../context/ConfigContext";
-import { UsersContext } from "../context/UsersContext";
 import { useTheme } from "../context/ThemeContext";
 import { userStatuses } from "../../constants/userStatus";
+import { IconsContext } from "../context/IconsContext";
+import { OrganisationContext } from "../context/OrganisationContext/OrganisationContext";
 
 interface UserWithProfilePictureProps {
   userId: number;
@@ -17,7 +18,8 @@ interface UserWithProfilePictureProps {
 
 export const UserProfilePicture = memo((props: UserWithProfilePictureProps) => {
   const { assetsServiceUrl } = useContext(ConfigContext);
-  const { getUserById } = useContext(UsersContext);
+  const { getUserById } = useContext(OrganisationContext);
+  const { icons } = useContext(IconsContext);
   const theme = useTheme();
   const {
     userId,
@@ -30,8 +32,10 @@ export const UserProfilePicture = memo((props: UserWithProfilePictureProps) => {
 
   const user = getUserById(userId);
   const userStatus = userStatuses.find((status) => {
-    return status.kind == user.userStatus.status;
+    return status.kind == user?.userStatus.status;
   });
+
+  const UserIcon = icons.User;
 
   return (
     <View
@@ -45,29 +49,46 @@ export const UserProfilePicture = memo((props: UserWithProfilePictureProps) => {
         style={{
           width: size,
           height: size,
-          backgroundColor: user.userProfile?.profileColor,
           borderRadius: size / 4,
+          backgroundColor: user.userProfile.profileColor,
         }}
       >
-        <Image
-          style={{ borderRadius: size / 4 }}
-          source={{
-            width: size,
-            height: size,
-            cache: "force-cache",
-            uri: [assetsServiceUrl, user.userProfile?.profilePictureUrl].join(
-              "/"
-            ),
-          }}
-          defaultSource={{
-            width: size,
-            height: size,
-            cache: "force-cache",
-            uri: [assetsServiceUrl, user.userProfile?.profilePictureUrl].join(
-              "/"
-            ),
-          }}
-        />
+        {user?.userProfile.profilePictureUrl ? (
+          <Image
+            style={{ borderRadius: size / 4 }}
+            source={{
+              width: size,
+              height: size,
+              cache: "force-cache",
+              uri: [
+                assetsServiceUrl,
+                user?.userProfile?.profilePictureUrl,
+              ].join("/"),
+            }}
+            defaultSource={{
+              width: size,
+              height: size,
+              cache: "force-cache",
+              uri: [
+                assetsServiceUrl,
+                user?.userProfile?.profilePictureUrl,
+              ].join("/"),
+            }}
+          />
+        ) : (
+          <View
+            style={{
+              width: size,
+              height: size,
+              borderRadius: size / 4,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.1)",
+            }}
+          >
+            <UserIcon color={theme.colors.alt2} size={size - 2} />
+          </View>
+        )}
         {showStatusIndicator ? (
           <View
             style={{
@@ -85,7 +106,7 @@ export const UserProfilePicture = memo((props: UserWithProfilePictureProps) => {
         ) : null}
       </View>
       {showUserName ? (
-        <Text style={{ ...textStyle }}>{user.userProfile.username}</Text>
+        <Text style={{ ...textStyle }}>{user?.userProfile.username}</Text>
       ) : null}
     </View>
   );
