@@ -1,4 +1,4 @@
-import { Message, Reaction, User } from "@prisma/client";
+import { Message, Reaction } from "@prisma/client";
 import { PropsWithChildren, createContext, useContext, useRef } from "react";
 import { Chat, ChatArgs, createChat } from "./Chat";
 import { useUser } from "../../../auth";
@@ -7,6 +7,7 @@ import { useMutation } from "../../../utils/useMutation";
 import { useLazyQuery } from "../../../utils/useLazyQuery";
 import { OrganisationContext } from "../OrganisationContext/OrganisationContext";
 import { Subject } from "../../../utils/Subject";
+import { UserIsTypingPayload } from "../SocketContext/SocketContext";
 
 interface ChatContextValue {
   getChat: (args: ChatArgs) => Chat;
@@ -41,6 +42,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
   const mentionSubject = new Subject<Message>({} as Message);
   const reactionSubject = new Subject<Reaction>({} as Reaction);
   const reactionDeleteSubject = new Subject<Reaction>({} as Reaction);
+  const whoIsTypingSubject = new Subject({} as UserIsTypingPayload);
 
   const { socket } = useSocket("message:created", (message) => {
     let userIdToAddDMUserIds: number | null = null;
@@ -75,6 +77,10 @@ export const ChatProvider = (props: PropsWithChildren) => {
     reactionDeleteSubject.next(reaction);
   });
 
+  useSocket("user-typing", (payload) => {
+    whoIsTypingSubject.next(payload);
+  });
+
   const createNewChat = (args: ChatArgs) => {
     const chat = createChat({
       args,
@@ -84,6 +90,9 @@ export const ChatProvider = (props: PropsWithChildren) => {
       reactionSubject,
       reactionDeleteSubject,
       messageUpdateSubject,
+      whoIsTypingSubject,
+      emitWhoIsTyping: () =>
+        socket.emit("user-typing", { ...args, userId: user.id }),
       fetchMessages: () =>
         args.kind === "channel"
           ? listChannelMessages({ channelId: args.channelId })

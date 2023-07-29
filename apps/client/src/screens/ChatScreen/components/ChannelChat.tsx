@@ -40,8 +40,8 @@ export const ChannelChat = () => {
         ? getEditor({
             kind: "channel",
             channel,
-            onUpdate: () => {},
-            sendMessage: (message) => chat.createMessage(message),
+            onUpdate: () => chat.handleTextUpdate(),
+            sendMessage: (text) => chat.createMessage(text),
           })
         : () => <></>,
     [chat, channel]

@@ -1,26 +1,23 @@
 import { View, Text } from "react-native";
-import { UsersContext } from "../../context/UsersContext";
 import { useContext } from "react";
-import { UsersTypingContext } from "../../context/UsersTypingContext";
 import { useUser } from "../../../auth";
+import { OrganisationContext } from "../../context/OrganisationContext/OrganisationContext";
+import { ChatInstanceContext } from "../../context/Chat/ChatInstanceContext";
+import { useSubjectValue } from "../../../utils/useSubjectValue";
 
-interface TypingUsersListProps {
-  channelOrUserId: number;
-}
-
-export function useTypingUsers(channelOrUserId: number) {
+export function useTypingUsers() {
   const { user } = useUser();
-  const { getUserById } = useContext(UsersContext);
-  const { typingUsersByChannelId } = useContext(UsersTypingContext);
+  const { getUserById } = useContext(OrganisationContext);
+  const { chat } = useContext(ChatInstanceContext);
+  const whoIsTyping = useSubjectValue(chat.whoIsTyping$);
 
-  return Array.from(typingUsersByChannelId.get(channelOrUserId) ?? [])
+  return Array.from(whoIsTyping)
     .filter((userId) => userId !== user.id)
     .map((userId) => getUserById(userId));
 }
 
-export const TypingUsersList = (props: TypingUsersListProps) => {
-  const { channelOrUserId } = props;
-  const users = useTypingUsers(channelOrUserId);
+export const TypingUsersList = () => {
+  const users = useTypingUsers();
 
   return (
     <View style={{ height: 16, flexDirection: "row" }}>

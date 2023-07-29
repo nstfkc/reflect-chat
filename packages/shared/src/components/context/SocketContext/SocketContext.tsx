@@ -20,15 +20,19 @@ import { io } from "socket.io-client";
 import { ConfigContext } from "../ConfigContext/ConfigContext";
 import { useUser } from "../../../auth";
 
+export type UserIsTypingPayload = { userId: number } & (
+  | { kind: "channel"; channelId: number }
+  | { kind: "thread"; conversationId: number }
+  | { kind: "dm"; receiverId: number }
+);
+
 type EmitEvents = {
   "user-connected": ({ user }: { user: User }) => void;
-
   "channel-created": (channel: Channel) => void;
   "last-seen-message": (params: { userId: number; message: Message }) => void;
-  /*  */
   "message:create": (message: Partial<Message>) => void;
   "message:update": (message: Partial<Message>) => void;
-  "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
+  "user-typing": (payload: UserIsTypingPayload) => void;
   "update-user-status": (payload: {
     userStatusId: number;
     userStatus: UserStatusKind;
@@ -50,7 +54,7 @@ export type ListenEvents = {
   "message:updated": (message: Message) => void;
   "reaction:created": (reaction: Reaction) => void;
   "reaction:deleted": (reaction: Reaction) => void;
-  "user-typing": (payload: { userId: number; channelOrUserId: number }) => void;
+  "user-typing": (payload: UserIsTypingPayload) => void;
   "update-user-status": (payload: {
     userStatusId: number;
     userStatus: UserStatusKind;

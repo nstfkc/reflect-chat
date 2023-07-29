@@ -1,8 +1,10 @@
+import { debounce } from "ts-debounce";
 import { User, Message, Reaction } from "@prisma/client";
 import { createId } from "@paralleldrive/cuid2";
 import { insertDateBetweenMessages } from "../../ui/Chat/utils";
 import { Subject } from "../../../utils/Subject";
 import { MessageWithThread } from "../../../types/global";
+import { UserIsTypingPayload } from "../SocketContext/SocketContext";
 
 export type ChatArgs =
   | { kind: "thread"; conversationId: number }
@@ -19,11 +21,13 @@ interface ChatParams {
     messageId: number;
   }) => Promise<Reaction>;
   deleteReaction: (reaction: Reaction) => Promise<Reaction>;
+  emitWhoIsTyping: VoidFunction;
   messageSubject: Subject<Message>;
   messageUpdateSubject: Subject<Message>;
   mentionSubject: Subject<Message>;
   reactionSubject: Subject<Reaction>;
   reactionDeleteSubject: Subject<Reaction>;
+  whoIsTypingSubject: Subject<UserIsTypingPayload>;
   args: ChatArgs;
 }
 
@@ -31,10 +35,14 @@ export function createChat(params: ChatParams) {
   let isActive = false;
   let messages: Record<string, MessageWithThread> = {};
 
+  let whoIsTyping: Set<number> = new Set();
+  let whoIsTypingTimers: Map<number, NodeJS.Timer> = new Map();
+
   const getMessages = () => insertDateBetweenMessages(Object.values(messages));
   const messages$ = new Subject(getMessages());
   const unseenMessageIds$ = new Subject<Set<number>>(new Set());
   const unseenMentions$ = new Subject<Set<number>>(new Set());
+  const whoIsTyping$ = new Subject<Set<number>>(new Set());
 
   params.fetchMessages().then((_messages) => {
     messages = Object.fromEntries(
@@ -192,6 +200,9 @@ export function createChat(params: ChatParams) {
 
     messages[message.publicId] = { thread: [], reactions: [], ...message };
     messages$.next(getMessages());
+
+    whoIsTyping.delete(message.senderId);
+    whoIsTyping$.next(new Set(whoIsTyping));
   };
 
   const handleUpdateMessage = (message: Message) => {
@@ -202,7 +213,7 @@ export function createChat(params: ChatParams) {
     messages$.next(getMessages());
   };
 
-  const handleNewMention = (message: Message) => {
+  const handleCreateMention = (message: Message) => {
     const collect = canMessageBeCollected(message);
     if (!collect) {
       return;
@@ -228,7 +239,7 @@ export function createChat(params: ChatParams) {
     }
   };
 
-  const handleReactionDelete = (reaction: Reaction) => {
+  const handleDeleteReaction = (reaction: Reaction) => {
     const messageToRemoveReaction = Object.values(messages).find(
       (message) => message.id === reaction.messageId
     );
@@ -245,6 +256,46 @@ export function createChat(params: ChatParams) {
     messages$.next(getMessages());
   };
 
+  const handleAddWhoIsTyping = (payload: UserIsTypingPayload) => {
+    function canCollect() {
+      if (params.args.kind === payload.kind) {
+        if (params.args.kind === "channel" && payload.kind === "channel") {
+          return params.args.channelId === payload.channelId;
+        }
+        if (params.args.kind === "thread" && payload.kind === "thread") {
+          return params.args.conversationId === payload.conversationId;
+        }
+        if (params.args.kind === "dm" && payload.kind === "dm") {
+          return payload.receiverId === params.user.id;
+        }
+        return false;
+      }
+    }
+
+    if (!canCollect()) return;
+
+    const key = payload.userId;
+
+    if (whoIsTypingTimers.get(payload.userId)) {
+      clearTimeout(whoIsTypingTimers.get(key));
+    }
+
+    whoIsTyping.add(payload.userId);
+
+    whoIsTypingTimers.set(
+      key,
+      setTimeout(() => {
+        whoIsTyping.delete(payload.userId);
+        whoIsTyping$.next(new Set(whoIsTyping));
+      }, 5000)
+    );
+
+    whoIsTyping$.next(new Set(whoIsTyping));
+  };
+
+  const unsubscribeWhoIsTyping =
+    params.whoIsTypingSubject.subscribe(handleAddWhoIsTyping);
+
   const unsubscribeMessageSubscription =
     params.messageSubject.subscribe(handleCreateMessage);
 
@@ -252,13 +303,13 @@ export function createChat(params: ChatParams) {
     params.messageUpdateSubject.subscribe(handleUpdateMessage);
 
   const unsubscribeMentionSubscription =
-    params.mentionSubject.subscribe(handleNewMention);
+    params.mentionSubject.subscribe(handleCreateMention);
 
   const unsubscribeReactionSubscription =
     params.reactionSubject.subscribe(handleCreateReaction);
 
   const unsubscribeReactionDeleteSubscription =
-    params.reactionDeleteSubject.subscribe(handleReactionDelete);
+    params.reactionDeleteSubject.subscribe(handleDeleteReaction);
 
   const destroy = () => {
     unsubscribeMessageSubscription();
@@ -266,6 +317,7 @@ export function createChat(params: ChatParams) {
     unsubscribeMessageUpdateSubscription();
     unsubscribeReactionSubscription();
     unsubscribeReactionDeleteSubscription();
+    unsubscribeWhoIsTyping();
   };
 
   const activate = () => {
@@ -284,11 +336,13 @@ export function createChat(params: ChatParams) {
     messages$,
     unseenMessageIds$,
     unseenMentions$,
+    whoIsTyping$,
     destroy,
     activate,
     deactivate,
     handleCreateMessage,
     handleReadMessage,
+    handleTextUpdate: debounce(() => params.emitWhoIsTyping(), 500),
     getAllMessages: () => messages,
   };
 }

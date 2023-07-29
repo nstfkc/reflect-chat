@@ -48,7 +48,7 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
         ? getEditor({
             kind: "thread",
             message: parentMessage,
-            onUpdate: () => {},
+            onUpdate: () => chat.handleTextUpdate(),
             sendMessage: (message) => chat.createMessage(message),
           })
         : () => <></>,
@@ -87,7 +87,7 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
           </div>
           <div className="p-2">
             <div className="px-6">
-              <TypingUsersList channelOrUserId={parentMessage?.id!} />
+              <TypingUsersList />
             </div>
             <div className="w-full rounded-xl bg-white/40">
               {Editor ? <Editor /> : null}

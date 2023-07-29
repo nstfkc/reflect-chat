@@ -38,9 +38,7 @@ export const DMChat = () => {
       getEditor({
         kind: "user",
         user: receiver!,
-        onUpdate: () => {
-          //
-        },
+        onUpdate: () => chat.handleTextUpdate(),
         sendMessage: (message) => chat.createMessage(message),
       }),
     [chat, receiver]
