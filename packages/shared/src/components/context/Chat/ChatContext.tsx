@@ -7,7 +7,10 @@ import { useMutation } from "../../../utils/useMutation";
 import { useLazyQuery } from "../../../utils/useLazyQuery";
 import { OrganisationContext } from "../OrganisationContext/OrganisationContext";
 import { Subject } from "../../../utils/Subject";
-import { UserIsTypingPayload } from "../SocketContext/SocketContext";
+import {
+  SocketContext,
+  UserIsTypingPayload,
+} from "../SocketContext/SocketContext";
 
 interface ChatContextValue {
   getChat: (args: ChatArgs) => Chat;
@@ -44,7 +47,9 @@ export const ChatProvider = (props: PropsWithChildren) => {
   const reactionDeleteSubject = new Subject<Reaction>({} as Reaction);
   const whoIsTypingSubject = new Subject({} as UserIsTypingPayload);
 
-  const { socket } = useSocket("message:created", (message) => {
+  const { socket, debug } = useContext(SocketContext);
+
+  useSocket("message:created", (message) => {
     let userIdToAddDMUserIds: number | null = null;
     if (message.receiverId === user.id) {
       userIdToAddDMUserIds = message.senderId;
@@ -91,8 +96,15 @@ export const ChatProvider = (props: PropsWithChildren) => {
       reactionDeleteSubject,
       messageUpdateSubject,
       whoIsTypingSubject,
-      emitWhoIsTyping: () =>
-        socket.emit("user-typing", { ...args, userId: user.id }),
+      emitWhoIsTyping: () => {
+        debug();
+        try {
+          socket.emit("user-typing", { ...args, userId: user.id });
+        } catch (err) {
+          console.log(err);
+        }
+      },
+
       fetchMessages: () =>
         args.kind === "channel"
           ? listChannelMessages({ channelId: args.channelId })

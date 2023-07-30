@@ -70,26 +70,36 @@ export type InternalSocket = Socket<ListenEvents, EmitEvents>;
 interface SocketContextValue {
   socket: InternalSocket | null;
   connected: boolean;
+  debug: VoidFunction;
 }
 
 export const SocketContext = createContext({} as SocketContextValue);
 
 function useSocket(userId: number) {
   const { socketUrl } = useContext(ConfigContext);
-  const [socket, setSocket] = useState<InternalSocket | null>(null);
-  useEffect(() => {
+  const [socket] = useState<InternalSocket | null>(() => {
     const socket = io(socketUrl, {
       query: { userId: userId },
     });
+
+    console.log({ socket });
 
     socket.on("error", (err) => {
       console.log("SOCKET_ERROR", err);
     });
 
+    socket.on("reconnect_error", (error) => {
+      console.log("reconnect_error", { error });
+      // ...
+    });
+
+    socket.io.on("reconnect_failed", (error: any) => {
+      console.log("reconnect_failed", { error });
+      // ...
+    });
     // log socket connection
     socket.on("connect", () => {
       console.log("SOCKET CONNECTED!", socket.id);
-      setSocket(socket);
 
       socket.emit("user-connected", { userId });
     });
@@ -98,24 +108,21 @@ function useSocket(userId: number) {
 
       socket.emit("user-disconnected", { userId });
     });
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-      return null;
-    };
-  }, [userId, socketUrl]);
 
-  if (socket === null) {
-    return {
-      socket,
-      connected: false,
-    };
-  }
+    setInterval(() => {
+      socket.emit("ping");
+    }, 2000);
+    return socket;
+  });
+
+  const debug = () => {
+    console.log("DEBUG", { socket });
+  };
 
   return {
     connected: socket?.connected ?? false,
     socket,
+    debug,
   };
 }
 
@@ -129,7 +136,13 @@ export const SocketProvider = (props: SocketProviderProps) => {
   const { socket, connected } = useSocket(user?.id);
 
   return (
-    <SocketContext.Provider value={{ socket, connected }}>
+    <SocketContext.Provider
+      value={{
+        socket,
+        connected,
+        debug: () => console.log("DEBUG", { socket }),
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );

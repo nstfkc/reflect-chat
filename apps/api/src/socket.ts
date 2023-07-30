@@ -45,6 +45,11 @@ export function sockets(io: Server) {
     socket.on("user-connected", ({ userId }) => {
       io.emit("user-connected", { userId });
     });
+
+    socket.on("ping", () => {
+      console.log("PING");
+    });
+
     socket.on("user-disconnected", ({ userId }) => {
       console.log(userId, "disconnected");
     });

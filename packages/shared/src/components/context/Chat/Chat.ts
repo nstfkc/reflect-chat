@@ -95,7 +95,7 @@ export function createChat(params: ChatParams) {
     const messageToAddReaction = Object.values(messages).find(
       (message) => message.id === args.messageId
     );
-    const { reactions } = messages[messageToAddReaction.publicId];
+    const { reactions = [] } = messages[messageToAddReaction?.publicId] ?? {};
     const itExists = reactions.find(
       (reaction) =>
         reaction.unified === args.unified && reaction.userId === params.user.id
@@ -344,6 +344,7 @@ export function createChat(params: ChatParams) {
     handleReadMessage,
     handleTextUpdate: debounce(() => params.emitWhoIsTyping(), 500),
     getAllMessages: () => messages,
+    kind: params.args.kind,
   };
 }
 

@@ -2,7 +2,8 @@ const socketHost = process.env.SOCKET_HOST;
 
 const local = {
   clientHost: "http://localhost:4000/client",
-  apiHost: "http://localhost:8080",
+  // apiHost: "http://localhost:8080",
+  apiHost: "https://reflect-chat-api.fly.dev",
   assetsWorkerHost: "https://reflect.flak-media.workers.dev",
 };
 
