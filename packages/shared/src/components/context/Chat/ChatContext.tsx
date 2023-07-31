@@ -7,7 +7,10 @@ import { useMutation } from "../../../utils/useMutation";
 import { useLazyQuery } from "../../../utils/useLazyQuery";
 import { OrganisationContext } from "../OrganisationContext/OrganisationContext";
 import { Subject } from "../../../utils/Subject";
-import { UserIsTypingPayload } from "../SocketContext/SocketContext";
+import {
+  SocketContext,
+  UserIsTypingPayload,
+} from "../SocketContext/SocketContext";
 
 interface ChatContextValue {
   getChat: (args: ChatArgs) => Chat;
@@ -19,8 +22,7 @@ export const ChatContext = createContext({} as ChatContextValue);
 
 export const ChatProvider = (props: PropsWithChildren) => {
   const { user } = useUser();
-  const { directMessageUserIds, channels, users } =
-    useContext(OrganisationContext);
+  const { directMessageUserIds, users } = useContext(OrganisationContext);
 
   const { trigger: triggerCreateMessage } = useMutation("createMessage");
   const { trigger: triggerUpdateMessage } = useMutation("updateMessage");
@@ -44,7 +46,9 @@ export const ChatProvider = (props: PropsWithChildren) => {
   const reactionDeleteSubject = new Subject<Reaction>({} as Reaction);
   const whoIsTypingSubject = new Subject({} as UserIsTypingPayload);
 
-  const { socket } = useSocket("message:created", (message) => {
+  const { getSocket } = useContext(SocketContext);
+
+  useSocket("message:created", (message) => {
     let userIdToAddDMUserIds: number | null = null;
     if (message.receiverId === user.id) {
       userIdToAddDMUserIds = message.senderId;
@@ -92,7 +96,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
       messageUpdateSubject,
       whoIsTypingSubject,
       emitWhoIsTyping: () =>
-        socket.emit("user-typing", { ...args, userId: user.id }),
+        getSocket().emit("user-typing", { ...args, userId: user.id }),
       fetchMessages: () =>
         args.kind === "channel"
           ? listChannelMessages({ channelId: args.channelId })
@@ -104,7 +108,7 @@ export const ChatProvider = (props: PropsWithChildren) => {
       createMessage: (message) =>
         triggerCreateMessage(message).then((res) => {
           if (res.success === true) {
-            socket.emit("message:create", res.data);
+            getSocket().emit("message:create", res.data);
             return res.data;
           }
         }),
@@ -114,21 +118,21 @@ export const ChatProvider = (props: PropsWithChildren) => {
           text: message.text,
         }).then((res) => {
           if (res.success === true) {
-            socket.emit("message:update", res.data);
+            getSocket().emit("message:update", res.data);
             return res.data;
           }
         }) as any, // TODO: fix
       createReaction: ({ messageId, unified }) =>
         triggerCreateReaction({ messageId, unified }).then((res) => {
           if (res.success === true) {
-            socket.emit("reaction:create", res.data);
+            getSocket().emit("reaction:create", res.data);
             return res.data;
           }
         }),
       deleteReaction: (reaction) => {
         return triggerDeleteReaction({ id: reaction.id }).then((res) => {
           if (res.success === true) {
-            socket.emit("reaction:delete", res.data);
+            getSocket().emit("reaction:delete", res.data);
             return res.data;
           }
         });
@@ -139,26 +143,14 @@ export const ChatProvider = (props: PropsWithChildren) => {
 
   const map = new Map<string, Chat>();
 
-  for (const dmId of directMessageUserIds) {
-    map.set(`dm-${dmId}`, createNewChat({ kind: "dm", receiverId: dmId }));
-  }
-
-  for (const channel of channels) {
-    map.set(
-      `channel-${channel.id}`,
-      createNewChat({ kind: "channel", channelId: channel.id })
-    );
-  }
-
   const chatListRef = useRef(map);
-
-  if (!socket) {
-    return null;
-  }
 
   const getChat = (args: ChatArgs) => {
     const { kind, ...rest } = args;
     const id = [kind, ...Object.values(rest)].join("-");
+    if (!getSocket()) {
+      return null;
+    }
 
     if (!chatListRef.current.has(id)) {
       chatListRef.current.set(id, createNewChat(args));
@@ -176,9 +168,17 @@ export const ChatProvider = (props: PropsWithChildren) => {
     return null;
   };
 
+  if (!getSocket()) {
+    return null;
+  }
+
   return (
     <ChatContext.Provider
-      value={{ getChat, getMessageByPublicId, directMessageUserIds$ }}
+      value={{
+        getChat,
+        getMessageByPublicId,
+        directMessageUserIds$,
+      }}
     >
       {props.children}
     </ChatContext.Provider>

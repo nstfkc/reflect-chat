@@ -8,17 +8,13 @@ import type {
   UserProfile,
   UserStatusKind,
 } from "db";
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { ReactNode, createContext, useContext, useEffect } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
 import { ConfigContext } from "../ConfigContext/ConfigContext";
 import { useUser } from "../../../auth";
+import { Subject } from "../../../utils/Subject";
+import { useSubjectValue } from "../../../utils/useSubjectValue";
 
 export type UserIsTypingPayload = { userId: number } & (
   | { kind: "channel"; channelId: number }
@@ -69,54 +65,39 @@ export type InternalSocket = Socket<ListenEvents, EmitEvents>;
 
 interface SocketContextValue {
   socket: InternalSocket | null;
+  getSocket: () => InternalSocket | null;
   connected: boolean;
 }
 
 export const SocketContext = createContext({} as SocketContextValue);
 
-function useSocket(userId: number) {
-  const { socketUrl } = useContext(ConfigContext);
-  const [socket, setSocket] = useState<InternalSocket | null>(null);
-  useEffect(() => {
-    const socket = io(socketUrl, {
-      query: { userId: userId },
-    });
+const socketSubject = new Subject<InternalSocket | null>(null);
 
-    socket.on("error", (err) => {
-      console.log("SOCKET_ERROR", err);
-    });
-
-    // log socket connection
-    socket.on("connect", () => {
-      console.log("SOCKET CONNECTED!", socket.id);
-      setSocket(socket);
-
-      socket.emit("user-connected", { userId });
-    });
-    socket.on("disconnect", () => {
-      console.log("SOCKET DISCONNECTED!", socket.id);
-
-      socket.emit("user-disconnected", { userId });
-    });
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-      return null;
-    };
-  }, [userId, socketUrl]);
-
-  if (socket === null) {
-    return {
-      socket,
-      connected: false,
-    };
+let called = false;
+function createSocket(socketUrl: string, userId: number) {
+  if (called) {
+    return;
   }
+  called = true;
+  if (socketSubject.getValue()) {
+    return;
+  }
+  const socket = io(socketUrl, {
+    query: { userId: userId },
+    forceNew: false,
+  });
 
-  return {
-    connected: socket?.connected ?? false,
-    socket,
-  };
+  socket.on("connect", () => {
+    console.log("SOCKET CONNECTED!", socket.id);
+    socket.emit("user-connected", { userId });
+    socketSubject.next(socket);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("SOCKET DISCONNECTED!", socket.id);
+    called = false;
+    socket.emit("user-disconnected", { userId });
+  });
 }
 
 interface SocketProviderProps {
@@ -125,11 +106,23 @@ interface SocketProviderProps {
 
 export const SocketProvider = (props: SocketProviderProps) => {
   const { children } = props;
+  const { socketUrl } = useContext(ConfigContext);
+  const socket = useSubjectValue(socketSubject);
   const { user } = useUser();
-  const { socket, connected } = useSocket(user?.id);
 
+  useEffect(() => {
+    createSocket(socketUrl, user?.id);
+  }, []);
+
+  console.log(socket);
   return (
-    <SocketContext.Provider value={{ socket, connected }}>
+    <SocketContext.Provider
+      value={{
+        socket,
+        connected: socket?.connected,
+        getSocket: () => socketSubject.getValue(),
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );
