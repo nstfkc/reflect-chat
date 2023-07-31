@@ -2,7 +2,6 @@ import { useContext, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   FileUploaderProvider,
-  useUser,
   TypingUsersList,
   useTheme,
   UserProfilePicture,
@@ -18,7 +17,6 @@ export const DMChat = () => {
   const theme = useTheme();
   const { receiverPublicId } = useParams();
   const { getUserByPublicId } = useContext(UsersContext);
-  const { user } = useUser();
   const receiver = getUserByPublicId(receiverPublicId ?? "");
 
   const { getChat } = useContext(ChatContext);
@@ -38,7 +36,7 @@ export const DMChat = () => {
       getEditor({
         kind: "user",
         user: receiver!,
-        onUpdate: () => chat.handleTextUpdate(),
+        onUpdate: chat.handleTextUpdate,
         sendMessage: (message) => chat.createMessage(message),
       }),
     [chat, receiver]
@@ -71,7 +69,7 @@ export const DMChat = () => {
           </div>
           <div className="p-2">
             <div className="px-6">
-              <TypingUsersList channelOrUserId={user?.id!} />
+              <TypingUsersList />
             </div>
             <div className="w-full rounded-xl bg-white/40">
               {Editor ? <Editor /> : null}

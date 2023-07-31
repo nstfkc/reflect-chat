@@ -63,6 +63,31 @@ export function createChat(params: ChatParams) {
     }
   };
 
+  let typingTimer = null;
+  let emitted = 0;
+  let skipped = 0;
+  const handleTextUpdate = (textLength: number) => {
+    if ((skipped > 6 && emitted === 0) || skipped > 20) {
+      skipped = 0;
+      params.emitWhoIsTyping();
+      emitted++;
+      return;
+    }
+    if (textLength === 25) {
+      clearTimeout(typingTimer);
+      return;
+    }
+    skipped++;
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => {
+      if (textLength > 8) {
+        params.emitWhoIsTyping();
+        emitted++;
+        skipped = 0;
+      }
+    }, 1000);
+  };
+
   const createMessage = (text: string) => {
     const publicId = createId();
     const { kind, ...rest } = params.args;
@@ -82,6 +107,7 @@ export function createChat(params: ChatParams) {
     params.createMessage(message).then((message) => {
       messages[publicId] = message;
     });
+    clearTimeout(typingTimer);
   };
 
   const updateMessage = (message: Message) => {
@@ -342,7 +368,7 @@ export function createChat(params: ChatParams) {
     deactivate,
     handleCreateMessage,
     handleReadMessage,
-    handleTextUpdate: debounce(() => params.emitWhoIsTyping(), 500),
+    handleTextUpdate,
     getAllMessages: () => messages,
     kind: params.args.kind,
   };

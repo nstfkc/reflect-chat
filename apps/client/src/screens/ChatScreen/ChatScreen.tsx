@@ -1,6 +1,6 @@
 import { TbX } from "react-icons/tb";
 
-import { useEffect, useState, useContext, useMemo } from "react";
+import { useEffect, useContext, useMemo } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import {
   FileUploaderProvider,
@@ -48,7 +48,7 @@ export const ThreadScreen = (props: ThreadScreenProps) => {
         ? getEditor({
             kind: "thread",
             message: parentMessage,
-            onUpdate: () => chat.handleTextUpdate(),
+            onUpdate: chat.handleTextUpdate,
             sendMessage: (message) => chat.createMessage(message),
           })
         : () => <></>,

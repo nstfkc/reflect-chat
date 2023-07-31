@@ -58,7 +58,7 @@ interface TextEditorProps {
   placeholder: string;
   onSubmit: (text: string, media: RawMedia[]) => void;
   onMentionListUpdate?: (user: User) => void;
-  onUpdate: VoidFunction;
+  onUpdate: (textLength: number) => void;
   onRender?: (editor: EditorInstance) => void;
   showActions?: boolean;
 }
@@ -103,8 +103,8 @@ export const TextEditor = (props: TextEditorProps) => {
       type: "doc",
       content: initialContent,
     },
-    onUpdate: () => {
-      onUpdate();
+    onUpdate: ({ editor }) => {
+      onUpdate(editor.getText().length);
     },
     editorProps: {
       attributes: {

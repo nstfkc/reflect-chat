@@ -15,7 +15,6 @@ import { MessageList } from "./MessageList";
 
 export const ChannelChat = () => {
   const { channelPublicId } = useParams();
-  const { canSendMessage } = useContext(MessageContext);
   const { channels } = useContext(OrganisationContext);
   const { getChat } = useContext(ChatContext);
   const theme = useTheme();
@@ -40,7 +39,7 @@ export const ChannelChat = () => {
         ? getEditor({
             kind: "channel",
             channel,
-            onUpdate: () => chat.handleTextUpdate(),
+            onUpdate: chat.handleTextUpdate,
             sendMessage: (text) => chat.createMessage(text),
           })
         : () => <></>,

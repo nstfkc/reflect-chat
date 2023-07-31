@@ -114,7 +114,6 @@ export const SocketProvider = (props: SocketProviderProps) => {
     createSocket(socketUrl, user?.id);
   }, []);
 
-  console.log(socket);
   return (
     <SocketContext.Provider
       value={{

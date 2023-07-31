@@ -95,8 +95,10 @@ export const ChatProvider = (props: PropsWithChildren) => {
       reactionDeleteSubject,
       messageUpdateSubject,
       whoIsTypingSubject,
-      emitWhoIsTyping: () =>
-        getSocket().emit("user-typing", { ...args, userId: user.id }),
+      emitWhoIsTyping: () => {
+        console.log("emitting");
+        getSocket().emit("user-typing", { ...args, userId: user.id });
+      },
       fetchMessages: () =>
         args.kind === "channel"
           ? listChannelMessages({ channelId: args.channelId })

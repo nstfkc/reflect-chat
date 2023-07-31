@@ -36,7 +36,7 @@ export const OrganisationProvider = (props: PropsWithChildren) => {
     useQuery("listDirectMessages");
 
   if (usersLoading || channelsLoading || isLoadingDirectMessages) {
-    return <div>Loading...</div>;
+    return <div>Loading organisation...</div>;
   }
   const directMessageUserIds = Array.from(
     new Set(

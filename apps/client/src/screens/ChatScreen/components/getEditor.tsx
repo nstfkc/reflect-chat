@@ -5,19 +5,19 @@ type GetEditorProps =
   | {
       kind: "channel";
       channel: Channel;
-      onUpdate: VoidFunction;
+      onUpdate: (textLength: number) => void;
       sendMessage: (message: string) => void;
     }
   | {
       kind: "thread";
       message: Message;
-      onUpdate: VoidFunction;
+      onUpdate: (textLength: number) => void;
       sendMessage: (message: string) => void;
     }
   | {
       kind: "user";
       user: User;
-      onUpdate: VoidFunction;
+      onUpdate: (textLength: number) => void;
       sendMessage: (message: string) => void;
     };
 
