@@ -103,7 +103,6 @@ function useAccessToken() {
   }, []);
 
   const updateToken = (newToken: string | null) => {
-    console.log("UPDATE TOKEN");
     if (newToken === null) {
       localStorage.removeItem("access_token");
     } else {
@@ -167,7 +166,10 @@ function App() {
       <IconsProvider>
         <ConfigProvider baseUrl={config.baseUrl}>
           <HttpProvider accessToken={token} http={http}>
-            <AuthProvider onSignOut={() => updateToken(null)}>
+            <AuthProvider
+              onSignIn={(token) => updateToken(token)}
+              onSignOut={() => updateToken(null)}
+            >
               <SignedOut>
                 <ThemeProvider>
                   <RouterProvider router={signedOutRouter}></RouterProvider>
