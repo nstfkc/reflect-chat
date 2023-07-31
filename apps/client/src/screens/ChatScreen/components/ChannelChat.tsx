@@ -71,10 +71,9 @@ export const ChannelChat = () => {
           </div>
           <div className="p-2">
             <div className="px-6">
-              <TypingUsersList channelOrUserId={channel.id} />
+              <TypingUsersList />
             </div>
             <div className="w-full rounded-xl bg-white/40">
-              <div>{canSendMessage ? "" : "Cant send message"}</div>
               {Editor ? <Editor /> : null}
             </div>
           </div>
