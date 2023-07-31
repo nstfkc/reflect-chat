@@ -292,7 +292,10 @@ export function createChat(params: ChatParams) {
           return params.args.conversationId === payload.conversationId;
         }
         if (params.args.kind === "dm" && payload.kind === "dm") {
-          return payload.receiverId === params.user.id;
+          return (
+            payload.receiverId === params.user.id &&
+            payload.userId === params.args.receiverId
+          );
         }
         return false;
       }
