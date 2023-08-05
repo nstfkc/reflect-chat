@@ -15,8 +15,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-primary text-secondary">
-        <header>
-          <nav>
+        <header className="bg-secondary">
+          <nav className="text-primary">
             <div className="container mx-auto max-w-4xl px-4 md:px-0">
               <div className="flex items-center justify-between py-4">
                 <div>

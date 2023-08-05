@@ -25,7 +25,12 @@ const nextConfig = {
 
   rewrites: async () => {
     return process.env.NO_PROXY
-      ? []
+      ? [
+          {
+            source: "/media/:path*",
+            destination: `${config.assetsWorkerHost}/:path*`,
+          },
+        ]
       : [
           {
             source: "/client",
