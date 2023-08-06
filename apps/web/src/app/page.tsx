@@ -1,10 +1,11 @@
 import { AppPreview } from "./components/AppPreview";
+import { Benefits } from "./components/Benefits";
 
 const Hero = () => {
   return (
-    <section>
+    <section id="hero">
       <div className="text-primary px-4">
-        <div className="flex flex-col">
+        <div className="flex flex-col container max-w-4xl mx-auto px-4">
           <h1 className="text-2xl md:text-3xl font-black">
             Communication app for teams <br /> and communities
           </h1>
@@ -29,7 +30,10 @@ export default function Home() {
           <Hero />
         </div>
       </div>
-      <div className="h-[72px]"></div>
+      <div className="h-[144px]"></div>
+      <div className="container max-w-4xl mx-auto">
+        <Benefits />
+      </div>
     </div>
   );
 }
