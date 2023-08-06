@@ -69,3 +69,70 @@ export const GeneralChat = () => {
     </>
   );
 };
+
+export const features: Array<{
+  user: User;
+  message: JSX.Element;
+  hour: string;
+}> = [
+  {
+    user: "Enes Tufekci",
+    hour: "10:54 am",
+    message: (
+      <div>
+        Hey <Mention user="channel" />, I see some problems with the logs, can
+        we have a look together?
+      </div>
+    ),
+  },
+  {
+    user: "Dave Schneider",
+    hour: "10:55 am",
+    message: <p>Hey, sure give me 10 mins.</p>,
+  },
+  {
+    user: "Enes Tufekci",
+    hour: "10:54 am",
+    message: (
+      <div>
+        Hey <Mention user="channel" />, I see some problems with the logs, can
+        we have a look together?
+      </div>
+    ),
+  },
+  {
+    user: "Dave Schneider",
+    hour: "10:55 am",
+    message: <p>Hey, sure give me 10 mins.</p>,
+  },
+  {
+    user: "Enes Tufekci",
+    hour: "10:54 am",
+    message: (
+      <div>
+        Hey <Mention user="channel" />, I see some problems with the logs, can
+        we have a look together?
+      </div>
+    ),
+  },
+  {
+    user: "Dave Schneider",
+    hour: "10:55 am",
+    message: <p>Hey, sure give me 10 mins.</p>,
+  },
+  {
+    user: "Enes Tufekci",
+    hour: "10:54 am",
+    message: (
+      <div>
+        Hey <Mention user="channel" />, I see some problems with the logs, can
+        we have a look together?
+      </div>
+    ),
+  },
+  {
+    user: "Dave Schneider",
+    hour: "10:55 am",
+    message: <p>Hey, sure give me 10 mins.</p>,
+  },
+];

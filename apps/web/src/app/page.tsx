@@ -1,5 +1,6 @@
 import { AppPreview } from "./components/AppPreview";
 import { Benefits } from "./components/Benefits";
+import { Features } from "./components/Features";
 
 const Hero = () => {
   return (
@@ -33,6 +34,8 @@ export default function Home() {
       <div className="h-[144px]"></div>
       <div className="container max-w-4xl mx-auto">
         <Benefits />
+        <div className="h-16"></div>
+        <Features />
       </div>
     </div>
   );
