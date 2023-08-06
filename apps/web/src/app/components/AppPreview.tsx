@@ -13,7 +13,7 @@ import {
   TbMenu,
 } from "react-icons/tb";
 import { UserAvatar } from "./UserAvatar";
-import { GeneralChat } from "./mockConversations";
+import { GeneralChat, Message } from "./mockConversations";
 import { useEffect } from "react";
 
 const TitleBar = () => {
@@ -156,33 +156,42 @@ const SideBar = () => {
   );
 };
 
-const MessageHistory = () => {
-  return (
-    <div className="flex flex-col gap-2">
-      <GeneralChat />
-    </div>
-  );
-};
-
 const Thread = () => {
   return (
-    <div className="hidden lg:flex shrink-0 h-full flex-col justify-end w-[36%] bg-alt2">
-      <div>message history</div>
-      <div className="p-2">
-        <div className="bg-white/40 p-4 rounded-lg ">
-          <span className="opacity-50 text-xs">Reply...</span>
+    <div className="hidden lg:flex flex-col shrink-0 h-full w-[36%] bg-alt2">
+      <div className="flex flex-col p-2 gap-2">
+        <div className="">
+          <h2 className="font-bold">Thread</h2>
+        </div>
+        <div className="bg-black/10 rounded-xl p-2">
+          <Message user="Enes Tufekci" hour="14:00 pm">
+            Hello world
+          </Message>
+        </div>
+      </div>
+      <div className="flex flex-col justify-end h-full">
+        <div className="flex flex-col gap-2 px-2">
+          <GeneralChat />
+        </div>
+        <div className="p-2">
+          <div className="bg-white/40 p-4 rounded-lg ">
+            <span className="opacity-50 text-xs">Reply...</span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
 const Main = () => {
   return (
     <div className="flex h-full">
       <div className="flex flex-col w-full h-full">
         <div className="bg-alt1 p-2 font-semibold text-xs"># General</div>
         <div className="flex flex-1 h-full flex-col justify-end">
-          <MessageHistory />
+          <div className="flex flex-col gap-2 px-2">
+            <GeneralChat />
+          </div>
           <div className="p-2">
             <div className="bg-white/40 p-4 rounded-lg w-full">
               <span className="opacity-50 text-xs">Message #General</span>
@@ -216,10 +225,10 @@ export const AppPreview = () => {
   return (
     <div
       className={[
-        "aspect-[9/16] sm:aspect-[5/4] md:aspect-[5/3]",
+        "aspect-[390/844] sm:aspect-[5/4] md:aspect-[5/3]",
         "translate-y-24",
         "mt-[-102px]",
-        "rounded-xl",
+        "rounded-[24px] md:rounded-xl",
         "shadow-xl",
         "overflow-hidden",
         "border-primary/10",

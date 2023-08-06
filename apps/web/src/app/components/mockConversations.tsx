@@ -2,15 +2,16 @@
 import { ReactNode } from "react";
 import { User, UserAvatar } from "./UserAvatar";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
+
 interface MessageProps {
   user: User;
   hour: string;
   children: ReactNode;
 }
 
-const Message = (props: MessageProps) => {
+export const Message = (props: MessageProps) => {
   return (
-    <div className="flex gap-2 px-2 text-xs">
+    <div className="flex gap-2 text-xs">
       <div>
         <UserAvatar size={24} user={props.user} />
       </div>
