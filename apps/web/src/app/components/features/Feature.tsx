@@ -15,7 +15,7 @@ export const Feature = (props: FeatureProps) => {
     <div>
       <div
         className={[
-          "flex flex-col md:flex-row gap-8",
+          "flex flex-col md:flex-row gap-8 select-none",
           reversed ? "md:flex-row-reverse" : "",
         ].join(" ")}
       >
