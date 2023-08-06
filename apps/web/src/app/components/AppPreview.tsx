@@ -63,7 +63,7 @@ const Channels = () => {
           <div
             key={channel.name}
             className={[
-              "text-[10px] leading-relaxed py-[2px] rounded-md px-1",
+              "text-[11px] leading-relaxed py-[2px] rounded-md px-1",
               channel.isActive ? "bg-black/10" : "",
             ].join(" ")}
           >
@@ -92,29 +92,29 @@ const DMs = () => {
     <div>
       <span className="font-semibold text-xs px-2">Direct Messages</span>
       <div className="flex flex-col gap-[1px] px-2">
-        <div className="text-[10px] leading-relaxed py-[2px] rounded-sm px-1">
+        <div className="text-[11px] leading-relaxed py-[2px] rounded-sm px-1">
           <div className="flex items-center gap-1">
-            <UserAvatar user="Jakob Frater" size={12} />
+            <UserAvatar user="Jakob Frater" size={16} />
             <span>Jakob Frater (you)</span>
           </div>
         </div>
-        <div className="text-[10px] leading-relaxed py-[2px] rounded-sm px-1">
+        <div className="text-[11px] leading-relaxed py-[2px] rounded-sm px-1">
           <div className="flex items-center gap-1">
-            <UserAvatar user="Enes Tufekci" size={12} />
+            <UserAvatar user="Enes Tufekci" size={16} />
             <span>Enes Tufekci</span>
           </div>
         </div>
 
-        <div className="text-[10px] leading-relaxed py-[2px] rounded-sm px-1">
+        <div className="text-[11px] leading-relaxed py-[2px] rounded-sm px-1">
           <div className="flex items-center gap-1">
-            <UserAvatar user="Norah Scott" size={12} />
+            <UserAvatar user="Norah Scott" size={16} />
             <span>Norah Scott</span>
           </div>
         </div>
 
-        <div className="text-[10px] leading-relaxed py-[2px] rounded-sm px-1">
+        <div className="text-[11px] leading-relaxed py-[2px] rounded-sm px-1">
           <div className="flex items-center gap-1">
-            <UserAvatar user="Dave Schneider" size={12} />
+            <UserAvatar user="Dave Schneider" size={16} />
             <span>Dave Schneider</span>
           </div>
         </div>
@@ -129,7 +129,7 @@ const SideBar = () => {
       <div className="px-2 py-1">
         <span className="font-bold">reflect</span>
       </div>
-      <div className="px-2 text-[10px]">
+      <div className="px-2 text-[11px]">
         <div className="flex items-center gap-1">
           <TbHeadset /> <span>Personal assistant</span>
         </div>
@@ -225,7 +225,7 @@ export const AppPreview = () => {
   return (
     <div
       className={[
-        "aspect-[390/844] sm:aspect-[5/4] md:aspect-[5/3]",
+        "aspect-[390/844] md:aspect-[5/4] lg:aspect-[5/3]",
         "translate-y-24",
         "mt-[-102px]",
         "rounded-[24px] md:rounded-xl",
