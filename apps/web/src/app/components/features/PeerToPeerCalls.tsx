@@ -1,61 +1,75 @@
 "use client";
 import { motion } from "framer-motion";
+import { Feature } from "./Feature";
+import { UserAvatar } from "../UserAvatar";
 
-export const PeerToPeerCalls = () => {
+export const PeerToPeer = () => {
   return (
-    <div>
-      <div>
-        <h3 className="font-black text-xl tracking-wider">
-          Peer-to-Peer Audio and video calls
-        </h3>
-        <p>
-          Sometimes it is just better to hop into a call, reflect allows you to
-          make peer-to-peer audio and video calls with close to 0 latency.
-        </p>
-      </div>
-
-      <div className="h-8"></div>
-      <div className="border-2 border-gray-700 rounded-lg p-8 py-32">
-        <div className="flex items-center justify-center">
-          <div className="flex flex-col items-center">
-            <div className="w-[84px] h-[60px] rounded-md border-2 border-gray-700 bg-red-600/20"></div>
-            <div className="w-[100px] h-[2px] bg-gray-700"></div>
-          </div>
-          <div className="flex flex-col flex-1 mx-[-8px] gap-2">
-            <div className="h-1 bg-gray-700/60 relative overflow-hidden">
-              <motion.div
-                animate={{ left: "110%" }}
-                initial={{ left: "-10%" }}
-                transition={{
-                  duration: 0.85,
-                  repeatType: "loop",
-                  repeat: Infinity,
-                  repeatDelay: 0.2,
-                }}
-                className="absolute w-2 h-2 top-[-2px] rounded-full bg-gray-700"
-              ></motion.div>
-            </div>
-
-            <div className="h-1 bg-gray-700/60 relative overflow-hidden">
-              <motion.div
-                animate={{ left: "-10%" }}
-                initial={{ left: "110%" }}
-                transition={{
-                  duration: 0.8,
-                  repeatType: "loop",
-                  repeat: Infinity,
-                  repeatDelay: 0.2,
-                }}
-                className="absolute w-2 h-2 top-[-2px] rounded-full bg-gray-700"
-              ></motion.div>
+    <Feature
+      reversed
+      title="High-Quality Peer-to-Peer Audio and Video Calls"
+      description="Bridge geographical gaps with crystal-clear audio and video calls that
+          bring you closer to your colleagues. Whether it's a quick
+          check-in or a detailed discussion, our high-quality calls ensure that
+          every interaction is meaningful and productive."
+    >
+      <div className="flex items-center justify-center h-full">
+        <div className="flex flex-col items-center justify-center overflow-hidden">
+          <div className="w-[64px] rounded-md aspect-[4/3] border-2 border-secondary">
+            <div className="w-[8px] mx-auto rounded-sm mt-[-3px] border-[2px] border-secondary"></div>
+            <div className="flex h-full justify-center p-1">
+              <div className="border-2 border-alt1 rounded-full w-[28px] h-[28px] animate-pulse">
+                <div className="rounded-full w-[24px] h-[24px] overflow-hidden">
+                  <UserAvatar size={24} user="Michael Selkis" />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col items-center">
-            <div className="w-[84px] h-[60px] rounded-md border-2 border-gray-700 bg-green-600/20"></div>
-            <div className="w-[100px] h-[2px] bg-gray-700"></div>
+          <div className="w-[80px] border-[1.5px] mt-[-1px] rounded-[2px] border-secondary"></div>
+        </div>
+        <div className="flex flex-col flex-1 max-w-[128px] mx-[-8px] gap-2">
+          <div className="h-1 bg-gray-700/60 relative overflow-hidden">
+            <motion.div
+              animate={{ left: "110%" }}
+              initial={{ left: "-10%" }}
+              transition={{
+                duration: 0.85,
+                repeatType: "loop",
+                repeat: Infinity,
+                repeatDelay: 0.2,
+              }}
+              className="absolute w-2 h-2 top-[-2px] rounded-full bg-gray-700"
+            ></motion.div>
+          </div>
+
+          <div className="h-1 bg-gray-700/60 relative overflow-hidden">
+            <motion.div
+              animate={{ left: "-10%" }}
+              initial={{ left: "110%" }}
+              transition={{
+                duration: 0.8,
+                repeatType: "loop",
+                repeat: Infinity,
+                repeatDelay: 0.2,
+              }}
+              className="absolute w-2 h-2 top-[-2px] rounded-full bg-gray-700"
+            ></motion.div>
           </div>
         </div>
+        <div className="flex flex-col items-center justify-center overflow-hidden">
+          <div className="w-[64px] rounded-md aspect-[4/3] border-2 border-secondary">
+            <div className="w-[8px] mx-auto rounded-sm mt-[-3px] border-[2px] border-secondary"></div>
+            <div className="flex h-full justify-center p-1">
+              <div className="border-2 border-alt1 rounded-full w-[28px] h-[28px] animate-pulse">
+                <div className="rounded-full w-[24px] h-[24px] overflow-hidden">
+                  <UserAvatar size={24} user="Alina Lambert" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="w-[80px] border-[1.5px] mt-[-1px] rounded-[2px] border-secondary"></div>
+        </div>
       </div>
-    </div>
+    </Feature>
   );
 };
