@@ -227,3 +227,22 @@ model InvitationCode {
   role   String //admin 
   userId String?
 }
+
+model WaitingList {
+  id Int @id @default(autoincrement())
+
+  agreedToReceiveUpdates Boolean? @default(false)
+  email                  String
+  createtAt              DateTime @default(now())
+}
+
+model ContactForm {
+  id Int @id @default(autoincrement())
+
+  email       String
+  jobTitle    String? @default("")
+  description String? @default("")
+
+  agreedToReceiveUpdates Boolean? @default(false)
+  createtAt              DateTime @default(now())
+}

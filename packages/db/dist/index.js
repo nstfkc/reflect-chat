@@ -55,6 +55,7 @@ __reExport(src_exports, require("@prisma/client"), module.exports);
 var mutations_exports = {};
 __export(mutations_exports, {
   createChannel: () => createChannel,
+  createContactFormEntry: () => createContactFormEntry,
   createMessage: () => createMessage,
   createOrganisation: () => createOrganisation,
   createReaction: () => createReaction,
@@ -64,7 +65,8 @@ __export(mutations_exports, {
   signOut: () => signOut,
   signUp: () => signUp,
   updateMessage: () => updateMessage,
-  updateProfile: () => updateProfile
+  updateProfile: () => updateProfile,
+  waitingListSignUp: () => waitingListSignUp
 });
 var z = __toESM(require("zod"));
 var import_uniqolor = require("uniqolor");
@@ -409,7 +411,7 @@ var createMessage = createPrecedure({
     receiverId: z.number().optional(),
     channelId: z.number().optional()
   }),
-  handler: async (args, ctx) => {
+  handler: async (args) => {
     try {
       const message = await prisma.message.create({
         data: {
@@ -487,6 +489,56 @@ var deleteReaction = createPrecedure({
       success: true,
       data: reaction
     };
+  }
+});
+var waitingListSignUp = createPrecedure({
+  isPublic: true,
+  schema: z.object({
+    email: z.string(),
+    agreedToReceiveUpdates: z.boolean().optional()
+  }),
+  handler: async (args) => {
+    try {
+      const waitinglist = await prisma.waitingList.create({
+        data: {
+          email: args.email,
+          agreedToReceiveUpdates: args.agreedToReceiveUpdates
+        }
+      });
+      return {
+        success: true,
+        data: waitinglist
+      };
+    } catch (err) {
+      return prismaError({ message: "something went wrong", statusCode: 400 });
+    }
+  }
+});
+var createContactFormEntry = createPrecedure({
+  isPublic: true,
+  schema: z.object({
+    email: z.string(),
+    jobTitle: z.string().optional(),
+    description: z.string().optional(),
+    agreedToReceiveUpdates: z.boolean().optional()
+  }),
+  handler: async (args) => {
+    try {
+      const { description, email, jobTitle, agreedToReceiveUpdates } = args;
+      const waitinglist = await prisma.contactForm.create({
+        data: { email, description, jobTitle, agreedToReceiveUpdates }
+      });
+      return {
+        success: true,
+        data: waitinglist
+      };
+    } catch (err) {
+      return prismaError({
+        message: "something went wrong",
+        statusCode: 400,
+        payload: err
+      });
+    }
   }
 });
 

@@ -1,22 +1,31 @@
+import Link from "next/link";
 import { AppPreview } from "./components/AppPreview";
 import { Benefits } from "./components/Benefits";
 import { Features } from "./components/Features";
-import { WaitingListForm } from "./components/WaitingListForm";
+import { WaitingList } from "./components/WaitingListForm";
 
 const Hero = () => {
   return (
     <section id="hero">
       <div className="text-primary px-4">
-        <div className="flex flex-col container max-w-4xl mx-auto px-4">
-          <h1 className="text-2xl md:text-3xl font-black">
-            Communication infrastructure <br /> for teams <br /> and communities
+        <div className="flex flex-col container max-w-4xl mx-auto lg:px-4 py-16">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-wide">
+            communication infrastructure <br /> for productivity freaks
           </h1>
-          <h2 className="text-xl">Tailored for productivity</h2>
-        </div>
+          <div className="h-4"></div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold tracking-wider">
+              <span className="bg-primary text-secondary">10x</span> your
+              team&apos;s productivity
+            </h2>
+          </div>
 
+          <div>
+            <Link href="#waitinglist">Join to our waiting list</Link>
+          </div>
+        </div>
         <div className="h-8"></div>
       </div>
-
       <div className="px-8 md:px-4">
         <AppPreview />
       </div>
@@ -39,14 +48,23 @@ export default function Home() {
 
       <div className="h-32"></div>
       <div className="bg-alt1/30">
-        <div className="container max-w-4xl mx-auto p-4">
-          <WaitingListForm></WaitingListForm>
-        </div>
+        <section id="waitinglist">
+          <div className="container max-w-4xl mx-auto p-4">
+            <WaitingList />
+          </div>
+        </section>
       </div>
 
       <div className="h-32"></div>
       <div className="container max-w-4xl mx-auto">
         <Features />
+      </div>
+
+      <div className="h-32"></div>
+      <div className="bg-alt1/30">
+        <div className="container max-w-4xl mx-auto p-4">
+          <WaitingList />
+        </div>
       </div>
     </div>
   );

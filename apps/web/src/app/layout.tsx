@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Link from "next/link";
+import { WaitingList } from "./components/WaitingListForm";
 
 export const metadata = {
   title: "Reflect",
@@ -24,7 +25,13 @@ export default function RootLayout({
                     reflect
                   </Link>
                 </div>
-                <div className="flex gap-8">
+                <div className="flex items-center gap-8">
+                  <Link
+                    href="#benefits"
+                    className="font-semibold text-sm tracking-wide"
+                  >
+                    benefits
+                  </Link>
                   <Link
                     href="#features"
                     className="font-semibold text-sm tracking-wide"
@@ -32,10 +39,38 @@ export default function RootLayout({
                     features
                   </Link>
                   <Link
-                    href="#roadmap"
+                    href="/contact-us"
+                    className="font-semibold text-sm tracking-wide bg-primary text-secondary px-2 py-2 rounded-lg"
+                  >
+                    contact us
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </header>
+        {children}
+        <footer className="bg-secondary text-primary">
+          <div className="container mx-auto max-w-6xl px-4 py-8 flex flex-col gap-8">
+            <div className="flex items-start justify-between">
+              <div>
+                <Link className="text-lg font-black" href="/">
+                  reflect
+                </Link>
+              </div>
+              <div className="flex gap-16">
+                <div className="flex flex-col gap-4">
+                  <Link
+                    href="#benefits"
                     className="font-semibold text-sm tracking-wide"
                   >
-                    roadmap
+                    benefits
+                  </Link>
+                  <Link
+                    href="#features"
+                    className="font-semibold text-sm tracking-wide"
+                  >
+                    features
                   </Link>
                   <a
                     target="_blank"
@@ -43,47 +78,33 @@ export default function RootLayout({
                     href="https://twitter.com/reflectrocks"
                     className="font-semibold text-sm tracking-wide"
                   >
-                    twitter
+                    X <small>(f.k.a twitter)</small>
                   </a>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <Link
+                    href="/contact-us"
+                    className="font-semibold text-sm tracking-wide"
+                  >
+                    contact us
+                  </Link>
+                  <Link
+                    href="/terms-and-conditions"
+                    className="font-semibold text-sm tracking-wide"
+                  >
+                    terms and conditions
+                  </Link>
+                  <Link
+                    href="/privacy-policy"
+                    className="font-semibold text-sm tracking-wide"
+                  >
+                    privacy policy
+                  </Link>
                 </div>
               </div>
             </div>
-          </nav>
-        </header>
-        {children}
-        <div className="h-16"></div>
-        <footer className="bg-secondary text-primary">
-          <div className="container mx-auto max-w-6xl px-4 py-8">
-            <div className="flex justify-between">
-              <div>
-                <Link className="text-lg font-black" href="/#hero">
-                  reflect.rocks
-                </Link>
-                <br />
-                <small>© 2023 Enes Tuefekci. All rights reserved</small>
-              </div>
-              <div className="flex flex-col gap-4">
-                <Link
-                  href="#features"
-                  className="font-semibold text-sm tracking-wide"
-                >
-                  features
-                </Link>
-                <Link
-                  href="#roadmap"
-                  className="font-semibold text-sm tracking-wide"
-                >
-                  roadmap
-                </Link>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://twitter.com/reflectrocks"
-                  className="font-semibold text-sm tracking-wide"
-                >
-                  twitter
-                </a>
-              </div>
+            <div>
+              <small>© 2023 reflect. All rights reserved.</small>
             </div>
           </div>
         </footer>
