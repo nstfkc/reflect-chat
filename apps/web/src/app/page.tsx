@@ -8,20 +8,25 @@ const Hero = () => {
   return (
     <section id="hero">
       <div className="text-primary px-4">
-        <div className="flex flex-col container max-w-4xl mx-auto lg:px-4 py-16">
+        <div className="flex flex-col container max-w-4xl mx-auto lg:px-4 py-16 gap-8">
           <h1 className="text-4xl md:text-6xl font-bold tracking-wide">
             communication infrastructure <br /> for productivity freaks
           </h1>
-          <div className="h-4"></div>
           <div>
             <h2 className="text-xl md:text-2xl font-bold tracking-wider">
-              <span className="bg-primary text-secondary">10x</span> your
-              team&apos;s productivity
+              <span className="text-alt1">reflect</span> is a replacement for{" "}
+              <br />
+              slack + zoom + zapier + confluence
             </h2>
           </div>
 
           <div>
-            <Link href="#waitinglist">Join to our waiting list</Link>
+            <Link
+              href="#waitinglist"
+              className="bg-primary text-secondary font-semibold px-4 py-2 rounded-md"
+            >
+              Join to our waiting list
+            </Link>
           </div>
         </div>
         <div className="h-8"></div>
