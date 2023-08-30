@@ -1,6 +1,6 @@
 "use client";
 
-import { useAnimate, motion } from "framer-motion";
+import { useAnimate } from "framer-motion";
 
 import {
   TbCommand,
@@ -11,6 +11,7 @@ import {
   TbFiles,
   TbPencil,
   TbMenu,
+  TbArrowsJoin,
 } from "react-icons/tb";
 import { UserAvatar } from "./UserAvatar";
 import { GeneralChat, Message } from "./mockConversations";
@@ -125,33 +126,44 @@ const DMs = () => {
 
 const SideBar = () => {
   return (
-    <div className="bg-alt2 h-full py-1">
+    <div className="bg-alt2 h-full py-1 flex flex-col h-full">
       <div className="px-2 py-1">
         <span className="font-bold">reflect</span>
       </div>
-      <div className="px-2 text-[11px]">
-        <div className="flex items-center gap-1">
-          <TbHeadset /> <span>Personal assistant</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <TbBooks /> <span>Knowledge base</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <TbFiles /> <span>Files</span>
+      <div className="flex flex-col h-full justify-between">
+        <div>
+          <div className="px-2 text-[11px]">
+            <div className="flex items-center gap-1">
+              <TbBooks /> <span>Content</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TbArrowsJoin /> <span>Automations</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TbUsers /> <span>People</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <TbPencil /> <span>Notes</span>
+            </div>
+          </div>
+          <div className="h-4"></div>
+          <Channels />
+          <div className="h-4"></div>
+          <DMs />
         </div>
 
-        <div className="flex items-center gap-1">
-          <TbUsers /> <span>People</span>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <TbPencil /> <span>Drafts</span>
+        <div className="px-2 text-[11px]">
+          <div className="flex items-center justify-center bg-black/10 rounded-lg py-2 gap-1">
+            <div className="">
+              <TbHeadset className="text-[14px]" />
+            </div>{" "}
+            <div>
+              <span className="font-semibold">Personal assistant</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="h-4"></div>
-      <Channels />
-      <div className="h-4"></div>
-      <DMs />
     </div>
   );
 };

@@ -16,10 +16,9 @@ const Hero = () => {
             <h2 className="text-xl md:text-2xl font-bold tracking-wider">
               <span className="text-alt1">reflect</span> is a replacement for{" "}
               <br />
-              slack + zoom + zapier + confluence
+              slack + zoom + zapier + and more...
             </h2>
           </div>
-
           <div>
             <Link
               href="#waitinglist"

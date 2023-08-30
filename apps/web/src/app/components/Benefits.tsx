@@ -1,6 +1,10 @@
 import { ReactNode } from "react";
 import { IconType } from "react-icons/lib";
 import {
+  TbArrowGuide,
+  TbArrowMerge,
+  TbArrowWaveRightUp,
+  TbArrowsUp,
   TbBrush,
   TbCash,
   TbClockShield,
@@ -37,34 +41,31 @@ export const Benefits = () => {
         <h2 className="text-2xl font-bold">Benefits</h2>
         <div className="h-4"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Benefit title="Shaped by User Insights" icon={TbUserQuestion}>
-            We&apos;ve taken the time to engage with teams across various
-            industries, listening closely to their experiences and challenges.
-            This collaborative effort has enabled us to develop features that
-            truly resonate with the demands of modern communication, resulting
-            in a tool that feels tailor-made for your context.
+          <Benefit title="Efficient Workflow Integration" icon={TbArrowGuide}>
+            Every tool employed in your operations represents a potential weak
+            link and liability. <strong>reflect</strong> eliminates complexity
+            by offering a unified platform that incorporates all necessary
+            tools.
           </Benefit>
-          <Benefit title="Thoughtful Design Simplicity" icon={TbBrush}>
-            In a world filled with complexity, Reflect offers a breath of fresh
-            air. Our user interface is deliberately designed to be minimalist
-            and intuitive. By reducing clutter and distractions, we ensure that
-            your focus remains on the conversations and tasks that drive your
-            team forward.
+          <Benefit title="Seamless Automation" icon={TbArrowMerge}>
+            Featuring a market-leading automation system,{" "}
+            <strong>reflect</strong> empowers you to effortlessly harness
+            operational events, converting them into actions that can generate
+            reports or trigger subsequent events.
           </Benefit>
-          <Benefit title="More Time for What Counts" icon={TbClockShield}>
-            Your time is precious, and Reflect&apos;s AI-powered capabilities
-            are here to help you reclaim it. Imagine having routine tasks such
-            as scheduling appointments, setting reminders, and organizing to-dos
-            effortlessly managed by our intelligent assistant. This means you
-            can direct your energy toward the high-impact activities that truly
-            matter for your organization&apos;s success.
+          <Benefit
+            title="Tailored Solutions for Unique Challenges"
+            icon={TbArrowWaveRightUp}
+          >
+            Recognizing that not every challenge has a pre-built solution,
+            <strong>reflect</strong> provides a platform to construct solutions
+            for your specific needs.
           </Benefit>
-          <Benefit title="Budget-Friendly Quality" icon={TbCash}>
-            At Reflect, we firmly believe that effective communication tools
-            should be accessible without straining your budget. Our commitment
-            to offering competitive pricing ensures that your team can enjoy
-            top-tier communication capabilities without breaking the bank.
-            It&apos;s quality and value combined.
+          <Benefit title="First-class AI integration" icon={TbArrowsUp}>
+            Bid farewell to mundane tasks such as scheduling meetings, setting
+            reminders, crafting to-do lists, and follow-ups. With{" "}
+            <strong>reflect</strong>, every member of your organization gains an
+            AI-powered personal assistant.
           </Benefit>
         </div>
       </div>
