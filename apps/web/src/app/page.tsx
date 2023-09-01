@@ -3,15 +3,44 @@ import { AppPreview } from "./components/AppPreview";
 import { Benefits } from "./components/Benefits";
 import { Features } from "./components/Features";
 import { WaitingList } from "./components/WaitingListForm";
+import { PropsWithChildren } from "react";
+import { IconType } from "react-icons/lib";
+import {
+  TbUsersGroup,
+  TbMessageCheck,
+  TbCalendarTime,
+  TbArrowGuide,
+} from "react-icons/tb";
+
+const Wrapper = ({
+  children,
+  Icon = TbUsersGroup,
+}: PropsWithChildren<{ Icon: IconType }>) => {
+  return (
+    <div className="bg-white/20 p-4 rounded-lg text-xl tracking-wide flex items-center gap-4">
+      <div className="w-16 h-16 rounded-full bg-secondary flex justify-center items-center">
+        <Icon className="text-2xl" />
+      </div>
+      {children}
+    </div>
+  );
+};
 
 const Hero = () => {
   return (
     <section id="hero">
       <div className="text-primary px-4">
-        <div className="flex flex-col container max-w-4xl mx-auto lg:px-4 py-16 gap-8">
+        <div className="flex flex-col container max-w-4xl mx-auto lg:px-4 py-16 gap-12">
           <h1 className="text-4xl md:text-6xl font-bold tracking-wide">
-            communication infrastructure <br /> for productivity freaks
+            communication infrastructure <br /> for{" "}
+            <span className="text-alt1">online businesses</span>
           </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Wrapper Icon={TbUsersGroup}>Organize your team</Wrapper>
+            <Wrapper Icon={TbMessageCheck}>Talk to your customers</Wrapper>
+            <Wrapper Icon={TbCalendarTime}>Manage your content</Wrapper>
+            <Wrapper Icon={TbArrowGuide}>Automate the rest</Wrapper>
+          </div>
           <div>
             <h2 className="text-xl md:text-2xl font-bold tracking-wider">
               <span className="text-alt1">reflect</span> is a replacement for{" "}
