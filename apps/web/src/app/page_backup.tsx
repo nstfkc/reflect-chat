@@ -1,6 +1,6 @@
 import { AIPoweredSearch } from "./components/features/AIPoweredSearch";
 import { Automations } from "./components/features/Automations";
-import { IntegratedKnowledgeBase } from "./components/features/KnowledgeBase";
+import { ContentManager } from "./components/features/ContentManager";
 import { PeerToPeer } from "./components/features/PeerToPeerCalls";
 import { PersonalAIAssistant } from "./components/features/PersonalAIAssistant";
 import { RealTimeChat } from "./components/features/RealTimeChat";
@@ -41,7 +41,7 @@ export default function Home() {
             <div className="flex flex-col gap-8 leading-relaxed">
               <RealTimeChat />
               <PeerToPeer />
-              <IntegratedKnowledgeBase />
+              <ContentManager />
               <AIPoweredSearch />
               <PersonalAIAssistant />
               <Automations />

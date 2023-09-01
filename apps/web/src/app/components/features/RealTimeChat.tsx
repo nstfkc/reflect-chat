@@ -48,11 +48,8 @@ export const RealTimeChat = () => {
 
   return (
     <Feature
-      title="Real-Time Chat with User-Centric Approach"
-      description="Experience the power of real-time messaging that's rooted in a
-      user-centric philosophy. Our chat feature is not just about exchanging
-      messages – it's about maintaining fluid conversations that
-      effortlessly adapt to your communication style."
+      title="Real-Time Chat"
+      description="Communicate with your team and clients in private or public channels in real-time."
     >
       <div className="flex flex-col justify-end h-full gap-4 p-2 select-none">
         {messages.map((message, index) => (

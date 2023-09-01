@@ -141,7 +141,7 @@ export const ContactForm = () => {
 
         <div className="flex flex-col gap-0">
           <label className="text-sm font-bold" htmlFor="details">
-            Details (optional)
+            Your message
           </label>
           <textarea
             className="p-2 rounded-lg resize-none outline-alt1"

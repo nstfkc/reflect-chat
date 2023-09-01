@@ -2,7 +2,7 @@
 
 import { RealTimeChat } from "./features/RealTimeChat";
 import { PeerToPeer } from "./features/PeerToPeerCalls";
-import { IntegratedKnowledgeBase } from "./features/KnowledgeBase";
+import { ContentManager } from "./features/ContentManager";
 import { AIPoweredSearch } from "./features/AIPoweredSearch";
 import { Automations } from "./features/Automations";
 import { ThirtPartIntegrations } from "./features/ThirtPartIntegrations";
@@ -16,9 +16,7 @@ export const Features = () => {
       <div className="h-4"></div>
       <div className="flex flex-col gap-8">
         <RealTimeChat />
-        <PeerToPeer />
-        <IntegratedKnowledgeBase />
-        <AIPoweredSearch />
+        <ContentManager />
         <Automations />
         <ThirtPartIntegrations />
       </div>

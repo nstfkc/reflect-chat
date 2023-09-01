@@ -21,7 +21,7 @@ const Wrapper = ({
       <div className="w-16 h-16 rounded-full bg-secondary flex justify-center items-center">
         <Icon className="text-2xl" />
       </div>
-      {children}
+      <div className="font-semibold text-xl tracking-0">{children}</div>
     </div>
   );
 };
@@ -37,7 +37,7 @@ const Hero = () => {
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Wrapper Icon={TbUsersGroup}>Organize your team</Wrapper>
-            <Wrapper Icon={TbMessageCheck}>Talk to your customers</Wrapper>
+            <Wrapper Icon={TbMessageCheck}>Talk to your clients</Wrapper>
             <Wrapper Icon={TbCalendarTime}>Manage your content</Wrapper>
             <Wrapper Icon={TbArrowGuide}>Automate the rest</Wrapper>
           </div>

@@ -21,8 +21,8 @@ interface BenefitProps {
 const Benefit = (props: BenefitProps) => {
   return (
     <div className="bg-alt2 p-4 rounded-lg">
-      <article>
-        <div className="flex items-center justify-between">
+      <article className="flex flex-col gap-4">
+        <div className="flex justify-between">
           <h3 className="text-lg font-bold">{props.title}</h3>
           <div className="bg-primary w-14 h-14 rounded-full flex items-center justify-center">
             {<props.icon className="text-3xl opacity-[0.5] stroke-[1.4px]" />}
@@ -45,30 +45,26 @@ export const Benefits = () => {
             title="Remove clutter from your workflow"
             icon={TbArrowGuide}
           >
-            Every tool employed in your operations represents a potential weak
-            link and liability. <strong>reflect</strong> eliminates complexity
-            by offering a unified platform that incorporates all necessary
-            tools.
+            Every software employed in your operations is a liability.
+            <strong> reflect</strong> eliminates complexity by offering a
+            unified platform that incorporates all necessary tools.
           </Benefit>
           <Benefit title="Automate everything" icon={TbArrowMerge}>
-            Featuring a market-leading automation system,{" "}
-            <strong>reflect</strong> empowers you to effortlessly harness
-            operational events, converting them into actions that can generate
-            reports or trigger subsequent events.
+            <strong>reflect</strong> comes with a no-code tool for you to
+            automate everything in your workflow
           </Benefit>
           <Benefit
             title="Tailored Solutions for Unique Challenges"
             icon={TbArrowWaveRightUp}
           >
-            Recognizing that not every challenge has a pre-built solution,
-            <strong> reflect</strong> provides a platform to construct solutions
-            for your specific needs.
+            <strong>reflect</strong> is an extensible platform. You can
+            implement custom solutions for your unique problems. We assist you
+            whenever you need technical support.
           </Benefit>
           <Benefit title="First-class AI integration" icon={TbArrowsUp}>
-            Bid farewell to mundane tasks such as scheduling meetings, setting
-            reminders, crafting to-do lists, and follow-ups. With{" "}
-            <strong>reflect</strong>, every member of your organization gains an
-            AI-powered personal assistant.
+            We implement every feature AI in mind. <strong>reflect</strong>,
+            frees you from mundane tasks like setting meetings, creating todo
+            lists, reminders etc.
           </Benefit>
         </div>
       </div>
