@@ -41,13 +41,16 @@ export const Benefits = () => {
         <h2 className="text-2xl font-bold">Benefits</h2>
         <div className="h-4"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Benefit title="Efficient Workflow Integration" icon={TbArrowGuide}>
+          <Benefit
+            title="Remove clutter from your workflow"
+            icon={TbArrowGuide}
+          >
             Every tool employed in your operations represents a potential weak
             link and liability. <strong>reflect</strong> eliminates complexity
             by offering a unified platform that incorporates all necessary
             tools.
           </Benefit>
-          <Benefit title="Seamless Automation" icon={TbArrowMerge}>
+          <Benefit title="Automate everything" icon={TbArrowMerge}>
             Featuring a market-leading automation system,{" "}
             <strong>reflect</strong> empowers you to effortlessly harness
             operational events, converting them into actions that can generate
@@ -58,7 +61,7 @@ export const Benefits = () => {
             icon={TbArrowWaveRightUp}
           >
             Recognizing that not every challenge has a pre-built solution,
-            <strong>reflect</strong> provides a platform to construct solutions
+            <strong> reflect</strong> provides a platform to construct solutions
             for your specific needs.
           </Benefit>
           <Benefit title="First-class AI integration" icon={TbArrowsUp}>
