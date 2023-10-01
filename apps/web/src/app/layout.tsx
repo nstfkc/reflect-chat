@@ -51,7 +51,7 @@ export default function RootLayout({
         </header>
         {children}
         <footer className="bg-secondary text-primary">
-          <div className="container mx-auto max-w-6xl px-4 py-8 flex flex-col gap-8">
+          <div className="container mx-auto max-w-4xl px-4 py-8 flex flex-col gap-8">
             <div className="flex items-start justify-between">
               <div>
                 <Link className="text-lg font-black" href="/">

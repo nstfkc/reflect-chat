@@ -8,30 +8,14 @@ export const WaitingList = (props: { vertical?: boolean }) => {
   const { vertical = false } = props;
   return (
     <div>
-      <span className="text-2xl font-bold">Join to the waiting list</span>
+      <span className="text-2xl font-bold">Join the waiting list</span>
       <div
         className={[
-          "flex flex-col items-start gap-8 rounded-lg p-4",
+          "flex flex-col items-start gap-8 rounded-lg py-4",
           vertical ? "md:flex-col" : "md:flex-row",
         ].join(" ")}
       >
-        <div className={["w-full", vertical ? "w-full" : "md:w-1/2"].join(" ")}>
-          <div className="font-semibold">By joining to the waiting:</div>
-          <ul className="list-disc list-inside pl-4">
-            <li>
-              You will have lifelong <strong>50%</strong> discount(*)
-            </li>
-            <li>You will get access to the reflect private community</li>
-            <li>You will be able to make feature requests</li>
-            <li>You have early access to the beta apps</li>
-            <li>You will have access to the development discussions</li>
-          </ul>
-
-          <div>
-            <small>(*) Discount will apply to a single organisation</small>
-          </div>
-        </div>
-        <div className="flex flex-col gap-4 w-full md:w-1/2">
+        <div className="flex flex-col gap-4 w-full">
           <WaitingListForm />
         </div>
       </div>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ReactNode } from "react";
 import { IconType } from "react-icons/lib";
 import {
@@ -5,9 +6,12 @@ import {
   TbArrowMerge,
   TbArrowWaveRightUp,
   TbArrowsUp,
+  TbBell,
   TbBrush,
   TbCash,
+  TbClock,
   TbClockShield,
+  TbNotification,
   TbPaint,
   TbUserQuestion,
 } from "react-icons/tb";
@@ -40,32 +44,43 @@ export const Benefits = () => {
       <div className="px-4">
         <h2 className="text-2xl font-bold">Benefits</h2>
         <div className="h-4"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Benefit
-            title="Remove clutter from your workflow"
-            icon={TbArrowGuide}
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-3">
+            <div className="py-1">
+              <TbClock className="text-2xl" />
+            </div>
+            <p>
+              <span className="font-bold">reflect</span>&apos;s main objective
+              is to make your business operations as efficient as possible by
+              simplifing your communication infrastructure.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <div className="py-1">
+              <TbArrowMerge className="rotate-90 text-2xl" />
+            </div>
+            <p>
+              You can channel all of your inbound messages to{" "}
+              <span className="font-bold">reflect</span> and manage them in a
+              single platform.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <div className="py-1">
+              <TbBell className="text-2xl" />
+            </div>
+            <p>With push notifications you never miss an opportunity.</p>
+          </div>
+        </div>
+        <div className="h-12"></div>
+        <div>
+          <Link
+            href="/contact-us"
+            className="bg-secondary px-4 py-2 rounded-md text-primary border-2 border-secondary/10 shadow-md"
           >
-            Every software employed in your operations is a liability.
-            <strong> reflect</strong> eliminates complexity by offering a
-            unified platform that incorporates all necessary tools.
-          </Benefit>
-          <Benefit title="Automate everything" icon={TbArrowMerge}>
-            <strong>reflect</strong> comes with a no-code tool for you to
-            automate everything in your workflow
-          </Benefit>
-          <Benefit
-            title="Tailored Solutions for Unique Challenges"
-            icon={TbArrowWaveRightUp}
-          >
-            <strong>reflect</strong> is an extensible platform. You can
-            implement custom solutions for your unique problems. We assist you
-            whenever you need technical support.
-          </Benefit>
-          <Benefit title="First-class AI integration" icon={TbArrowsUp}>
-            We implement every feature AI in mind. <strong>reflect</strong>,
-            frees you from mundane tasks like setting meetings, creating todo
-            lists, reminders etc.
-          </Benefit>
+            Contact us
+          </Link>{" "}
+          for more information.
         </div>
       </div>
     </section>

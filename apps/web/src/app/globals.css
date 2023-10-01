@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .fcc {
+        @apply flex justify-center items-center
+    }
+    .rc {
+        @apply relative translate-y-[-50%] top-[50%] translate-x-[-50%] left-[50%]
+    }
+}
