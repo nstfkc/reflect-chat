@@ -12,7 +12,7 @@ export const Features = () => {
         <div className="flex flex-col gap-2">
           <h4 className="font-bold">Internal Communication</h4>
           <p>
-            Stay Connected, Seamlessly With Reflect, you can have real-time
+            Stay Connected, Seamlessly With fleckt, you can have real-time
             conversations within your organization through public and private
             channels or direct messages. Share documents, exchange videos and
             audio effortlessly.
@@ -39,8 +39,8 @@ export const Features = () => {
             <div className="h-2"></div>
             <p>
               Whether you run a B2B or B2C business, enabling users to contact
-              you through your website is a breeze with Reflect. A simple widget
-              on your site connects to your Reflect app, allowing you to engage
+              you through your website is a breeze with fleckt. A simple widget
+              on your site connects to your fleckt app, allowing you to engage
               with potential customers in real-time.
             </p>
           </div>
@@ -65,7 +65,7 @@ export const Features = () => {
             <div className="h-2"></div>
             <p>
               Emails may be the go-to platform for B2B communication, but they
-              can be cumbersome for back-and-forth conversations. Use Reflect to
+              can be cumbersome for back-and-forth conversations. Use fleckt to
               create temporary channels, granting clients access via a magic
               link. You can set expiration dates for these channels, ensuring
               that after the specified date, the other party can&apos;t access
@@ -96,7 +96,7 @@ export const Features = () => {
             <div className="h-2"></div>
             <p>
               Building a SaaS and collecting emails via a waitlist? Connect your
-              waitlist widget to a dedicated channel on Reflect. Receive instant
+              waitlist widget to a dedicated channel on fleckt. Receive instant
               notifications whenever a new sign-up occurs.
             </p>
             <div className="h-4"></div>
@@ -106,7 +106,7 @@ export const Features = () => {
             <div className="h-2"></div>
             <p>
               If you&apos;re managing a B2B or B2C business, link your contact
-              form to a dedicated Reflect channel. Receive new requests as
+              form to a dedicated fleckt channel. Receive new requests as
               messages, and with just one click, you can reply with a
               personalized message and a magic link, streamlining your
               communication process.

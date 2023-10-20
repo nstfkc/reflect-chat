@@ -102,7 +102,7 @@ export const XHeroBanners = () => {
 
       <div className="flex flex-col items-center justify-center">
         <div className="border-2 w-32 h-32 border-primary rounded-full flex items-center justify-center">
-          <span className="font-bold">reflect</span>
+          <span className="font-bold">fleckt</span>
         </div>
       </div>
       <div className="grid grid-cols-3">
@@ -190,7 +190,7 @@ export const HeroBanners = () => {
     <div className="w-full aspect-[4/3] overflow-hidden">
       <div className="w-full aspect-[1] text-primary relative translate-y-[-50%] top-[50%]">
         <div className="w-24 h-24 rounded-full border-2 border-primary flex items-center justify-center rc">
-          <span className="text-center font-bold">reflect</span>
+          <span className="text-center font-bold">fleckt</span>
         </div>
         <div className="absolute w-[50%] h-[50%] border-[1px] border-dashed border-primary/30 rounded-full rc"></div>
         <div className="absolute w-[60%] h-[60%] border-[1px] border-dashed border-primary/10 rounded-full rc"></div>
