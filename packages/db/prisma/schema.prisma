@@ -45,6 +45,7 @@ enum MembershipRole {
   OWNER
   ADMIN
   USER
+  VISITOR
 }
 
 enum GlobalRole {
@@ -169,6 +170,7 @@ model Media {
 model Message {
   id       Int    @id @default(autoincrement())
   publicId String @unique @default(cuid())
+  renderer String @default("default.v1")
 
   text      String     @db.Text
   media     Media[]

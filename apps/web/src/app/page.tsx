@@ -34,7 +34,8 @@ const Hero = () => {
         <div className="h-8"></div>
         <div className="flex flex-col container max-w-4xl mx-auto lg:px-4 gap-12">
           <h1 className="text-4xl md:text-6xl font-bold tracking-wide text-center">
-            communication infrastructure <br /> for{" "}
+            all-in-<span className="text-alt1">one</span> <br /> communication
+            platform <br /> for{" "}
             <span className="text-alt1">online businesses</span>
           </h1>
         </div>

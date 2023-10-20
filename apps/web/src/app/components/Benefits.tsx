@@ -20,19 +20,17 @@ interface BenefitProps {
   title: string;
   children: ReactNode;
   icon: IconType;
+  index: number;
 }
 
 const Benefit = (props: BenefitProps) => {
   return (
-    <div className="bg-alt2 p-4 rounded-lg">
+    <div className="bg-alt2/50 p-4 rounded-lg relative">
       <article className="flex flex-col gap-4">
         <div className="flex justify-between">
           <h3 className="text-lg font-bold">{props.title}</h3>
-          <div className="bg-primary w-14 h-14 rounded-full flex items-center justify-center">
-            {<props.icon className="text-3xl opacity-[0.5] stroke-[1.4px]" />}
-          </div>
         </div>
-        <p className="opacity-75">{props.children}</p>
+        <p className="">{props.children}</p>
       </article>
     </div>
   );
@@ -45,32 +43,31 @@ export const Benefits = () => {
         <h2 className="text-2xl font-bold">Benefits</h2>
         <div className="h-4"></div>
         <div className="flex flex-col gap-4">
-          <div className="flex gap-3">
-            <div className="py-1">
-              <TbClock className="text-2xl" />
-            </div>
-            <p>
-              <span className="font-bold">reflect</span>&apos;s main objective
-              is to make your business operations as efficient as possible by
-              simplifing your communication infrastructure.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <div className="py-1">
-              <TbArrowMerge className="rotate-90 text-2xl" />
-            </div>
-            <p>
-              You can channel all of your inbound messages to{" "}
-              <span className="font-bold">reflect</span> and manage them in a
-              single platform.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <div className="py-1">
-              <TbBell className="text-2xl" />
-            </div>
-            <p>With push notifications you never miss an opportunity.</p>
-          </div>
+          <Benefit
+            icon={TbClock}
+            title="Unlock your organisation's full potential"
+            index={1}
+          >
+            You and your team will only focus on what brings value to your
+            business. You can automate everything with{" "}
+            <span className="font-bold">fleckt</span>.
+          </Benefit>
+
+          <Benefit
+            index={2}
+            title="Simplify your work flow"
+            icon={TbArrowMerge}
+          >
+            You will not juggle between different apps.{" "}
+            <span className="font-bold">fleckt</span> has everything you need.
+            We will help you to build custom solutions for specifically for your
+            business.
+          </Benefit>
+          <Benefit index={3} title="Never miss an opportunity" icon={TbBell}>
+            You can create notifications for everything.{" "}
+            <span className="font-bold">fleck</span> will let you know whenever
+            there is an opportunity.
+          </Benefit>
         </div>
         <div className="h-12"></div>
         <div>
@@ -80,7 +77,7 @@ export const Benefits = () => {
           >
             Contact us
           </Link>{" "}
-          for more information.
+          to learn more.
         </div>
       </div>
     </section>
