@@ -25,7 +25,7 @@ const PrivacyPolicy = () => {
       </p>
       <h2 id="data-controller">Data Controller:</h2>
       <p>
-        The Controller of your personal data is us, Reflect: Enes Tufekci,
+        The Controller of your personal data is us, fleckt: Enes Tufekci,
         address: Lokstedter Weg 53 20251 Hamburg/Germany
       </p>
       <p>
@@ -375,7 +375,7 @@ const PrivacyPolicy = () => {
             <td>Functionality</td>
             <td>reflect.auth</td>
             <td>1 year</td>
-            <td>Used for logging into Reflect app</td>
+            <td>Used for logging into fleckt app</td>
           </tr>
           <tr>
             <td>Analytical</td>

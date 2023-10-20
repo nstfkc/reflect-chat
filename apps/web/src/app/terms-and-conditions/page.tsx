@@ -7,7 +7,7 @@ const Terms = () => {
       <h2>Introduction</h2>
       <p>
         These Terms and Conditions outline the rules and regulations for the use
-        of our waiting list for Reflect. By joining our waiting list, you agree
+        of our waiting list for fleckt. By joining our waiting list, you agree
         to comply with these Terms. Please read these Terms carefully before
         submitting your information.
       </p>
@@ -29,7 +29,7 @@ const Terms = () => {
         <li>
           <strong>Email Communication:</strong> By joining the waiting list, you
           may receive occasional emails from us regarding updates, news, and
-          promotions related to Reflect. You can opt-out of these communications
+          promotions related to fleckt. You can opt-out of these communications
           at any time by following the unsubscribe link in the emails.
         </li>
       </ol>
@@ -55,7 +55,7 @@ const Terms = () => {
       <ol>
         <li>
           <strong>No Obligation:</strong> Joining the waiting list does not
-          guarantee access to the Reflect service. It is for informational
+          guarantee access to the fleckt service. It is for informational
           purposes and helps us gauge interest.
         </li>
         <li>
