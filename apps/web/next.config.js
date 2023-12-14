@@ -7,7 +7,7 @@ const local = {
 };
 
 const production = {
-  clientHost: "https://app.reflect.rocks",
+  clientHost: "https://app.fleckt.com",
   apiHost: "https://reflect-chat-api.fly.dev",
   assetsWorkerHost: "https://reflect.flak-media.workers.dev",
 };
