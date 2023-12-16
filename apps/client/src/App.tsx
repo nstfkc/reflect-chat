@@ -11,6 +11,7 @@ import {
   SignedIn,
   createIconsProvider,
   ThemeProvider,
+  useUser,
 } from "shared";
 
 import { HomeScreen } from "./screens/HomeScreen";
@@ -29,7 +30,13 @@ import {
   TbMinus,
 } from "react-icons/tb";
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 
 const config = getConfig(import.meta.env.PROD);
 
@@ -48,57 +55,78 @@ const IconsProvider = createIconsProvider({
   Minus: () => <TbMinus className="text-secondary" />,
 });
 
+const ProtectedRoute = () => {
+  const { user, isLoading } = useUser();
+  const location = useLocation();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (user) {
+    return (
+      <RootProvider>
+        <Outlet />;
+      </RootProvider>
+    );
+  }
+  return <Navigate to={`/auth/sign-in?callback=${location.pathname}`} />;
+};
+
 const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <HomeScreen />,
+      element: <ProtectedRoute />,
       children: [
         {
-          path: "channel/:channelPublicId",
-          element: <ChatScreen kind="channel" />,
+          path: "/",
+          element: <HomeScreen />,
           children: [
             {
-              path: ":messagePublicId",
-              element: <ThreadScreen kind="channel" />,
+              path: "channel/:channelPublicId",
+              element: <ChatScreen kind="channel" />,
+              children: [
+                {
+                  path: ":messagePublicId",
+                  element: <ThreadScreen kind="channel" />,
+                },
+              ],
             },
+            {
+              path: "dm/:receiverPublicId",
+              element: <ChatScreen kind="dm" />,
+              children: [
+                {
+                  path: ":messagePublicId",
+                  element: <ThreadScreen kind="dm" />,
+                },
+              ],
+            },
+            { path: "/people", element: <PeopleScreen /> },
           ],
         },
+
         {
-          path: "dm/:receiverPublicId",
-          element: <ChatScreen kind="dm" />,
-          children: [
-            { path: ":messagePublicId", element: <ThreadScreen kind="dm" /> },
-          ],
+          path: "/*",
+          element: <HomeScreen />,
         },
-        { path: "/people", element: <PeopleScreen /> },
       ],
     },
     {
-      path: "/*",
-      element: <HomeScreen />,
-    },
-  ],
-  { basename: "/client" }
-);
-
-const signedOutRouter = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <SignInScreen />,
-    },
-    {
-      path: "/*",
-      element: <SignInScreen />,
-    },
-    {
-      path: "/sign-in",
-      element: <SignInScreen />,
-    },
-    {
-      path: "/sign-up",
-      element: <SignUpScreen />,
+      path: "/auth",
+      children: [
+        {
+          path: "sign-in",
+          element: <SignInScreen />,
+        },
+        {
+          path: "sign-up",
+          element: <SignUpScreen />,
+        },
+        {
+          path: "sign-in-with-magic-link/:token",
+          element: <SignUpScreen />,
+        },
+      ],
     },
   ],
   { basename: "/client" }
@@ -183,18 +211,9 @@ function App() {
               onSignIn={(token) => updateToken(token)}
               onSignOut={() => updateToken(null)}
             >
-              <SignedOut>
-                <ThemeProvider>
-                  <RouterProvider router={signedOutRouter}></RouterProvider>
-                </ThemeProvider>
-              </SignedOut>
-              <SignedIn>
-                <RootProvider>
-                  <main className="bg-primary text-secondary">
-                    <RouterProvider router={router} />
-                  </main>
-                </RootProvider>
-              </SignedIn>
+              <main className="bg-primary text-secondary">
+                <RouterProvider router={router} />
+              </main>
             </AuthProvider>
           </HttpProvider>
         </ConfigProvider>

@@ -23,12 +23,12 @@ export const OrganisationProvider = (props: PropsWithChildren) => {
   const { organisation } = useOrganisation();
   const { user } = useUser();
   const { data: users, isLoading: usersLoading } = useQuery("listUsers", {
-    organisationId: organisation.publicId,
+    organisationId: organisation?.publicId,
   });
   const { data: channels, isLoading: channelsLoading } = useQuery(
     "listChannels",
     {
-      organisationId: organisation.id,
+      organisationId: organisation?.id,
     }
   );
 

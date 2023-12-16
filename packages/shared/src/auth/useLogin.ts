@@ -49,8 +49,8 @@ export function useOrganisation() {
     {}
   );
 
-  let organisation: Organisation | null = user.memberships[0]?.organisation;
-  if (data?.currentOrganisationId && user) {
+  let organisation: Organisation | null = user?.memberships[0]?.organisation;
+  if (organisation && data?.currentOrganisationId && user) {
     organisation = user.memberships
       .map((m) => {
         return m.organisation;

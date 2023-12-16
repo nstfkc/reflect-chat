@@ -14,7 +14,7 @@ export const SignInScreen = () => {
       <div className="w-[340px] max-w-md p-4">
         <SignInForm
           email={params.get("email") ?? ""}
-          onSuccess={() => navigate(`{params.get("callback") ?? "/"}`)}
+          onSuccess={() => navigate("/")}
           onSignUpPress={() => navigate("/sign-up")}
         />
       </div>
