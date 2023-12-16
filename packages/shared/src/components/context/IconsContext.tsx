@@ -9,6 +9,8 @@ type Icon = (props: {
 interface Icons {
   Users: Icon;
   User: Icon;
+  Plus: Icon;
+  Close: Icon;
 }
 
 interface IconsContextValue {

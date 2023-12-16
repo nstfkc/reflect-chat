@@ -6,6 +6,7 @@ import { Text } from "../lib/Text";
 import { useContext } from "react";
 import { MessageContext } from "../context/MessageContext";
 import { ChatContext } from "../context/Chat/ChatContext";
+import { IconsContext } from "../context/IconsContext";
 import { useSubjectValue } from "../../utils/useSubjectValue";
 
 interface ChannelItemProps {
@@ -68,12 +69,14 @@ const ChannelItem = (props: ChannelItemProps) => {
 interface ChannelListProps {
   activeChannelId: string | undefined;
   onChannelClick: (channel: Channel) => void;
+  onAddChannelClick: VoidFunction;
 }
 
 export const ChannelList = (props: ChannelListProps) => {
-  const { onChannelClick, activeChannelId } = props;
+  const { onChannelClick, activeChannelId, onAddChannelClick } = props;
   const { organisation } = useOrganisation();
   const { unreadMentions } = useContext(MessageContext);
+  const { icons } = useContext(IconsContext);
   const { data, isLoading } = useQuery("listChannels", {
     organisationId: organisation.id as any,
   });
@@ -84,14 +87,16 @@ export const ChannelList = (props: ChannelListProps) => {
 
   return (
     <View style={{ gap: 8 }}>
-      <Text style={{ fontWeight: "600", fontSize: 16 }}>Channels</Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Text style={{ fontWeight: "600", fontSize: 16 }}>Channels</Text>
+        <Pressable onPress={onAddChannelClick}>
+          <icons.Plus />
+        </Pressable>
+      </View>
       <FlatList
         data={data}
         renderItem={({ item }) => {
           const isActive = activeChannelId === item.publicId;
-          const undreadChannelMentions = (
-            unreadMentions[`key-${item.id}`] ?? new Set()
-          ).size;
           return (
             <ChannelItem
               onPress={() => onChannelClick(item)}

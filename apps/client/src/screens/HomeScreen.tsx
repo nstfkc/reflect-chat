@@ -1,5 +1,10 @@
 import { useState, useContext, PropsWithChildren } from "react";
+import { TbMenu2 } from "react-icons/tb";
+
 import { TbCamera } from "react-icons/tb";
+import { Modal } from "../components/Modal";
+import { Sheet } from "../components/Sheet";
+import { CreateChannel } from "shared";
 
 import {
   ChannelList,
@@ -58,24 +63,78 @@ const ImageWrapper = ({
   );
 };
 
-export const HomeScreen = () => {
-  const [showUserActions, setShowUserActions] = useState(false);
-  const [showUserProfile, setShowUserProfile] = useState(false);
+interface SidebarProps {
+  showSidebar: boolean;
+  setShowSidebarChange: (s: boolean) => void;
+}
 
-  const theme = useTheme();
+const Sidebar = (props: SidebarProps) => {
+  const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const navigate = useNavigate();
   const params = useParams();
+
+  const { channelId } = params;
+  return (
+    <Sheet onOpenChange={props.setShowSidebarChange} open={props.showSidebar}>
+      <div className="min-w-[280px] h-full p-4 bg-alt2 flex flex-col gap-4">
+        <Organisation
+          navigateToPeople={() => {
+            navigate("/people");
+          }}
+        />
+        <ChannelList
+          onAddChannelClick={() => setShowCreateChannelModal(true)}
+          activeChannelId={channelId}
+          onChannelClick={(channel) =>
+            navigate(`channel/${channel.publicId}`, { state: { channel } })
+          }
+        />
+        <Modal
+          title="Create Channel"
+          description="Create a new channel"
+          open={showCreateChannelModal}
+          onOpenChange={(s) => setShowCreateChannelModal(s)}
+        >
+          <CreateChannel
+            onSuccess={() => {
+              setShowCreateChannelModal(false);
+            }}
+          />
+        </Modal>
+        <DMList
+          onConversationPress={(user) => {
+            navigate(`dm/${user.publicId}`, { state: { user } });
+          }}
+        />
+      </div>
+    </Sheet>
+  );
+};
+
+export const HomeScreen = () => {
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showUserActions, setShowUserActions] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
+  const theme = useTheme();
+
   const { user } = useUser();
 
   const handleStatusSelect = (_userStatus: string) => {
     setShowUserActions(false);
   };
 
-  const { channelId } = params;
   return (
-    <div className="h-screen w-screen flex flex-col">
+    <div className="h-screen w-screen overflow-hidden flex flex-col">
       <div className="h-[48px] w-full bg-secondary titleBar">
-        <div className="flex justify-end items-center h-full px-4">
+        <div className="flex justify-between items-center h-full px-4">
+          <div>
+            <button
+              className="md:hidden text-white"
+              onClick={() => setShowSidebar(true)}
+            >
+              <TbMenu2 />
+            </button>
+          </div>
           <button onClick={() => setShowUserActions(true)}>
             <UserProfilePicture
               size={32}
@@ -86,24 +145,10 @@ export const HomeScreen = () => {
         </div>
       </div>
       <div className="flex h-full">
-        <div className="min-w-[280px] p-4 bg-alt2 flex flex-col gap-4">
-          <Organisation
-            navigateToPeople={() => {
-              navigate("/people");
-            }}
-          />
-          <ChannelList
-            activeChannelId={channelId}
-            onChannelClick={(channel) =>
-              navigate(`channel/${channel.publicId}`, { state: { channel } })
-            }
-          />
-          <DMList
-            onConversationPress={(user) => {
-              navigate(`dm/${user.publicId}`, { state: { user } });
-            }}
-          />
-        </div>
+        <Sidebar
+          showSidebar={showSidebar}
+          setShowSidebarChange={(s) => setShowSidebar(s)}
+        />
         <div className="flex-1">
           <Outlet />
         </div>

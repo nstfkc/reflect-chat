@@ -10,6 +10,7 @@ export {
 
 export { SignInForm } from "./components/forms";
 export { SignUpForm } from "./components/forms/SignUpForm";
+export { CreateChannel } from "./components/forms/CreateChannel";
 export { Button } from "./components/lib/Button";
 export { Text } from "./components/lib/Text";
 

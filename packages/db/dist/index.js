@@ -72,13 +72,13 @@ var z = __toESM(require("zod"));
 var import_uniqolor = require("uniqolor");
 
 // ../../node_modules/@babel/runtime/helpers/esm/typeof.js
-function _typeof(obj) {
+function _typeof(o) {
   "@babel/helpers - typeof";
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && "function" == typeof Symbol && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof(obj);
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+    return typeof o2;
+  } : function(o2) {
+    return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+  }, _typeof(o);
 }
 
 // ../../node_modules/date-fns/esm/_lib/toInteger/index.js
@@ -206,7 +206,6 @@ function createPrecedure(args) {
 // src/data/mutations.ts
 var import_client2 = require("@prisma/client");
 var createChannel = createPrecedure({
-  membershipRoles: [import_client2.MembershipRole.ADMIN, import_client2.MembershipRole.OWNER],
   schema: z.object({
     name: z.string({ required_error: "Name is required" }).min(3, "Channel name is too short"),
     kind: z.enum([import_client2.ChannelKind.PRIVATE, import_client2.ChannelKind.PUBLIC], {
@@ -305,6 +304,7 @@ var signIn = createPrecedure({
   handler: async (args, ctx) => {
     const { email, password } = args;
     const { helpers } = ctx;
+    console.log(email, password);
     try {
       const user = await prisma.user.findFirst({
         where: { email },

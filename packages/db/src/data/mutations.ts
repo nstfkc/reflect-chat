@@ -8,7 +8,6 @@ import { prisma } from "../db";
 import { invalidCredentialsError, prismaError } from "./error";
 
 export const createChannel = createPrecedure({
-  membershipRoles: [MembershipRole.ADMIN, MembershipRole.OWNER],
   schema: z.object({
     name: z
       .string({ required_error: "Name is required" })
@@ -115,6 +114,7 @@ export const signIn = createPrecedure({
     const { email, password } = args;
     const { helpers } = ctx;
 
+    console.log(email, password);
     try {
       const user = await prisma.user.findFirst({
         where: { email },
