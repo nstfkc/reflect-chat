@@ -19,7 +19,15 @@ import { ChatScreen, ThreadScreen } from "./screens/ChatScreen";
 import { SignInScreen } from "./screens/SignInScreen";
 import { SignUpScreen } from "./screens/SignUpScreen";
 import { getConfig } from "config";
-import { TbUsers, TbUser, TbPlus, TbX } from "react-icons/tb";
+import {
+  TbUsers,
+  TbUser,
+  TbPlus,
+  TbX,
+  TbSettings,
+  TbExternalLink,
+  TbMinus,
+} from "react-icons/tb";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -35,6 +43,9 @@ const IconsProvider = createIconsProvider({
   ),
   Plus: () => <TbPlus className="text-secondary" />,
   Close: () => <TbX className="text-secondary" />,
+  Settings: () => <TbSettings className="text-secondary" />,
+  ExternalLink: () => <TbExternalLink className="text-secondary" />,
+  Minus: () => <TbMinus className="text-secondary" />,
 });
 
 const router = createBrowserRouter(

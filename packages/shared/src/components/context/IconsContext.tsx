@@ -11,6 +11,9 @@ interface Icons {
   User: Icon;
   Plus: Icon;
   Close: Icon;
+  Settings: Icon;
+  ExternalLink: Icon;
+  Minus: Icon;
 }
 
 interface IconsContextValue {

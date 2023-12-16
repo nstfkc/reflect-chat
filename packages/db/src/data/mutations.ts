@@ -368,3 +368,43 @@ export const createContactFormEntry = createPrecedure({
     }
   },
 });
+
+export const createChannelInvitation = createPrecedure({
+  schema: z.object({
+    channelId: z.number(),
+    email: z.string(),
+    name: z.string(),
+    pin: z.string(),
+  }),
+  handler: async (args, ctx) => {
+    const { channelId, email, name, pin } = args;
+    const { id } = ctx;
+
+    try {
+      const channel = await prisma.channel.findUnique({
+        where: { id: channelId },
+      });
+
+      if (!channel) {
+        return prismaError({});
+      }
+
+      const channelInvitation = await prisma.channelInvitation.create({
+        data: {
+          issuedEmail: email,
+          pin,
+          username: name,
+          channelId,
+          createdById: id,
+        },
+      });
+
+      return {
+        data: channelInvitation,
+        success: true,
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  },
+});

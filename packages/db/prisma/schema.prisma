@@ -45,6 +45,7 @@ enum MembershipRole {
   OWNER
   ADMIN
   USER
+  EXTERNAL
   VISITOR
 }
 
@@ -77,7 +78,7 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   email     String     @unique
-  password  String
+  password  String?
   role      GlobalRole
 
   userProfile UserProfile?
@@ -89,6 +90,7 @@ model User {
   messagesReceived       Message[]                @relation("Receiver")
   Channel                Channel[]
   reactions              Reaction[]
+  ChannelInvitation      ChannelInvitation[]
 }
 
 enum UserStatusKind {
@@ -140,12 +142,30 @@ model Channel {
   updatedAt    DateTime     @updatedAt
   Organisation Organisation @relation(fields: [organisationId], references: [id])
 
-  organisationId Int
-  createdById    Int
-  Message        Message[]
+  organisationId    Int
+  createdById       Int
+  Message           Message[]
+  ChannelInvitation ChannelInvitation[]
 
   @@index([organisationId])
   @@index([createdById])
+}
+
+model ChannelInvitation {
+  id Int @id @default(autoincrement())
+
+  channelId Int
+  channel   Channel @relation(fields: [channelId], references: [id])
+
+  issuedEmail String
+  username    String
+  pin         String
+
+  createdById Int
+  createdBy   User @relation(fields: [createdById], references: [id])
+
+  @@index([createdById])
+  @@index([channelId])
 }
 
 model Media {
