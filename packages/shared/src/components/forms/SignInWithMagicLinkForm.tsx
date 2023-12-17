@@ -10,13 +10,27 @@ import { useSignIn } from "../../auth";
 import { useEffect } from "react";
 import { Input } from "../lib/Input";
 import { useTheme } from "../context/ThemeContext";
+import { useQuery } from "../../utils/useQuery";
 
 interface SignInWithMagicLinkProps {
   onSuccess: VoidFunction;
-  email?: string;
+  token: string;
 }
 
-export const SignInWithMagicLink = (props: SignInWithMagicLinkProps) => {
+export const SignInWithMagicLinkForm = (props: SignInWithMagicLinkProps) => {
+  const { token } = props;
+  const { data } = useQuery("getChannelInvitation", {
+    token,
+  });
+
+  if (!data) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   const {
     control,
     handleSubmit,
@@ -25,17 +39,18 @@ export const SignInWithMagicLink = (props: SignInWithMagicLinkProps) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: props.email ?? "",
-      password: "",
+      email: data.issuedEmail,
+      name: data.username,
+      pin: "",
     },
   });
 
   const { trigger, isMutating, error } = useSignIn();
   const [invalidCredentialsError, setInvalidCredentialsError] = useState("");
-  const onSubmit = () => {
+  const onSubmit = (values) => {
     trigger({
-      email: watch("email"),
-      password: watch("password"),
+      email: values.email,
+      pin: values.pin,
     }).then((res) => {
       if (res.success === true) {
         props.onSuccess();

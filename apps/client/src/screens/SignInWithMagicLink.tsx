@@ -1,8 +1,9 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { SignInForm, useTheme } from "shared";
+import { useTheme } from "shared";
+import { SignInWithMagicLinkForm } from "shared/src/components/forms/SignInWithMagicLinkForm";
 
-export const SignInScreen = () => {
+export const SignInWithMagicLink = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -12,10 +13,9 @@ export const SignInScreen = () => {
       className="flex w-full h-screen justify-center items-center"
     >
       <div className="w-[340px] max-w-md p-4">
-        <SignInForm
-          email={params.get("email") ?? ""}
-          onSuccess={() => navigate("/")}
-          onSignUpPress={() => navigate("/sign-up")}
+        <SignInWithMagicLinkForm
+          token={params.get("token") ?? ""}
+          onSuccess={() => navigate(params.get("callback") ?? "/")}
         />
       </div>
     </div>

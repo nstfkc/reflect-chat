@@ -30,7 +30,9 @@
     "db:push": {
       "cache": false
     },
-    "db:studio": {},
+    "db:studio": {
+      "cache": false
+    },
     "db:seed": {
       "cache": false
     },

@@ -164,6 +164,7 @@ model ChannelInvitation {
   createdById Int
   createdBy   User @relation(fields: [createdById], references: [id])
 
+  @@unique([channelId, issuedEmail])
   @@index([createdById])
   @@index([channelId])
 }

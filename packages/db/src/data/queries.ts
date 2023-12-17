@@ -269,3 +269,22 @@ export const listUsers = createPrecedure({
     }
   },
 });
+
+export const getChannelInvitation = createPrecedure({
+  schema: z.object({ token: z.string() }),
+  handler: async (args, ctx) => {
+    const { token } = args;
+    const plain = Buffer.from(token, "base64").toString("utf8");
+    const { id } = JSON.parse(plain);
+    const intivation = await prisma.channelInvitation.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    return {
+      success: true,
+      data: intivation,
+    };
+  },
+});

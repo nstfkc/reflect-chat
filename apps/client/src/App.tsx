@@ -36,7 +36,10 @@ import {
   RouterProvider,
   Navigate,
   useLocation,
+  useMatch,
+  useSearchParams,
 } from "react-router-dom";
+import { SignInWithMagicLink } from "./screens/SignInWithMagicLink";
 
 const config = getConfig(import.meta.env.PROD);
 
@@ -58,14 +61,32 @@ const IconsProvider = createIconsProvider({
 const ProtectedRoute = () => {
   const { user, isLoading } = useUser();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const match = useMatch("/external/channel/:channelPublicId");
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  if (match) {
+    searchParams.append("callback", location.pathname);
+    return (
+      <Navigate to={`/auth/sign-in/magic-link?${searchParams.toString()}`} />
+    );
+  }
+
   if (user) {
     return (
       <RootProvider>
         <Outlet />;
       </RootProvider>
+    );
+  }
+
+  if (match) {
+    searchParams.append("callback", location.pathname);
+    return (
+      <Navigate to={`/auth/sign-in/magic-link?${searchParams.toString()}`} />
     );
   }
   return <Navigate to={`/auth/sign-in?callback=${location.pathname}`} />;
@@ -83,6 +104,16 @@ const router = createBrowserRouter(
           children: [
             {
               path: "channel/:channelPublicId",
+              element: <ChatScreen kind="channel" />,
+              children: [
+                {
+                  path: ":messagePublicId",
+                  element: <ThreadScreen kind="channel" />,
+                },
+              ],
+            },
+            {
+              path: "external/channel/:channelPublicId",
               element: <ChatScreen kind="channel" />,
               children: [
                 {
@@ -123,8 +154,8 @@ const router = createBrowserRouter(
           element: <SignUpScreen />,
         },
         {
-          path: "sign-in-with-magic-link/:token",
-          element: <SignUpScreen />,
+          path: "sign-in/magic-link",
+          element: <SignInWithMagicLink />,
         },
       ],
     },

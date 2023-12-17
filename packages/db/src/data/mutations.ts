@@ -174,6 +174,158 @@ export const signIn = createPrecedure({
   },
 });
 
+export const signInWithMagicLink = createPrecedure({
+  isPublic: true,
+  schema: z.object({
+    email: z.string().email(),
+    pin: z.string(),
+    channelId: z.number(),
+  }),
+  handler: async (args, ctx) => {
+    const { email, pin, channelId } = args;
+    const { helpers } = ctx;
+    let invitation;
+    try {
+      invitation = await prisma.channelInvitation.findFirst({
+        where: {
+          issuedEmail: email,
+          pin,
+          channelId,
+        },
+        include: {
+          channel: true,
+        },
+      });
+    } catch (err) {
+      return {
+        success: false,
+        error: { title: "INSUFFICIENT_PERMISSIONS" },
+      };
+      // Do something
+    }
+
+    console.log(invitation);
+    let user;
+    if (invitation) {
+      try {
+        user = await prisma.user.findFirst({
+          where: { email },
+          include: {
+            userProfile: true,
+            userStatus: true,
+            memberships: {
+              include: {
+                organisation: true,
+              },
+            },
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        // Do something
+      }
+    }
+
+    if (user) {
+      const token = helpers.jwtSign({
+        id: user.id,
+        userId: user.publicId,
+        globalRole: user.role,
+        membershipRoles: Object.fromEntries(
+          user.memberships.map((membership) => [
+            membership.organisation.publicId,
+            membership.role,
+          ])
+        ),
+      });
+      const now = Date.now();
+
+      helpers.setHeader("Access-Control-Allow-Credentials", "true");
+      helpers.setCookie("Authorization", `Bearer ${token}`, {
+        expires: addDays(now, 1),
+        path: "/",
+        httpOnly: true,
+        sameSite: true,
+      });
+      const { password: _, ...data } = user;
+      return {
+        success: true,
+        data: { ...data, token },
+      };
+    }
+
+    user = await prisma.user.create({
+      data: {
+        email,
+        role: "CUSTOMER",
+        userProfile: {
+          create: {
+            username: invitation.username,
+            profileColor: (() => random({ saturation: [50, 80] }).color)(),
+          },
+        },
+        userStatus: {
+          create: {
+            status: "ONLINE",
+          },
+        },
+        memberships: {
+          create: {
+            role: "EXTERNAL",
+            organisationId: invitation.channel.organisationId,
+          },
+        },
+      },
+      select: {
+        email: true,
+        memberships: true,
+      },
+    });
+
+    try {
+      if (user) {
+        const passwordMatches = true;
+
+        if (passwordMatches) {
+          const token = helpers.jwtSign({
+            id: user.id,
+            userId: user.publicId,
+            globalRole: user.role,
+            membershipRoles: Object.fromEntries(
+              user.memberships.map((membership) => [
+                membership.organisation.publicId,
+                membership.role,
+              ])
+            ),
+          });
+          const now = Date.now();
+
+          helpers.setHeader("Access-Control-Allow-Credentials", "true");
+          helpers.setCookie("Authorization", `Bearer ${token}`, {
+            expires: addDays(now, 1),
+            path: "/",
+            httpOnly: true,
+            sameSite: true,
+          });
+          const { password: _, ...data } = user;
+          return {
+            success: true,
+            data: { ...data, token },
+          };
+        } else {
+          helpers.setStatusCode(401);
+          return invalidCredentialsError({});
+        }
+      } else {
+        helpers.setStatusCode(401);
+        return invalidCredentialsError({});
+      }
+    } catch (error) {
+      return invalidCredentialsError({});
+    }
+  },
+});
+
 export const signOut = createPrecedure({
   handler: async (_, ctx) => {
     ctx.helpers.deleteCookie("Authorization");
