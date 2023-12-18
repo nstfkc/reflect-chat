@@ -64,6 +64,8 @@ const ProtectedRoute = () => {
   const [searchParams] = useSearchParams();
   const match = useMatch("/external/channel/:channelPublicId");
 
+  console.log(location.pathname);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -77,12 +79,21 @@ const ProtectedRoute = () => {
   }
 
   if (match) {
-    searchParams.append("callback", location.pathname);
     return (
-      <Navigate to={`/auth/sign-in/magic-link?${searchParams.toString()}`} />
+      <Navigate
+        to={`/auth/sign-in/magic-link?callback=${
+          location.pathname
+        }&${searchParams.toString()}`}
+      />
     );
   }
-  return <Navigate to={`/auth/sign-in?callback=${location.pathname}`} />;
+  return (
+    <Navigate
+      to={`/auth/sign-in?callback=${
+        location.pathname
+      }&${searchParams.toString()}`}
+    />
+  );
 };
 
 const router = createBrowserRouter(
