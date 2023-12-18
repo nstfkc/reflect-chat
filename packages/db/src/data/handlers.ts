@@ -18,6 +18,7 @@ type Handler<T, U> = (
 ) => Promise<HandlerReturn<U>>;
 
 export type Precedure<U, T extends ZodRawShape> = {
+  cors: boolean;
   handler: (
     args: z.infer<ZodObject<T>>,
     ctx: HandlerContext
@@ -39,6 +40,7 @@ export function createPrecedure<U, T extends ZodRawShape>(args: {
   globalRoles?: GlobalRole[];
   isPublic?: boolean;
   doNotValidate?: boolean;
+  cors?: boolean;
 }): Precedure<U, T> {
   const {
     handler,
@@ -47,8 +49,10 @@ export function createPrecedure<U, T extends ZodRawShape>(args: {
     membershipRoles,
     isPublic = false,
     doNotValidate = false,
+    cors = false,
   } = args;
   return {
+    cors,
     isPublic,
     handler: (args, ctx) => {
       let error: HandlerReturnError | null = null;

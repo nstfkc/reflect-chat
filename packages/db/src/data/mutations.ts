@@ -3,7 +3,7 @@ import { random } from "uniqolor";
 import { addDays } from "date-fns";
 
 import { createPrecedure } from "./handlers";
-import { ChannelKind, MembershipRole } from "@prisma/client";
+import { ChannelKind } from "@prisma/client";
 import { prisma } from "../db";
 import {
   insufficientPermissionsError,
@@ -511,6 +511,7 @@ export const waitingListSignUp = createPrecedure({
 });
 
 export const createContactFormEntry = createPrecedure({
+  cors: true,
   isPublic: true,
   schema: z.object({
     email: z.string(),
@@ -550,6 +551,8 @@ export const createChannelInvitation = createPrecedure({
     const { channelId, email, name, pin } = args;
     const { id } = ctx;
 
+    const user = await prisma.user.findFirst({ where: { email } });
+
     try {
       const channel = await prisma.channel.findUnique({
         where: { id: channelId },
@@ -566,6 +569,7 @@ export const createChannelInvitation = createPrecedure({
           username: name,
           channelId,
           createdById: id,
+          createdForId: user?.id,
         },
       });
 

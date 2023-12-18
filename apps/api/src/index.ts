@@ -14,6 +14,11 @@ server.register((server, opts, done) => {
 Object.entries(mutations).map(([url, config]) => {
   server.route({
     preHandler: (req, res, done) => {
+      if (config.cors) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "POST");
+        res.header("Access-Control-Allow-Headers", "*");
+      }
       if (config.isPublic) {
         done();
       } else {
@@ -25,9 +30,13 @@ Object.entries(mutations).map(([url, config]) => {
         done();
       }
     },
-    method: ["POST", "HEAD"],
+    method: ["POST", "OPTIONS", "HEAD"],
     url: `/api/${url}`.replace("//", "/"),
     handler: async (req, rep) => {
+      if (req.method === "OPTIONS") {
+        rep.send();
+        return;
+      }
       const res = await config.handler(req.body, {
         ...req.requestContext.get("context"),
         helpers: {
