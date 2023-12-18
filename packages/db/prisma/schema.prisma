@@ -84,13 +84,14 @@ model User {
   userProfile UserProfile?
   userStatus  UserStatus?
 
-  memberships            Membership[]
-  OrganisationInvitation OrganisationInvitation[]
-  messagesSent           Message[]                @relation("Sender")
-  messagesReceived       Message[]                @relation("Receiver")
-  Channel                Channel[]
-  reactions              Reaction[]
-  ChannelInvitation      ChannelInvitation[]
+  memberships                Membership[]
+  OrganisationInvitation     OrganisationInvitation[]
+  messagesSent               Message[]                @relation("Sender")
+  messagesReceived           Message[]                @relation("Receiver")
+  Channel                    Channel[]
+  reactions                  Reaction[]
+  channelInvitationsCreated  ChannelInvitation[]      @relation("createdBy")
+  channelInvitationsReceived ChannelInvitation[]      @relation("createdFor")
 }
 
 enum UserStatusKind {
@@ -161,11 +162,15 @@ model ChannelInvitation {
   username    String
   pin         String
 
+  createdForId Int?
+  createdFor   User? @relation("createdFor", fields: [createdForId], references: [id])
+
   createdById Int
-  createdBy   User @relation(fields: [createdById], references: [id])
+  createdBy   User @relation("createdBy", fields: [createdById], references: [id])
 
   @@unique([channelId, issuedEmail])
   @@index([createdById])
+  @@index([createdForId])
   @@index([channelId])
 }
 

@@ -416,13 +416,19 @@ var signInWithMagicLink = createPrecedure({
       };
     }
     if (user) {
+      await prisma.channelInvitation.update({
+        where: { id: invitation.id },
+        data: {
+          createdForId: user.id
+        }
+      });
       const token = helpers.jwtSign({
         id: user.id,
         userId: user.publicId,
         globalRole: user.role,
         membershipRoles: Object.fromEntries(
           user.memberships.map((membership) => [
-            membership.organisation.publicId,
+            membership.organisation.id,
             membership.role
           ])
         )
@@ -461,6 +467,9 @@ var signInWithMagicLink = createPrecedure({
             role: "EXTERNAL",
             organisationId: invitation.channel.organisationId
           }
+        },
+        channelInvitationsReceived: {
+          connect: [{ id: invitation.id }]
         }
       },
       select: {
@@ -478,7 +487,7 @@ var signInWithMagicLink = createPrecedure({
             globalRole: user.role,
             membershipRoles: Object.fromEntries(
               user.memberships.map((membership) => [
-                membership.organisation.publicId,
+                membership.organisation.id,
                 membership.role
               ])
             )
@@ -770,7 +779,27 @@ var me = createPrecedure({
 var listChannels = createPrecedure({
   doNotValidate: true,
   schema: z2.object({ organisationId: z2.number() }),
-  handler: async (args) => {
+  handler: async (args, ctx) => {
+    const role = ctx.membershipRoles[args.organisationId];
+    if (role === "EXTERNAL") {
+      const user = await prisma.user.findFirst({
+        where: { publicId: ctx.userId },
+        include: {
+          channelInvitationsReceived: true
+        }
+      });
+      const channels = await prisma.channel.findMany({
+        where: {
+          kind: "PUBLIC",
+          organisationId: Number(args.organisationId),
+          id: { in: user.channelInvitationsReceived.map((i) => i.channelId) }
+        }
+      });
+      return {
+        success: true,
+        data: channels
+      };
+    }
     try {
       const channels = await prisma.channel.findMany({
         where: {

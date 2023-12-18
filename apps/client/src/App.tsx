@@ -7,10 +7,7 @@ import {
   HttpProvider,
   HTTPHandler,
   AuthProvider,
-  SignedOut,
-  SignedIn,
   createIconsProvider,
-  ThemeProvider,
   useUser,
 } from "shared";
 
@@ -64,8 +61,6 @@ const ProtectedRoute = () => {
   const [searchParams] = useSearchParams();
   const match = useMatch("/external/channel/:channelPublicId");
 
-  console.log(location.pathname);
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -73,7 +68,7 @@ const ProtectedRoute = () => {
   if (user) {
     return (
       <RootProvider>
-        <Outlet />;
+        <Outlet />
       </RootProvider>
     );
   }

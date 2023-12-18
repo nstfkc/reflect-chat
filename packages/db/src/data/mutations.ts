@@ -235,13 +235,20 @@ export const signInWithMagicLink = createPrecedure({
     }
 
     if (user) {
+      await prisma.channelInvitation.update({
+        where: { id: invitation.id },
+        data: {
+          createdForId: user.id,
+        },
+      });
+
       const token = helpers.jwtSign({
         id: user.id,
         userId: user.publicId,
         globalRole: user.role,
         membershipRoles: Object.fromEntries(
           user.memberships.map((membership) => [
-            membership.organisation.publicId,
+            membership.organisation.id,
             membership.role,
           ])
         ),
@@ -283,6 +290,9 @@ export const signInWithMagicLink = createPrecedure({
             organisationId: invitation.channel.organisationId,
           },
         },
+        channelInvitationsReceived: {
+          connect: [{ id: invitation.id }],
+        },
       },
       select: {
         email: true,
@@ -301,7 +311,7 @@ export const signInWithMagicLink = createPrecedure({
             globalRole: user.role,
             membershipRoles: Object.fromEntries(
               user.memberships.map((membership) => [
-                membership.organisation.publicId,
+                membership.organisation.id,
                 membership.role,
               ])
             ),

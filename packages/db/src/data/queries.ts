@@ -32,7 +32,29 @@ export const me = createPrecedure({
 export const listChannels = createPrecedure({
   doNotValidate: true,
   schema: z.object({ organisationId: z.number() }),
-  handler: async (args) => {
+  handler: async (args, ctx) => {
+    const role = ctx.membershipRoles[args.organisationId];
+    if (role === "EXTERNAL") {
+      const user = await prisma.user.findFirst({
+        where: { publicId: ctx.userId },
+        include: {
+          channelInvitationsReceived: true,
+        },
+      });
+      const channels = await prisma.channel.findMany({
+        where: {
+          kind: "PUBLIC",
+          organisationId: Number(args.organisationId),
+          id: { in: user.channelInvitationsReceived.map((i) => i.channelId) },
+        },
+      });
+
+      return {
+        success: true,
+        data: channels,
+      };
+    }
+
     try {
       const channels = await prisma.channel.findMany({
         where: {
