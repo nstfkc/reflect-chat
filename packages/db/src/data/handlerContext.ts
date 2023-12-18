@@ -15,5 +15,9 @@ export type HandlerContext = {
     setStatusCode: (code: number) => void;
     verifyPassword: (a: string, b: string) => Promise<boolean>;
     hashPassword: (a: string) => Promise<string>;
+    getHeader: (name: string) => string;
+    io: {
+      emit: (event: string, payload: any) => void;
+    };
   };
 };

@@ -40,6 +40,7 @@ Object.entries(mutations).map(([url, config]) => {
       const res = await config.handler(req.body, {
         ...req.requestContext.get("context"),
         helpers: {
+          io: server.io,
           deleteCookie: (name) => {
             rep.clearCookie(name);
           },
@@ -49,6 +50,9 @@ Object.entries(mutations).map(([url, config]) => {
           jwtSign: (payload) => jwt.sign(payload, process.env.SECRET),
           setHeader: (name, value) => {
             rep.header(name, value);
+          },
+          getHeader: (name) => {
+            return req.headers[name];
           },
           setStatusCode: (code) => {
             rep.statusCode = code;

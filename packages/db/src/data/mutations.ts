@@ -619,18 +619,44 @@ export const createApiKey = createPrecedure({
 
 export const customMessage = createPrecedure({
   cors: true,
+  isPublic: true,
   schema: z.object({
     channelId: z.string(),
     data: z.object({}),
   }),
   handler: async (args, ctx) => {
     const { data, channelId } = args;
+    const apiKeyToken =
+      ctx.helpers.getHeader("Flect-API-Key") ??
+      ctx.helpers.getHeader("flect-api-key");
+
+    if (!apiKeyToken) {
+      return insufficientPermissionsError({});
+    }
+
+    const apiKey = await prisma.apiKey.findUnique({
+      where: {
+        key: apiKeyToken,
+      },
+    });
+
+    if (!apiKey) {
+      return insufficientPermissionsError({});
+    }
 
     const channel = await prisma.channel.findFirst({
       where: {
         publicId: channelId,
       },
     });
+
+    function writeValue(value: any) {
+      const basic = ["boolean", "string", "number"];
+      if (!basic.includes(typeof value)) {
+        return JSON.stringify(value);
+      }
+      return String(value);
+    }
 
     const text = Object.entries(data)
       .map(([key, value]) => {
@@ -641,7 +667,7 @@ export const customMessage = createPrecedure({
           },
           {
             type: "paragraph",
-            content: [{ type: "text", text: JSON.stringify(value) }],
+            content: [{ type: "text", text: writeValue(value) }],
           },
         ];
       })
@@ -655,17 +681,13 @@ export const customMessage = createPrecedure({
       },
     });
 
+    if (message) {
+      ctx.helpers.io.emit("message:created", message);
+    }
+
     return {
       success: true,
       data: message,
     };
   },
 });
-
-const x = [
-  {
-    type: "paragraph",
-    content: [{ type: "text", marks: [{ type: "bold" }], text: "Message" }],
-  },
-  { type: "paragraph", content: [{ type: "text", text: "Hello" }] },
-];
