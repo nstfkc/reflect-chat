@@ -30,12 +30,38 @@ export const UserProfilePicture = memo((props: UserWithProfilePictureProps) => {
     textStyle,
   } = props;
 
+  const UserIcon = icons.User;
+
+  if (!userId) {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 6,
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            width: size,
+            height: size,
+            borderRadius: size / 4,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.1)",
+          }}
+        >
+          <UserIcon color={theme.colors.alt2} size={size - 2} />
+        </View>
+      </View>
+    );
+  }
+
   const user = getUserById(userId);
+
   const userStatus = userStatuses.find((status) => {
     return status.kind == user?.userStatus.status;
   });
-
-  const UserIcon = icons.User;
 
   return (
     <View

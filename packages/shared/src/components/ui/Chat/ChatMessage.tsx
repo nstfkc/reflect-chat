@@ -72,7 +72,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
                 }}
               >
                 <Text style={{ fontWeight: "800" }}>
-                  {author?.userProfile.username}
+                  {author?.userProfile.username ?? "System Message"}
                 </Text>
                 <Text
                   style={{

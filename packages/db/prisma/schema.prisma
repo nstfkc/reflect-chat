@@ -22,6 +22,7 @@ model Organisation {
   createdAt              DateTime                 @default(now())
   updatedAt              DateTime                 @updatedAt
   OrganisationInvitation OrganisationInvitation[]
+  ApiKey                 ApiKey[]
 }
 
 model OrganisationInvitation {
@@ -92,6 +93,7 @@ model User {
   reactions                  Reaction[]
   channelInvitationsCreated  ChannelInvitation[]      @relation("createdBy")
   channelInvitationsReceived ChannelInvitation[]      @relation("createdFor")
+  ApiKey                     ApiKey[]
 }
 
 enum UserStatusKind {
@@ -273,4 +275,24 @@ model ContactForm {
 
   agreedToReceiveUpdates Boolean? @default(false)
   createtAt              DateTime @default(now())
+}
+
+model ApiKey {
+  id String @id @default(cuid())
+
+  name        String
+  description String?
+  key         String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  expiresAt   DateTime?
+
+  creatorId Int
+  createdBy User @relation(fields: [creatorId], references: [id])
+
+  organisationId Int
+  Organisation   Organisation @relation(fields: [organisationId], references: [id])
+
+  @@index([organisationId])
+  @@index([creatorId])
 }

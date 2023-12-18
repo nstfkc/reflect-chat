@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { random } from "uniqolor";
 import { addDays } from "date-fns";
+import { createId } from "@paralleldrive/cuid2";
 
 import { createPrecedure } from "./handlers";
 import { ChannelKind } from "@prisma/client";
@@ -586,3 +587,85 @@ export const createChannelInvitation = createPrecedure({
     }
   },
 });
+
+export const createApiKey = createPrecedure({
+  schema: z.object({
+    name: z.string(),
+    description: z.string().optional(),
+    organisationId: z.number(),
+  }),
+  handler: async (args, ctx) => {
+    const { description, name, organisationId } = args;
+    const key = createId();
+    try {
+      const apiKey = await prisma.apiKey.create({
+        data: {
+          key,
+          name,
+          description,
+          creatorId: ctx.id,
+          organisationId,
+        },
+      });
+      return {
+        success: true,
+        data: apiKey,
+      };
+    } catch (err) {
+      return prismaError({});
+    }
+  },
+});
+
+export const customMessage = createPrecedure({
+  cors: true,
+  schema: z.object({
+    channelId: z.string(),
+    data: z.object({}),
+  }),
+  handler: async (args, ctx) => {
+    const { data, channelId } = args;
+
+    const channel = await prisma.channel.findFirst({
+      where: {
+        publicId: channelId,
+      },
+    });
+
+    const text = Object.entries(data)
+      .map(([key, value]) => {
+        return [
+          {
+            type: "paragraph",
+            content: [{ type: "text", marks: [{ type: "bold" }], text: key }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: JSON.stringify(value) }],
+          },
+        ];
+      })
+      .flat();
+
+    const message = await prisma.message.create({
+      data: {
+        channelId: channel.id,
+        text: JSON.stringify(text),
+        senderId: 0,
+      },
+    });
+
+    return {
+      success: true,
+      data: message,
+    };
+  },
+});
+
+const x = [
+  {
+    type: "paragraph",
+    content: [{ type: "text", marks: [{ type: "bold" }], text: "Message" }],
+  },
+  { type: "paragraph", content: [{ type: "text", text: "Hello" }] },
+];
