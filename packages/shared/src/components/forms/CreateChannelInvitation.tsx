@@ -3,12 +3,16 @@ import { Button } from "../lib/Button";
 import { View } from "react-native";
 import { useMutation } from "../../utils/useMutation";
 import { Controller, useForm } from "react-hook-form";
+import { Text } from "../lib/Text";
+import { useState } from "react";
 
 export const CreateChannelInvitation = (props: {
   channelId: number;
   onSuccess: VoidFunction;
 }) => {
   const { trigger, isMutating } = useMutation("createChannelInvitation");
+  const [token, setToken] = useState("");
+
   const { handleSubmit, control } = useForm({
     defaultValues: {
       email: "",
@@ -26,10 +30,18 @@ export const CreateChannelInvitation = (props: {
       pin,
     }).then((res) => {
       if (res.success) {
-        props.onSuccess();
+        setToken(res.data.token);
       }
     });
   };
+
+  if (token) {
+    return (
+      <View>
+        <Text>{token}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ gap: 8 }}>

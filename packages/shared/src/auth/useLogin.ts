@@ -17,6 +17,17 @@ export function useSignIn() {
   });
 }
 
+export function useSignInWithInvitation() {
+  const { onSignIn } = useContext(AuthContext);
+  const { mutate } = useQuery("me");
+  return useMutation("signInWithMagicLink", {
+    onSuccess: (user) => {
+      onSignIn(user.token);
+      mutate(user as any);
+    },
+  });
+}
+
 export function useSignUp() {
   return useMutation("signUp");
 }

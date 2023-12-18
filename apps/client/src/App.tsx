@@ -68,13 +68,6 @@ const ProtectedRoute = () => {
     return <div>Loading...</div>;
   }
 
-  if (match) {
-    searchParams.append("callback", location.pathname);
-    return (
-      <Navigate to={`/auth/sign-in/magic-link?${searchParams.toString()}`} />
-    );
-  }
-
   if (user) {
     return (
       <RootProvider>
@@ -254,3 +247,5 @@ function App() {
 }
 
 export default App;
+
+// http://localhost:3000/client/external/channel/clq6tck8d0005luw3sd9xp9iy?token=eyJjaGFubmVsSWQiOjcsImVtYWlsIjoiZW5lc3h0dWZla2NpQGdtYWlsLmNvbSIsIm5hbWUiOiJFbmVzIn0=

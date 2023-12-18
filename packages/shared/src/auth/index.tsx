@@ -8,4 +8,5 @@ export {
   useSignOut,
   useOrganisation,
   useSwitchOrganisation,
+  useSignInWithInvitation,
 } from "./useLogin";

@@ -275,16 +275,15 @@ export const getChannelInvitation = createPrecedure({
   handler: async (args, ctx) => {
     const { token } = args;
     const plain = Buffer.from(token, "base64").toString("utf8");
-    const { id } = JSON.parse(plain);
-    const intivation = await prisma.channelInvitation.findUnique({
-      where: {
-        id,
-      },
-    });
+    const { channelId, email, name } = JSON.parse(plain);
 
     return {
       success: true,
-      data: intivation,
+      data: {
+        channelId,
+        email,
+        name,
+      },
     };
   },
 });

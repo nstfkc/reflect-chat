@@ -6,54 +6,49 @@ import { Text } from "../lib/Text";
 
 import { Button } from "../lib/Button";
 
-import { useSignIn } from "../../auth";
+import { useSignIn, useSignInWithInvitation } from "../../auth";
 import { useEffect } from "react";
 import { Input } from "../lib/Input";
 import { useTheme } from "../context/ThemeContext";
 import { useQuery } from "../../utils/useQuery";
+import { useMutation } from "../../utils/useMutation";
 
 interface SignInWithMagicLinkProps {
   onSuccess: VoidFunction;
   token: string;
 }
 
-export const SignInWithMagicLinkForm = (props: SignInWithMagicLinkProps) => {
-  const { token } = props;
-  const { data } = useQuery("getChannelInvitation", {
-    token,
-  });
-
-  if (!data) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
+const Form = (props: {
+  data: { channelId: string; email: string; name: string };
+  onSuccess: VoidFunction;
+}) => {
+  const { data, onSuccess } = props;
+  console.log(data);
   const {
     control,
     handleSubmit,
-    watch,
     setError,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: data.issuedEmail,
-      name: data.username,
+      email: data?.email,
+      name: data?.name,
+      channelId: data?.channelId,
       pin: "",
     },
   });
 
-  const { trigger, isMutating, error } = useSignIn();
+  const { trigger, isMutating, error } = useSignInWithInvitation();
   const [invalidCredentialsError, setInvalidCredentialsError] = useState("");
+
   const onSubmit = (values) => {
     trigger({
       email: values.email,
       pin: values.pin,
+      channelId: Number(values.channelId),
     }).then((res) => {
       if (res.success === true) {
-        props.onSuccess();
+        onSuccess();
       }
     });
   };
@@ -69,7 +64,6 @@ export const SignInWithMagicLinkForm = (props: SignInWithMagicLinkProps) => {
     }
   }, [error, setError]);
 
-  const theme = useTheme();
   return (
     <View style={{ gap: 16 }}>
       <Text style={{ fontWeight: "900", fontSize: 24 }}>Reflect</Text>
@@ -81,7 +75,6 @@ export const SignInWithMagicLinkForm = (props: SignInWithMagicLinkProps) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              autoFocus={!props.email}
               placeholder="Email"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -99,39 +92,56 @@ export const SignInWithMagicLinkForm = (props: SignInWithMagicLinkProps) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              autoFocus={!!props.email}
-              placeholder="Password"
+              placeholder="Name"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="name"
+        />
+
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <Input
+              autoFocus={true}
+              placeholder="PIN"
               secureTextEntry={true}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
             />
           )}
-          name="password"
+          name="pin"
         />
-        {errors.password?.message && <Text>{errors.password.message}</Text>}
       </View>
       <View style={{ gap: 24 }}>
         <Button disabled={isMutating} onPress={handleSubmit(onSubmit)}>
           Sign In
         </Button>
-        {invalidCredentialsError.length ? (
-          <Text>{invalidCredentialsError}</Text>
-        ) : null}
-        <Pressable
-          onPress={props.onSignUpPress}
-          style={{
-            backgroundColor: theme.colors.alt2,
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
-          <Text>
-            Don&apos;t have an account? Try{" "}
-            <Text style={{ fontWeight: "600" }}>sign up</Text>.
-          </Text>
-        </Pressable>
       </View>
     </View>
   );
+};
+
+export const SignInWithMagicLinkForm = (props: SignInWithMagicLinkProps) => {
+  const { token } = props;
+
+  const { data } = useQuery("getChannelInvitation", {
+    token,
+  });
+
+  if (!data) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return <Form data={data} onSuccess={props.onSuccess} />;
 };

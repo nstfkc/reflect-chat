@@ -388,10 +388,9 @@ var signInWithMagicLink = createPrecedure({
     } catch (err) {
       return {
         success: false,
-        error: { title: "INSUFFICIENT_PERMISSIONS" }
+        error: insufficientPermissionsError({})
       };
     }
-    console.log(invitation);
     let user;
     if (invitation) {
       try {
@@ -410,6 +409,11 @@ var signInWithMagicLink = createPrecedure({
       } catch (err) {
         console.log(err);
       }
+    } else {
+      return {
+        success: false,
+        error: insufficientPermissionsError({})
+      };
     }
     if (user) {
       const token = helpers.jwtSign({
@@ -702,7 +706,7 @@ var createChannelInvitation = createPrecedure({
       if (!channel) {
         return prismaError({});
       }
-      const channelInvitation = await prisma.channelInvitation.create({
+      await prisma.channelInvitation.create({
         data: {
           issuedEmail: email,
           pin,
@@ -712,7 +716,11 @@ var createChannelInvitation = createPrecedure({
         }
       });
       return {
-        data: channelInvitation,
+        data: {
+          token: Buffer.from(
+            JSON.stringify({ channelId, email, name })
+          ).toString("base64")
+        },
         success: true
       };
     } catch (error) {
@@ -984,15 +992,14 @@ var getChannelInvitation = createPrecedure({
   handler: async (args, ctx) => {
     const { token } = args;
     const plain = Buffer.from(token, "base64").toString("utf8");
-    const { id } = JSON.parse(plain);
-    const intivation = await prisma.channelInvitation.findUnique({
-      where: {
-        id
-      }
-    });
+    const { channelId, email, name } = JSON.parse(plain);
     return {
       success: true,
-      data: intivation
+      data: {
+        channelId,
+        email,
+        name
+      }
     };
   }
 });

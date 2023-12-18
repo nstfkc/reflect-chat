@@ -5,7 +5,11 @@ import { addDays } from "date-fns";
 import { createPrecedure } from "./handlers";
 import { ChannelKind, MembershipRole } from "@prisma/client";
 import { prisma } from "../db";
-import { invalidCredentialsError, prismaError } from "./error";
+import {
+  insufficientPermissionsError,
+  invalidCredentialsError,
+  prismaError,
+} from "./error";
 
 export const createChannel = createPrecedure({
   schema: z.object({
@@ -199,12 +203,11 @@ export const signInWithMagicLink = createPrecedure({
     } catch (err) {
       return {
         success: false,
-        error: { title: "INSUFFICIENT_PERMISSIONS" },
+        error: insufficientPermissionsError({}),
       };
       // Do something
     }
 
-    console.log(invitation);
     let user;
     if (invitation) {
       try {
@@ -224,6 +227,11 @@ export const signInWithMagicLink = createPrecedure({
         console.log(err);
         // Do something
       }
+    } else {
+      return {
+        success: false,
+        error: insufficientPermissionsError({}),
+      };
     }
 
     if (user) {
@@ -541,7 +549,7 @@ export const createChannelInvitation = createPrecedure({
         return prismaError({});
       }
 
-      const channelInvitation = await prisma.channelInvitation.create({
+      await prisma.channelInvitation.create({
         data: {
           issuedEmail: email,
           pin,
@@ -552,7 +560,11 @@ export const createChannelInvitation = createPrecedure({
       });
 
       return {
-        data: channelInvitation,
+        data: {
+          token: Buffer.from(
+            JSON.stringify({ channelId, email, name })
+          ).toString("base64"),
+        },
         success: true,
       };
     } catch (error) {
