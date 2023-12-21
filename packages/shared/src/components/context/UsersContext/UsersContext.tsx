@@ -61,7 +61,7 @@ export const UsersProvider = (props: UserProviderProps) => {
     mutate((users) => {
       return [
         ...users.map((user) => {
-          if (user.id === userId) {
+          if (user?.id === userId) {
             return {
               ...user,
               userProfile,

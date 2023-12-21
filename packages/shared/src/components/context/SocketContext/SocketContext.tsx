@@ -8,7 +8,7 @@ import type {
   UserProfile,
   UserStatusKind,
 } from "db";
-import { ReactNode, createContext, useContext, useEffect } from "react";
+import { ReactNode, createContext, useContext, useEffect, useRef } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
 import { ConfigContext } from "../ConfigContext/ConfigContext";
@@ -90,6 +90,7 @@ function createSocket(socketUrl: string, userId: number) {
   socket.on("connect", () => {
     console.log("SOCKET CONNECTED!", socket.id);
     socket.emit("user-connected", { userId });
+    socketSubject.getValue()?.disconnect();
     socketSubject.next(socket);
   });
 
@@ -108,11 +109,15 @@ export const SocketProvider = (props: SocketProviderProps) => {
   const { children } = props;
   const { socketUrl } = useContext(ConfigContext);
   const socket = useSubjectValue(socketSubject);
+  const socketRef = useRef(false);
   const { user } = useUser();
 
   useEffect(() => {
-    createSocket(socketUrl, user?.id);
-  }, []);
+    if (user?.id && socketRef.current === false) {
+      socketRef.current = true;
+      createSocket(socketUrl, user?.id);
+    }
+  }, [user]);
 
   return (
     <SocketContext.Provider

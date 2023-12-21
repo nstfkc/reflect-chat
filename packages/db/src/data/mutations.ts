@@ -400,7 +400,7 @@ export const createMessage = createPrecedure({
     receiverId: z.number().optional(),
     channelId: z.number().optional(),
   }),
-  handler: async (args) => {
+  handler: async (args, ctx) => {
     try {
       const message = await prisma.message.create({
         data: {
@@ -411,6 +411,9 @@ export const createMessage = createPrecedure({
           reactions: true,
         },
       });
+
+      ctx.helpers.io.emit("message:created", message);
+
       return {
         success: true,
         data: message,
@@ -688,6 +691,83 @@ export const customMessage = createPrecedure({
     return {
       success: true,
       data: message,
+    };
+  },
+});
+
+export const visitorSignIn = createPrecedure({
+  isPublic: true,
+  cors: true,
+  schema: z.object({
+    channelId: z.string(),
+    email: z.string(),
+    name: z.string(),
+    text: z.string(),
+  }),
+  handler: async (args, ctx) => {
+    const { channelId, email, name, text } = args;
+    const { helpers } = ctx;
+    const channel = await prisma.channel.findFirst({
+      where: { publicId: channelId },
+    });
+    const user = await prisma.user.create({
+      data: {
+        email,
+        role: "CUSTOMER",
+        userProfile: {
+          create: {
+            username: name,
+          },
+        },
+        memberships: {
+          create: {
+            role: "VISITOR",
+            organisationId: channel.organisationId,
+          },
+        },
+        userStatus: {
+          create: {
+            status: "ONLINE",
+          },
+        },
+      },
+    });
+
+    const message = await prisma.message.create({
+      data: {
+        text: JSON.stringify([
+          {
+            type: "paragraph",
+            content: [{ type: "text", text }],
+          },
+        ]),
+        channelId: channel.id,
+        senderId: user.id,
+      },
+    });
+
+    helpers.io.emit("message:created", message);
+
+    const token = helpers.jwtSign({
+      id: user.id,
+      userId: user.publicId,
+      globalRole: user.role,
+      membershipRoles: { [channel.organisationId]: "VISITOR" },
+    });
+
+    const now = Date.now();
+
+    helpers.setHeader("Access-Control-Allow-Credentials", "true");
+    helpers.setCookie("Authorization", `Bearer ${token}`, {
+      expires: addDays(now, 1),
+      path: "/",
+      httpOnly: true,
+      sameSite: true,
+    });
+    const { password: _, ...data } = user;
+    return {
+      success: true,
+      data: { user: { ...data }, token, message },
     };
   },
 });

@@ -37,6 +37,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { SignInWithMagicLink } from "./screens/SignInWithMagicLink";
+import { EmbededChat } from "./screens/ChatScreen/EmbededChat";
 
 const config = getConfig(import.meta.env.PROD);
 
@@ -137,9 +138,13 @@ const router = createBrowserRouter(
 
         {
           path: "/*",
-          element: <HomeScreen />,
+          element: <div>404</div>,
         },
       ],
+    },
+    {
+      path: "/embeded/:channelPublicId/:messagePublicId?",
+      element: <EmbededChat />,
     },
     {
       path: "/auth",
@@ -253,5 +258,3 @@ function App() {
 }
 
 export default App;
-
-// http://localhost:3000/client/external/channel/clq6tck8d0005luw3sd9xp9iy?token=eyJjaGFubmVsSWQiOjcsImVtYWlsIjoiZW5lc3h0dWZla2NpQGdtYWlsLmNvbSIsIm5hbWUiOiJFbmVzIn0=

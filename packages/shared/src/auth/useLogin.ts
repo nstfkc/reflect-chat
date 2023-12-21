@@ -28,6 +28,17 @@ export function useSignInWithInvitation() {
   });
 }
 
+export function useVisitorSignIn() {
+  const { onSignIn } = useContext(AuthContext);
+  const { mutate } = useQuery("me");
+  return useMutation("visitorSignIn", {
+    onSuccess: ({ token, user }) => {
+      onSignIn(token);
+      mutate(user as any);
+    },
+  });
+}
+
 export function useSignUp() {
   return useMutation("signUp");
 }

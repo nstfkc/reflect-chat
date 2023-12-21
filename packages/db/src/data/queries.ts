@@ -115,6 +115,25 @@ export const listDirectMessages = createPrecedure({
   },
 });
 
+export const getMessage = createPrecedure({
+  schema: z.object({ messagePublicId: z.string() }),
+  handler: async (args) => {
+    try {
+      // TODO: get message by id, this query is expensive because publicId is not indexed
+      const message = await prisma.message.findFirst({
+        where: { publicId: args.messagePublicId },
+      });
+
+      return {
+        success: true,
+        data: message,
+      };
+    } catch (error) {
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  },
+});
+
 export const getCurrentOrganisationId = createPrecedure({
   handler: async (_, ctx) => {
     const { currentOrganisationId } = ctx;
@@ -240,6 +259,7 @@ export const listThreadMessages = createPrecedure({
   doNotValidate: true,
   schema: z.object({
     conversationId: z.number().optional(),
+    withUsers: z.boolean().optional(),
   }),
   handler: async (args) => {
     try {
@@ -247,7 +267,11 @@ export const listThreadMessages = createPrecedure({
         where: {
           conversationId: Number(args.conversationId),
         },
-        include: { thread: true, reactions: true },
+        include: {
+          thread: true,
+          reactions: true,
+          ...(args.withUsers ? { sender: true, receiver: true } : {}),
+        },
         orderBy: { createdAt: "asc" },
       });
 

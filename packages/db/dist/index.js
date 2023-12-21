@@ -676,6 +676,7 @@ __export(mutations_exports, {
   signUp: () => signUp,
   updateMessage: () => updateMessage,
   updateProfile: () => updateProfile,
+  visitorSignIn: () => visitorSignIn,
   waitingListSignUp: () => waitingListSignUp
 });
 var z = __toESM(require("zod"));
@@ -1181,7 +1182,7 @@ var createMessage = createPrecedure({
     receiverId: z.number().optional(),
     channelId: z.number().optional()
   }),
-  handler: async (args) => {
+  handler: async (args, ctx) => {
     try {
       const message = await prisma.message.create({
         data: {
@@ -1192,6 +1193,7 @@ var createMessage = createPrecedure({
           reactions: true
         }
       });
+      ctx.helpers.io.emit("message:created", message);
       return {
         success: true,
         data: message
@@ -1442,12 +1444,84 @@ var customMessage = createPrecedure({
     };
   }
 });
+var visitorSignIn = createPrecedure({
+  isPublic: true,
+  cors: true,
+  schema: z.object({
+    channelId: z.string(),
+    email: z.string(),
+    name: z.string(),
+    text: z.string()
+  }),
+  handler: async (args, ctx) => {
+    const { channelId, email, name, text } = args;
+    const { helpers } = ctx;
+    const channel = await prisma.channel.findFirst({
+      where: { publicId: channelId }
+    });
+    const user = await prisma.user.create({
+      data: {
+        email,
+        role: "CUSTOMER",
+        userProfile: {
+          create: {
+            username: name
+          }
+        },
+        memberships: {
+          create: {
+            role: "VISITOR",
+            organisationId: channel.organisationId
+          }
+        },
+        userStatus: {
+          create: {
+            status: "ONLINE"
+          }
+        }
+      }
+    });
+    const message = await prisma.message.create({
+      data: {
+        text: JSON.stringify([
+          {
+            type: "paragraph",
+            content: [{ type: "text", text }]
+          }
+        ]),
+        channelId: channel.id,
+        senderId: user.id
+      }
+    });
+    helpers.io.emit("message:created", message);
+    const token = helpers.jwtSign({
+      id: user.id,
+      userId: user.publicId,
+      globalRole: user.role,
+      membershipRoles: { [channel.organisationId]: "VISITOR" }
+    });
+    const now = Date.now();
+    helpers.setHeader("Access-Control-Allow-Credentials", "true");
+    helpers.setCookie("Authorization", `Bearer ${token}`, {
+      expires: addDays(now, 1),
+      path: "/",
+      httpOnly: true,
+      sameSite: true
+    });
+    const { password: _, ...data } = user;
+    return {
+      success: true,
+      data: { user: { ...data }, token, message }
+    };
+  }
+});
 
 // src/data/queries.ts
 var queries_exports = {};
 __export(queries_exports, {
   getChannelInvitation: () => getChannelInvitation,
   getCurrentOrganisationId: () => getCurrentOrganisationId,
+  getMessage: () => getMessage,
   listChannelMessages: () => listChannelMessages,
   listChannels: () => listChannels,
   listDMMessages: () => listDMMessages,
@@ -1557,6 +1631,22 @@ var listDirectMessages = createPrecedure({
       };
     } catch (error) {
       console.log(error);
+      return prismaError({ payload: error, statusCode: 400 });
+    }
+  }
+});
+var getMessage = createPrecedure({
+  schema: z2.object({ messagePublicId: z2.string() }),
+  handler: async (args) => {
+    try {
+      const message = await prisma.message.findFirst({
+        where: { publicId: args.messagePublicId }
+      });
+      return {
+        success: true,
+        data: message
+      };
+    } catch (error) {
       return prismaError({ payload: error, statusCode: 400 });
     }
   }
@@ -1673,7 +1763,8 @@ var listDMMessages = createPrecedure({
 var listThreadMessages = createPrecedure({
   doNotValidate: true,
   schema: z2.object({
-    conversationId: z2.number().optional()
+    conversationId: z2.number().optional(),
+    withUsers: z2.boolean().optional()
   }),
   handler: async (args) => {
     try {
@@ -1681,7 +1772,11 @@ var listThreadMessages = createPrecedure({
         where: {
           conversationId: Number(args.conversationId)
         },
-        include: { thread: true, reactions: true },
+        include: {
+          thread: true,
+          reactions: true,
+          ...args.withUsers ? { sender: true, receiver: true } : {}
+        },
         orderBy: { createdAt: "asc" }
       });
       return {

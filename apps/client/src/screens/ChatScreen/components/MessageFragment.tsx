@@ -1,7 +1,7 @@
 import { JSONContent } from "shared";
 
 export const MessageFragment = ({
-  content,
+  content = [],
 }: {
   content: JSONContent["content"];
 }) => {

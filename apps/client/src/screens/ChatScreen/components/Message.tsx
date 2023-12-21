@@ -133,6 +133,9 @@ interface MessageProps {
   parentId?: number;
   showThreadCount?: boolean;
   onMessageRender: (message: Message) => void;
+  messageWrapper?: (
+    message: MessageWithThread
+  ) => (props: PropsWithChildren) => JSX.Element;
 }
 
 export const MessageRender = memo((props: MessageProps) => {
@@ -161,7 +164,7 @@ export const MessageRender = memo((props: MessageProps) => {
     <div className="ProseMirror">
       <ChatMessage
         messages={messagesOrDate}
-        messageWrapper={renderMessageWrapper}
+        messageWrapper={props.messageWrapper ?? renderMessageWrapper}
         fragmentRenderer={(message) => (
           <MessageRendererFragmentWrapper message={message} />
         )}
