@@ -1465,7 +1465,8 @@ var visitorSignIn = createPrecedure({
         role: "CUSTOMER",
         userProfile: {
           create: {
-            username: name
+            username: name,
+            profileColor: (() => (0, import_uniqolor.random)({ saturation: [50, 80] }).color)()
           }
         },
         memberships: {
@@ -1775,7 +1776,7 @@ var listThreadMessages = createPrecedure({
         include: {
           thread: true,
           reactions: true,
-          ...args.withUsers ? { sender: true, receiver: true } : {}
+          ...args.withUsers ? { sender: { include: { userProfile: true } }, receiver: true } : {}
         },
         orderBy: { createdAt: "asc" }
       });

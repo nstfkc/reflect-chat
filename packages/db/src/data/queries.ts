@@ -270,7 +270,9 @@ export const listThreadMessages = createPrecedure({
         include: {
           thread: true,
           reactions: true,
-          ...(args.withUsers ? { sender: true, receiver: true } : {}),
+          ...(args.withUsers
+            ? { sender: { include: { userProfile: true } }, receiver: true }
+            : {}),
         },
         orderBy: { createdAt: "asc" },
       });

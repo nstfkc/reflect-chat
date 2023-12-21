@@ -717,6 +717,7 @@ export const visitorSignIn = createPrecedure({
         userProfile: {
           create: {
             username: name,
+            profileColor: (() => random({ saturation: [50, 80] }).color)(),
           },
         },
         memberships: {

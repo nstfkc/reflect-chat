@@ -12,10 +12,20 @@ import { VisitorSignInForm } from "shared/src/components/forms/VisitorSignInForm
 import { MessageFragment } from "./components/MessageFragment";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
-import { Message } from "../../../../../packages/db/src";
+import { Message, User } from "../../../../../packages/db/src";
 
 export const MessageList = (props: { messages: Message[] }) => {
   const { messages } = props;
+  const { user } = useUser();
+  const users = messages.reduce((acc, message) => {
+    if (!message.sender) {
+      return acc;
+    }
+    return {
+      ...acc,
+      [message.senderId]: message.sender,
+    };
+  }, {} as Record<number, User>);
 
   const virtuoso = useRef<VirtuosoHandle>(null);
   const container = useRef<HTMLDivElement>(null);
@@ -24,7 +34,7 @@ export const MessageList = (props: { messages: Message[] }) => {
     <div className="h-[400px]">
       <div
         ref={container}
-        className="gap-8 overflow-scroll"
+        className="gap-8 overflow-scroll w-[300px] max-w-full"
         style={{ height: "100%" }}
       >
         <Virtuoso
@@ -35,10 +45,29 @@ export const MessageList = (props: { messages: Message[] }) => {
           followOutput={true}
           itemContent={(_, message) => {
             return (
-              <MessageFragment
-                key={message.id}
-                content={JSON.parse(message.text)}
-              />
+              <div key={message.id} className="py-2">
+                <div className={["flex flex-col w-full"].join(" ")}>
+                  <div
+                    className={
+                      message.senderId === user.id ? "text-left" : "text-right"
+                    }
+                  >
+                    <span className="font-bold">
+                      {users[message.senderId]?.userProfile.username}
+                    </span>
+                  </div>
+                  <div
+                    className={[
+                      message.senderId === user?.id
+                        ? "text-left"
+                        : "text-right",
+                      "bg-white/60 rounded-lg p-1",
+                    ].join(" ")}
+                  >
+                    <MessageFragment content={JSON.parse(message.text)} />
+                  </div>
+                </div>
+              </div>
             );
           }}
         />
@@ -72,8 +101,6 @@ const MessageInput = (props: {
         conversationId: props.conversationId,
         publicId: createId(),
       } as Message;
-
-      console.log(inputRef.current?.value);
 
       props.onCreate(message);
 
@@ -120,7 +147,10 @@ const Chat = ({ initialMessage }: { initialMessage: Message }) => {
   return (
     <div className="p-4">
       <div>
-        <MessageFragment content={JSON.parse(initialMessage.text)} />
+        <div className="flex align-start gap-1">
+          <div>Q:</div>
+          <MessageFragment content={JSON.parse(initialMessage.text)} />
+        </div>
       </div>
       <MessageList messages={messages} />
       <div>
