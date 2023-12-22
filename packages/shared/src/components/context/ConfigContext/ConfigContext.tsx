@@ -3,6 +3,7 @@ import { ReactNode, createContext } from "react";
 
 interface ConfigContextValue {
   apiUrl: string;
+  host: string;
   socketUrl: string;
   assetsServiceUrl: string;
 }
@@ -23,6 +24,7 @@ export const ConfigProvider = (props: ConfigProviderProps) => {
         apiUrl: [baseUrl, "api"].join("/"),
         socketUrl: baseUrl,
         assetsServiceUrl: [baseUrl, "media"].join("/"),
+        host: baseUrl,
       }}
     >
       {children}

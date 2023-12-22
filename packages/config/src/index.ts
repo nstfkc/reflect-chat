@@ -7,7 +7,7 @@ const local: Config = {
 };
 
 const production: Config = {
-  baseUrl: "https://reflect.rocks",
+  baseUrl: "https://fleckt.com",
 };
 
 export const getConfig = (isProd: boolean): Config => {

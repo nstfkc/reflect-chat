@@ -202,11 +202,7 @@ export const signInWithMagicLink = createPrecedure({
         },
       });
     } catch (err) {
-      return {
-        success: false,
-        error: insufficientPermissionsError({}),
-      };
-      // Do something
+      return insufficientPermissionsError({});
     }
 
     let user;
@@ -229,10 +225,7 @@ export const signInWithMagicLink = createPrecedure({
         // Do something
       }
     } else {
-      return {
-        success: false,
-        error: insufficientPermissionsError({}),
-      };
+      return insufficientPermissionsError({});
     }
 
     if (user) {

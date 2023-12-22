@@ -152,7 +152,11 @@ const router = createBrowserRouter(
     },
     {
       path: "/auth",
-      Component: ({ children }: PropsWithChildren) => <main>{children}</main>,
+      Component: () => (
+        <main>
+          <Outlet />
+        </main>
+      ),
       children: [
         {
           path: "sign-in",

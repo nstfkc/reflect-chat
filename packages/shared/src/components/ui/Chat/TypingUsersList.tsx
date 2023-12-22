@@ -30,7 +30,7 @@ export const TypingUsersList = () => {
           <View key={user?.id}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text style={{ fontSize: 12, opacity: 0.8, fontWeight: "bold" }}>
-                {user.userProfile.username}{" "}
+                {user?.userProfile?.username}{" "}
                 <Text style={{ fontWeight: "normal" }}>is typing</Text>
               </Text>
             </View>

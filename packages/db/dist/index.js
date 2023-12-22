@@ -1000,10 +1000,7 @@ var signInWithMagicLink = createPrecedure({
         }
       });
     } catch (err) {
-      return {
-        success: false,
-        error: insufficientPermissionsError({})
-      };
+      return insufficientPermissionsError({});
     }
     let user;
     if (invitation) {
@@ -1024,10 +1021,7 @@ var signInWithMagicLink = createPrecedure({
         console.log(err);
       }
     } else {
-      return {
-        success: false,
-        error: insufficientPermissionsError({})
-      };
+      return insufficientPermissionsError({});
     }
     if (user) {
       await prisma.channelInvitation.update({

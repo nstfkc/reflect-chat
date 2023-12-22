@@ -1,15 +1,17 @@
 import { Input } from "../lib/Input";
 import { Button } from "../lib/Button";
-import { View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { useMutation } from "../../utils/useMutation";
 import { Controller, useForm } from "react-hook-form";
 import { Text } from "../lib/Text";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ConfigContext } from "../context/ConfigContext";
 
 export const CreateChannelInvitation = (props: {
   channelId: number;
   onSuccess: VoidFunction;
 }) => {
+  const { host } = useContext(ConfigContext);
   const { trigger, isMutating } = useMutation("createChannelInvitation");
   const [token, setToken] = useState("");
 
@@ -38,7 +40,9 @@ export const CreateChannelInvitation = (props: {
   if (token) {
     return (
       <View>
-        <Text>{token}</Text>
+        <Text>
+          {`${host}/client/external/channel/clkqjxw6e000bmv3m2pg0w09i?token=${token}`}
+        </Text>
       </View>
     );
   }
