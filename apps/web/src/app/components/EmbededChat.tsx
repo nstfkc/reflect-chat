@@ -2,7 +2,7 @@
 
 import { TbMessage2, TbX } from "react-icons/tb";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 export const EmbededChat = () => {
   const [active, setActive] = useState(false);
@@ -20,7 +20,7 @@ export const EmbededChat = () => {
           </div>
           <iframe
             height={500}
-            src="http://localhost:3000/client/embeded/clqdt91rw0001q2j4i3dnv94t"
+            src="https://fleckt.com/client/embeded/clqdt91rw0001q2j4i3dnv94t"
           ></iframe>
         </div>
       ) : (
