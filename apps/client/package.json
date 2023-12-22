@@ -13,6 +13,7 @@
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-popover": "^1.0.6",
+    "@radix-ui/react-scroll-area": "^1.0.5",
     "config": "workspace:*",
     "electron": "^25.1.1",
     "emoji-picker-react": "^4.4.10",

@@ -409,6 +409,11 @@ export const createMessage = createPrecedure({
         include: {
           thread: true,
           reactions: true,
+          sender: {
+            include: {
+              userProfile: true,
+            },
+          },
         },
       });
 
@@ -699,10 +704,10 @@ export const visitorSignIn = createPrecedure({
   isPublic: true,
   cors: true,
   schema: z.object({
-    channelId: z.string(),
-    email: z.string(),
-    name: z.string(),
-    text: z.string(),
+    channelId: z.string().min(25),
+    email: z.string().email(),
+    name: z.string().min(2, "Name is too short"),
+    text: z.string().min(44, "Message is too short, please add more detail"),
   }),
   handler: async (args, ctx) => {
     const { channelId, email, name, text } = args;

@@ -22,6 +22,7 @@ export const MessageFragment = ({
           case "text":
             return (
               <span
+                style={{ wordWrap: "break-word" }}
                 key={index}
                 className={`${c.marks
                   ?.map((mark) =>

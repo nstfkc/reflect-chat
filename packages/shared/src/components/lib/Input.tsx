@@ -1,7 +1,7 @@
 import { TextInput, TextInputProps } from "react-native";
 
 export const Input = (props: TextInputProps & { hasError?: boolean }) => {
-  const { value = "", ...rest } = props;
+  const { value = "", style = {}, ...rest } = props;
   return (
     <TextInput
       {...rest}
@@ -12,6 +12,7 @@ export const Input = (props: TextInputProps & { hasError?: boolean }) => {
         paddingHorizontal: 8,
         paddingVertical: 12,
         borderRadius: 6,
+        ...(style as any),
       }}
       placeholderTextColor="gray"
     />

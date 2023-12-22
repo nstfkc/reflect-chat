@@ -76,7 +76,7 @@ const Sidebar = (props: SidebarProps) => {
   const { channelId } = params;
   return (
     <Sheet onOpenChange={props.setShowSidebarChange} open={props.showSidebar}>
-      <div className="min-w-[280px] h-full p-4 bg-alt2 flex flex-col gap-4">
+      <div className="min-w-[280px] h-full p-4 bg-black/5 flex flex-col gap-4">
         <Organisation
           navigateToPeople={() => {
             navigate("/people");

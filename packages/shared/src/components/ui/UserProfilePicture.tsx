@@ -76,10 +76,10 @@ export const UserProfilePicture = memo((props: UserWithProfilePictureProps) => {
           width: size,
           height: size,
           borderRadius: size / 4,
-          backgroundColor: user.userProfile.profileColor,
+          backgroundColor: user.userProfile?.profileColor,
         }}
       >
-        {user?.userProfile.profilePictureUrl ? (
+        {user?.userProfile?.profilePictureUrl ? (
           <Image
             style={{ borderRadius: size / 4 }}
             source={{

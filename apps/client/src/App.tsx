@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, PropsWithChildren } from "react";
 
 import {
   RootProvider,
@@ -100,7 +100,11 @@ const router = createBrowserRouter(
       children: [
         {
           path: "/",
-          element: <HomeScreen />,
+          element: (
+            <main>
+              <HomeScreen />
+            </main>
+          ),
           children: [
             {
               path: "channel/:channelPublicId",
@@ -148,6 +152,7 @@ const router = createBrowserRouter(
     },
     {
       path: "/auth",
+      Component: ({ children }: PropsWithChildren) => <main>{children}</main>,
       children: [
         {
           path: "sign-in",
@@ -246,9 +251,7 @@ function App() {
               onSignIn={(token) => updateToken(token)}
               onSignOut={() => updateToken(null)}
             >
-              <main className="bg-primary text-secondary">
-                <RouterProvider router={router} />
-              </main>
+              <RouterProvider router={router} />
             </AuthProvider>
           </HttpProvider>
         </ConfigProvider>

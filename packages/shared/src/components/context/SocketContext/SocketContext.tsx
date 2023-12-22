@@ -95,6 +95,8 @@ function createSocket(socketUrl: string, userId: number) {
   });
 
   socket.on("disconnect", () => {
+    socketSubject.next(null);
+    createSocket(socketUrl, userId);
     console.log("SOCKET DISCONNECTED!", socket.id);
     called = false;
     socket.emit("user-disconnected", { userId });

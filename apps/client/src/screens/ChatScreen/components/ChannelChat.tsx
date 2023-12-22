@@ -42,12 +42,8 @@ const ChannelHeader = (props: { channel: Channel }) => {
   const { icons } = useContext(IconsContext);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  const theme = useTheme();
   return (
-    <div
-      className="flex px-4 py-2 justify-between items-center"
-      style={{ backgroundColor: theme.colors.alt1 }}
-    >
+    <div className="flex px-4 py-2 justify-between items-center bg-black/10">
       <div className="font-bold">
         <div>{`# ${channel.name}`}</div>
       </div>

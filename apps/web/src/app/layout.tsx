@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/react";
 import Link from "next/link";
 import { Inter } from "next/font/google";
 import Loader from "next/font/local";
+import { EmbededChat } from "./components/EmbededChat";
 
 const ab = Loader({
   src: "./font.woff2",
@@ -128,6 +129,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        <EmbededChat />
         <Analytics />
       </body>
     </html>

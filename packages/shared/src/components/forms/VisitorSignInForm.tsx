@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useForm, Controller } from "react-hook-form";
-import { Pressable, View } from "react-native";
+import { Pressable, View, TextInput } from "react-native";
 import { Text } from "../lib/Text";
 
 import { Button } from "../lib/Button";
@@ -24,6 +24,8 @@ const Form = (props: {
     control,
     handleSubmit,
     setError,
+    getValues,
+    clearErrors,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -35,9 +37,9 @@ const Form = (props: {
   });
 
   const { trigger, isMutating, error } = useVisitorSignIn();
-  const [invalidCredentialsError, setInvalidCredentialsError] = useState("");
 
-  const onSubmit = (values) => {
+  const onSubmit = () => {
+    const values = getValues();
     trigger({
       email: values.email,
       name: values.name,
@@ -46,14 +48,17 @@ const Form = (props: {
     }).then((res) => {
       if (res.success === true) {
         onSuccess(res.data.message.publicId);
+      } else {
+        if (res.error?.info?.title === "VALIDATION_ERROR") {
+          res.error.info.payload.issues.forEach((issue) => {
+            setError(issue.path[0] as any, { message: issue.message });
+          });
+        }
       }
     });
   };
 
   useEffect(() => {
-    if (error?.info?.title === "INVALID_CREDENTIALS_ERROR") {
-      setInvalidCredentialsError("Invalid crendentials");
-    }
     if (error?.info?.title === "VALIDATION_ERROR") {
       error.info.payload.issues.forEach((issue) => {
         setError(issue.path[0] as any, { message: issue.message });
@@ -63,60 +68,128 @@ const Form = (props: {
 
   return (
     <View style={{ gap: 16 }}>
-      <Text style={{ fontWeight: "900", fontSize: 24 }}>Reflect</Text>
       <View style={{ gap: 8 }}>
         <Controller
           control={control}
           rules={{
             required: true,
           }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              placeholder="Email"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
-          )}
+          render={({ field: { onChange, onBlur, value }, fieldState }) => {
+            const showError = fieldState.error;
+            return (
+              <View>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 14,
+                    color: showError ? "red" : "default",
+                  }}
+                >
+                  {showError ? fieldState.error?.message ?? "Email" : "Email"}
+                </Text>
+                <Input
+                  style={{
+                    borderWidth: 2,
+                    borderColor: showError ? "red" : "transparent",
+                  }}
+                  placeholder="Your email address"
+                  onBlur={onBlur}
+                  onChangeText={(event) => {
+                    onChange(event);
+                    clearErrors("email");
+                  }}
+                  value={value}
+                />
+              </View>
+            );
+          }}
           name="email"
         />
-        {errors.email?.message && <Text>{errors.email.message}</Text>}
 
         <Controller
           control={control}
           rules={{
-            maxLength: 100,
+            required: true,
           }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              placeholder="Name"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
-          )}
+          render={({ field: { onChange, onBlur, value }, fieldState }) => {
+            const showError = fieldState.error;
+            return (
+              <View>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 14,
+                    color: showError ? "red" : "default",
+                  }}
+                >
+                  {showError ? fieldState.error?.message ?? "Name" : "Name"}
+                </Text>
+                <Input
+                  style={{
+                    borderWidth: 2,
+                    borderColor: showError ? "red" : "transparent",
+                  }}
+                  placeholder="Your Name"
+                  onBlur={onBlur}
+                  onChangeText={(event) => {
+                    onChange(event);
+                    clearErrors("name");
+                  }}
+                  value={value}
+                />
+              </View>
+            );
+          }}
           name="name"
         />
 
         <Controller
           control={control}
           rules={{
-            maxLength: 100,
+            required: true,
           }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              placeholder="Your message"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
-          )}
+          render={({ field: { onChange, onBlur, value }, fieldState }) => {
+            const showError = fieldState.error;
+            return (
+              <View>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 14,
+                    color: showError ? "red" : "default",
+                  }}
+                >
+                  {showError
+                    ? fieldState.error?.message ?? "Your Message"
+                    : "Your Message"}
+                </Text>
+                <TextInput
+                  multiline
+                  rows="4"
+                  style={{
+                    fontSize: 16,
+                    backgroundColor: "rgba(0,0,0,0.05)",
+                    paddingHorizontal: 8,
+                    paddingVertical: 12,
+                    borderRadius: 6,
+                    borderWidth: 2,
+                    borderColor: showError ? "red" : "transparent",
+                  }}
+                  onChangeText={(event) => {
+                    onChange(event);
+                    clearErrors("text");
+                  }}
+                  value={value}
+                />
+              </View>
+            );
+          }}
           name="text"
         />
       </View>
       <View style={{ gap: 24 }}>
-        <Button disabled={isMutating} onPress={handleSubmit(onSubmit)}>
-          Sign In
+        <Button disabled={isMutating} onPress={onSubmit}>
+          Send
         </Button>
       </View>
     </View>
