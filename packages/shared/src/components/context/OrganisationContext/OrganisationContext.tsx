@@ -2,6 +2,7 @@ import { Channel, Organisation, User, UserProfile, UserStatus } from "db";
 import { PropsWithChildren, createContext } from "react";
 import { useQuery } from "../../../utils/useQuery";
 import { useOrganisation, useUser } from "../../../auth";
+import { useSocket } from "../SocketContext";
 
 export type UserWithProfileAndStatus = User & { userProfile: UserProfile } & {
   userStatus: UserStatus;
@@ -22,9 +23,14 @@ export const OrganisationContext = createContext(
 export const OrganisationProvider = (props: PropsWithChildren) => {
   const { organisation } = useOrganisation();
   const { user } = useUser();
-  const { data: users, isLoading: usersLoading } = useQuery("listUsers", {
+  const {
+    data: users,
+    isLoading: usersLoading,
+    mutate,
+  } = useQuery("listUsers", {
     organisationId: organisation?.publicId,
   });
+
   const { data: channels, isLoading: channelsLoading } = useQuery(
     "listChannels",
     {
@@ -32,12 +38,17 @@ export const OrganisationProvider = (props: PropsWithChildren) => {
     }
   );
 
+  useSocket("user:created", (user) => {
+    mutate([...users, user]);
+  });
+
   const { data: directMessages = [], isLoading: isLoadingDirectMessages } =
     useQuery("listDirectMessages");
 
   if (usersLoading || channelsLoading || isLoadingDirectMessages) {
     return <div>Loading organisation...</div>;
   }
+
   const directMessageUserIds = Array.from(
     new Set(
       directMessages

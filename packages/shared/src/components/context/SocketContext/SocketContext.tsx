@@ -5,7 +5,7 @@ import type {
   Message,
   Reaction,
   User,
-  UserProfile,
+  UserProfile as UserProfileType,
   UserStatusKind,
 } from "db";
 import { ReactNode, createContext, useContext, useEffect, useRef } from "react";
@@ -34,7 +34,7 @@ type EmitEvents = {
     userStatus: UserStatusKind;
   }) => void;
   "update-user-profile": (payload: {
-    userProfile: UserProfile;
+    userProfile: UserProfileType;
     userId: number;
   }) => void;
   "reaction:create": (reaction: Reaction) => void;
@@ -56,9 +56,12 @@ export type ListenEvents = {
     userStatus: UserStatusKind;
   }) => void;
   "update-user-profile": (payload: {
-    userProfile: UserProfile;
+    userProfile: UserProfileType;
     userId: number;
   }) => void;
+  "user:created": (
+    user: User & { userProfile: UserProfileType; userStatus: any }
+  ) => void;
 };
 
 export type InternalSocket = Socket<ListenEvents, EmitEvents>;
@@ -96,7 +99,6 @@ function createSocket(socketUrl: string, userId: number) {
 
   socket.on("disconnect", () => {
     socketSubject.next(null);
-    createSocket(socketUrl, userId);
     console.log("SOCKET DISCONNECTED!", socket.id);
     called = false;
     socket.emit("user-disconnected", { userId });
@@ -119,7 +121,7 @@ export const SocketProvider = (props: SocketProviderProps) => {
       socketRef.current = true;
       createSocket(socketUrl, user?.id);
     }
-  }, [user]);
+  }, [user?.id, socketUrl]);
 
   return (
     <SocketContext.Provider
