@@ -26,14 +26,20 @@ export const ContactForm = () => {
     event.preventDefault();
     setStatus("pending");
 
-    fetch("/api/createContactFormEntry", {
+    fetch("/api/customMessage", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        "Flect-API-Key": "ycusfbfyxf9nfg00y44lfu0x",
+      },
       body: JSON.stringify({
-        email,
-        jobTitle,
-        description,
-        agreedToReceiveUpdates,
+        channelId: "clqh2ecy7000f13k2vtts6giy",
+        data: {
+          email,
+          jobTitle,
+          description,
+          agreedToReceiveUpdates,
+        },
       }),
     })
       .then((res) => res.json())

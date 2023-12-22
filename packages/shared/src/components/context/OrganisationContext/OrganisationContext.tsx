@@ -1,5 +1,5 @@
 import { Channel, Organisation, User, UserProfile, UserStatus } from "db";
-import { PropsWithChildren, createContext } from "react";
+import { PropsWithChildren, createContext, useCallback, useState } from "react";
 import { useQuery } from "../../../utils/useQuery";
 import { useOrganisation, useUser } from "../../../auth";
 import { useSocket } from "../SocketContext";
@@ -31,6 +31,8 @@ export const OrganisationProvider = (props: PropsWithChildren) => {
     organisationId: organisation?.publicId,
   });
 
+  const [newUsers, setNewUsers] = useState([]);
+
   const { data: channels, isLoading: channelsLoading } = useQuery(
     "listChannels",
     {
@@ -39,7 +41,7 @@ export const OrganisationProvider = (props: PropsWithChildren) => {
   );
 
   useSocket("user:created", (user) => {
-    mutate([...users, user]);
+    setNewUsers((users) => [...users, user]);
   });
 
   const { data: directMessages = [], isLoading: isLoadingDirectMessages } =
@@ -58,9 +60,10 @@ export const OrganisationProvider = (props: PropsWithChildren) => {
     )
   );
 
-  const getUserById = (userId: number) => {
-    return users.find((user) => user.id === userId);
+  const getUserById = (userId: number): UserWithProfileAndStatus => {
+    return [...users, ...newUsers].find((user) => user.id === userId);
   };
+
   return (
     <OrganisationContext.Provider
       value={{

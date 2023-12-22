@@ -1088,35 +1088,31 @@ var signInWithMagicLink = createPrecedure({
     try {
       if (user) {
         const passwordMatches = true;
-        if (passwordMatches) {
-          const token = helpers.jwtSign({
-            id: user.id,
-            userId: user.publicId,
-            globalRole: user.role,
-            membershipRoles: Object.fromEntries(
-              user.memberships.map((membership) => [
-                membership.organisation.id,
-                membership.role
-              ])
-            )
-          });
-          const now = Date.now();
-          helpers.setHeader("Access-Control-Allow-Credentials", "true");
-          helpers.setCookie("Authorization", `Bearer ${token}`, {
-            expires: addDays(now, 1),
-            path: "/",
-            httpOnly: true,
-            sameSite: true
-          });
-          const { password: _, ...data } = user;
-          return {
-            success: true,
-            data: { ...data, token }
-          };
-        } else {
-          helpers.setStatusCode(401);
-          return invalidCredentialsError({});
-        }
+        helpers.io.emit("user:created", user);
+        const token = helpers.jwtSign({
+          id: user.id,
+          userId: user.publicId,
+          globalRole: user.role,
+          membershipRoles: Object.fromEntries(
+            user.memberships.map((membership) => [
+              membership.organisation.id,
+              membership.role
+            ])
+          )
+        });
+        const now = Date.now();
+        helpers.setHeader("Access-Control-Allow-Credentials", "true");
+        helpers.setCookie("Authorization", `Bearer ${token}`, {
+          expires: addDays(now, 1),
+          path: "/",
+          httpOnly: true,
+          sameSite: true
+        });
+        const { password: _, ...data } = user;
+        return {
+          success: true,
+          data: { ...data, token }
+        };
       } else {
         helpers.setStatusCode(401);
         return invalidCredentialsError({});
@@ -1479,8 +1475,14 @@ var visitorSignIn = createPrecedure({
             status: "ONLINE"
           }
         }
+      },
+      include: {
+        userProfile: true,
+        userStatus: true,
+        memberships: true
       }
     });
+    helpers.io.emit("user:created", user);
     const message = await prisma.message.create({
       data: {
         text: JSON.stringify([

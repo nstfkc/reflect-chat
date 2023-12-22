@@ -1,11 +1,14 @@
 "use client";
 
 import { TbMessage2, TbX } from "react-icons/tb";
-
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 export const EmbededChat = () => {
   const [active, setActive] = useState(false);
+  const host =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : "https://fleckt.com";
   return (
     <div className="fixed  bottom-16 right-4">
       {active ? (
@@ -20,7 +23,7 @@ export const EmbededChat = () => {
           </div>
           <iframe
             height={500}
-            src="https://fleckt.com/client/embeded/clqdt91rw0001q2j4i3dnv94t"
+            src={`${host}/client/embeded/clqdt91rw0001q2j4i3dnv94t`}
           ></iframe>
         </div>
       ) : (
